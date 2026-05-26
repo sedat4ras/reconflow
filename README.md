@@ -5,6 +5,7 @@
 ![HTML](https://img.shields.io/badge/HTML-single%20file-orange?style=flat-square&logo=html5)
 ![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)
 ![Tools](https://img.shields.io/badge/tools-28-brightgreen?style=flat-square)
+![CMD Log](https://img.shields.io/badge/CMD_LOG-new-orange?style=flat-square)
 ![Language](https://img.shields.io/badge/lang-EN%20%2F%20TR-purple?style=flat-square)
 
 ---
@@ -21,12 +22,14 @@ It keeps your target IP in one place and injects it into every command automatic
 
 - **Target IP injection** — type the IP once, it fills into every command
 - **One-click copy** — every command copies instantly
+- **CMD LOG** — `+` button on every command logs it to a session activity page; add output/notes per entry, export as JSON
 - **Favorites** — star any command to pin it at the top of the page
 - **Notes** — collapsible note field on every command card
 - **Custom commands** — add your own commands to any tool page
 - **Session tracking** — check off services as you enumerate them
 - **Info panels** — bilingual (EN/TR) summary, what to look for, common vulns, tips
-- **Platform badges** — WIN / LIN labels on every tool info panel
+- **Platform badges** — WIN / LIN labels on every tool info panel (indicates target platform)
+- **Related tool badges** — AD and Linux pages show clickable tool shortcuts
 - **Fully offline** — zero dependencies, works without internet
 - **Persistent state** — everything saves to localStorage automatically
 
@@ -99,6 +102,7 @@ Or double-click `recon.html` in your file manager.
 4. Click **ℹ INFO** for a summary of what to look for
 5. Run commands — they auto-fill with your target IP
 6. Star important commands, add notes, track your progress
+7. Click **+** on any command card to log it → go to **CMD LOG** to add output/notes and export JSON
 
 ---
 
@@ -117,7 +121,7 @@ Or double-click `recon.html` in your file manager.
 │  □ HTTP 80      ├──────────────────────────────────────────┤
 │                 │  HOST DISCOVERY                          │
 │  TOOLS  ▼      │  ┌─────────────────────────────────────┐ │
-│  nmap           │  │ nmap -sn TARGETIP/24    [COPY]  ☆  │ │
+│  nmap           │  │ nmap -sn TARGETIP/24  [+][COPY][☆] │ │
 │  gobuster       │  │ Ping sweep — find live hosts        │ │
 │  ffuf           │  └─────────────────────────────────────┘ │
 │  cme            │                                          │
@@ -126,6 +130,8 @@ Or double-click `recon.html` in your file manager.
 │  AD / LINUX ▼  │                                          │
 │  Active Dir.    │                                          │
 │  Linux          │                                          │
+│                 │                                          │
+│  ◎ CMD LOG      │                                          │
 └─────────────────┴──────────────────────────────────────────┘
 ```
 

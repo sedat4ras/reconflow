@@ -135,6 +135,31 @@ body{background:var(--bg);color:var(--text);font-family:var(--mono);height:100vh
 .btn-copy{background:none;border:1px solid var(--border);color:var(--muted);padding:2px 8px;font-family:var(--mono);font-size:10px;cursor:pointer;border-radius:3px;flex-shrink:0;transition:all .12s;}
 .btn-copy:hover{border-color:var(--cyan);color:var(--cyan);}
 .btn-copy.copied{border-color:var(--green);color:var(--green);}
+.btn-log{background:none;border:1px solid var(--border);color:var(--muted);padding:2px 7px;font-family:var(--mono);font-size:11px;font-weight:700;cursor:pointer;border-radius:3px;flex-shrink:0;transition:all .12s;}
+.btn-log:hover{border-color:var(--green);color:var(--green);}
+.btn-log.logged{border-color:var(--green);color:var(--green);}
+/* CMD LOG page */
+.cmdlog-hdr{display:flex;align-items:center;gap:10px;margin-bottom:18px;padding-bottom:12px;border-bottom:1px solid var(--border);}
+.cmdlog-count{font-size:11px;color:var(--muted);font-family:var(--mono);}
+.cmdlog-entry{background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--green);border-radius:5px;margin-bottom:12px;overflow:hidden;}
+.cmdlog-entry-hdr{display:flex;align-items:center;gap:8px;padding:7px 12px;background:var(--bg3);border-bottom:1px solid var(--border);}
+.cmdlog-ts{font-family:var(--mono);font-size:10px;color:var(--muted);}
+.cmdlog-tool{font-family:var(--mono);font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;background:#0d2a45;color:#58b8f5;border:1px solid #1e5a8c;}
+.cmdlog-tool.lin{background:#0d2e0d;color:#4ecf6e;border-color:#1e6a2e;}
+.cmdlog-tool.both{background:#211a08;color:#c8a84b;border-color:#6a5218;}
+.cmdlog-purpose{font-size:11px;color:var(--text);flex:1;}
+.cmdlog-del{background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;padding:0 4px;transition:color .12s;}
+.cmdlog-del:hover{color:var(--red);}
+.cmdlog-body{padding:10px 12px;}
+.cmdlog-cmd{background:var(--bg);border:1px solid var(--border);border-radius:3px;padding:6px 10px;font-family:var(--mono);font-size:12px;color:var(--orange);white-space:pre-wrap;word-break:break-all;margin-bottom:8px;user-select:all;}
+.cmdlog-output{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:6px 10px;font-family:var(--mono);font-size:11px;border-radius:3px;resize:vertical;min-height:52px;box-sizing:border-box;}
+.cmdlog-output:focus{outline:none;border-color:var(--purple);}
+.cmdlog-output::placeholder{color:var(--muted);}
+.cmdlog-actions{display:flex;gap:8px;margin-bottom:16px;}
+.btn-export{background:none;border:1px solid var(--green);color:var(--green);padding:4px 12px;font-family:var(--mono);font-size:11px;cursor:pointer;border-radius:3px;transition:all .12s;}
+.btn-export:hover{background:rgba(63,185,80,.1);}
+.btn-logclr{background:none;border:1px solid var(--border);color:var(--muted);padding:4px 12px;font-family:var(--mono);font-size:11px;cursor:pointer;border-radius:3px;transition:all .12s;}
+.btn-logclr:hover{border-color:var(--red);color:var(--red);}
 .cmd-body{padding:0 12px 10px 36px;}
 .cmd-code{background:var(--bg);border:1px solid var(--border);border-radius:3px;padding:6px 10px;font-family:var(--mono);font-size:12px;color:var(--orange);white-space:pre-wrap;word-break:break-all;margin-bottom:5px;user-select:all;}
 .cmd-hint{font-size:11px;color:var(--muted);margin-bottom:5px;}
@@ -241,8 +266,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--mono);height:100vh
 //  TRANSLATIONS
 // ═══════════════════════════════════════════════════
 const T={
-  en:{target:'TARGET',clearState:'CLEAR STATE',tools:'TOOLS',envSection:'AD / LINUX',hint:'Click + to add ports to session · Select tool · Follow commands',services:'SERVICES',sessionLabel:'SESSION',statusLabel:'Status:',inProgress:'▶ IN PROGRESS',done:'✓ DONE',infoBtn:'ℹ INFO',clearSession:'✕ CLEAR SESSION',sessionView:'SESSION VIEW',sessionEmpty:'Session is empty. Click <b style="color:var(--green)">+</b> next to services to add them.',copy:'COPY',copied:'COPIED',notesPlaceholder:'Notes / findings...',clearConfirm:'Clear all progress?',lookFor:'🔍 What to look for',vulns:'⚡ Common vulnerabilities',creds:'🔑 Default credentials',favorites:'Favorites',noFavorites:'No favorites yet — click ☆ to add',customTitle:'Custom Commands',addBtn:'+ ADD',purposePh:'Description...',cmdPh:'Command...',hintPh:'Hint / note...',relatedTools:'🛠 Related Tools'},
-  tr:{target:'HEDEF',clearState:'SIFIRLA',tools:'ARAÇLAR',envSection:'AD / LİNUX',hint:'Portları oturuma eklemek için + · Araç seç · Komutları takip et',services:'SERVİSLER',sessionLabel:'OTURUM',statusLabel:'Durum:',inProgress:'▶ DEVAM EDİYOR',done:'✓ TAMAM',infoBtn:'ℹ BİLGİ',clearSession:'✕ OTURUMU TEMİZLE',sessionView:'OTURUM GÖRÜNÜMÜ',sessionEmpty:'Oturum boş. Yan paneldeki <b style="color:var(--green)">+</b> butonuna tıklayın.',copy:'KOPYALA',copied:'KOPYALANDI',notesPlaceholder:'Notlar / bulgular...',clearConfirm:'Tüm ilerleme sıfırlansın mı?',lookFor:'🔍 Ne aranır?',vulns:'⚡ Yaygın açıklar',creds:"🔑 Default credential'lar",favorites:'Favoriler',noFavorites:'Henüz favori yok — ☆ ile ekleyin',customTitle:'Özel Komutlar',addBtn:'+ EKLE',purposePh:'Açıklama...',cmdPh:'Komut...',hintPh:'İpucu / not...',relatedTools:'🛠 İlgili Araçlar'}
+  en:{target:'TARGET',clearState:'CLEAR STATE',tools:'TOOLS',envSection:'AD / LINUX',hint:'Click + to add ports to session · Select tool · Follow commands',services:'SERVICES',sessionLabel:'SESSION',statusLabel:'Status:',inProgress:'▶ IN PROGRESS',done:'✓ DONE',infoBtn:'ℹ INFO',clearSession:'✕ CLEAR SESSION',sessionView:'SESSION VIEW',sessionEmpty:'Session is empty. Click <b style="color:var(--green)">+</b> next to services to add them.',copy:'COPY',copied:'COPIED',notesPlaceholder:'Notes / findings...',clearConfirm:'Clear all progress?',lookFor:'🔍 What to look for',vulns:'⚡ Common vulnerabilities',creds:'🔑 Default credentials',favorites:'Favorites',noFavorites:'No favorites yet — click ☆ to add',customTitle:'Custom Commands',addBtn:'+ ADD',purposePh:'Description...',cmdPh:'Command...',hintPh:'Hint / note...',relatedTools:'🛠 Related Tools',cmdLog:'CMD LOG',cmdLogEmpty:'No commands logged yet — click <b style="color:var(--green)">+</b> on any command to add it.',cmdLogOutput:'Output / Notes...',cmdLogExport:'⬇ Export JSON',cmdLogClear:'✕ Clear Log',cmdLogAdded:'Added to log'},
+  tr:{target:'HEDEF',clearState:'SIFIRLA',tools:'ARAÇLAR',envSection:'AD / LİNUX',hint:'Portları oturuma eklemek için + · Araç seç · Komutları takip et',services:'SERVİSLER',sessionLabel:'OTURUM',statusLabel:'Durum:',inProgress:'▶ DEVAM EDİYOR',done:'✓ TAMAM',infoBtn:'ℹ BİLGİ',clearSession:'✕ OTURUMU TEMİZLE',sessionView:'OTURUM GÖRÜNÜMÜ',sessionEmpty:'Oturum boş. Yan paneldeki <b style="color:var(--green)">+</b> butonuna tıklayın.',copy:'KOPYALA',copied:'KOPYALANDI',notesPlaceholder:'Notlar / bulgular...',clearConfirm:'Tüm ilerleme sıfırlansın mı?',lookFor:'🔍 Ne aranır?',vulns:'⚡ Yaygın açıklar',creds:"🔑 Default credential'lar",favorites:'Favoriler',noFavorites:'Henüz favori yok — ☆ ile ekleyin',customTitle:'Özel Komutlar',addBtn:'+ EKLE',purposePh:'Açıklama...',cmdPh:'Komut...',hintPh:'İpucu / not...',relatedTools:'🛠 İlgili Araçlar',cmdLog:'CMD LOG',cmdLogEmpty:'Henüz komut eklenmedi — herhangi bir komuta <b style="color:var(--green)">+</b> tıkla.',cmdLogOutput:'Çıktı / Notlar...',cmdLogExport:'⬇ JSON İndir',cmdLogClear:'✕ Logu Temizle',cmdLogAdded:'Loga eklendi'}
 };
 
 // ═══════════════════════════════════════════════════
@@ -285,6 +310,20 @@ const DB = {
         {p:"Manual anonymous login",c:"ftp TARGETIP\n# user: anonymous\n# pass: anonymous@domain.com",h:"Inside: ls -la, get <file>, cd <dir>. Look for: id_rsa, config, creds, backups."},
         {p:"Recursive download",c:"wget -m --no-passive ftp://anonymous:anonymous@TARGETIP",h:"Mirrors full FTP tree. Then: grep -r 'password\\|secret\\|key' ./TARGETIP/"},
         {p:"Non-interactive listing",c:"curl -v -u anonymous:anonymous ftp://TARGETIP/",h:"Quick listing without interactive session."},
+      ]},
+      {name:"Inside FTP Session",cmds:[
+        {p:"List files (detailed)",c:"ls -la",h:"Shows hidden files (dot files), permissions, sizes, dates. Always use -la instead of plain ls."},
+        {p:"Current directory",c:"pwd",h:"Print working directory. Confirm where you are in the file tree."},
+        {p:"Change directory",c:"cd <dirname>\ncd ..\ncd /",h:"Navigate into a dir, go up one level, or try root. Some misconfigs let you escape the FTP root."},
+        {p:"Download single file",c:"get <filename>",h:"Downloads to your current local dir. Check: allowed.userlist, id_rsa, .htpasswd, web.config, *.bak"},
+        {p:"Download ALL files",c:"mget *",h:"Downloads everything in current dir. Answer 'y' for each file or type 'prompt off' first to skip confirmations."},
+        {p:"Upload file",c:"put <localfile>",h:"Test if write is allowed — try putting a test file. Write access → can drop webshell if FTP root overlaps with web root."},
+        {p:"Upload multiple files",c:"mput *.txt",h:"Upload multiple files matching pattern."},
+        {p:"Set binary mode",c:"binary",h:"Always set before transferring non-text files (images, zip, executables). Prevents corruption."},
+        {p:"Set ASCII mode",c:"ascii",h:"For plain text files. Binary mode is safer by default."},
+        {p:"Disable confirmation prompts",c:"prompt off",h:"Disables y/n prompt for mget/mput. Set before bulk downloads."},
+        {p:"Navigate + dump all at once",c:"prompt off\nbinary\nmget *",h:"The go-to sequence after connecting: no prompts, binary mode, grab everything."},
+        {p:"Exit session",c:"bye",h:"Also: quit, exit. Closes the FTP connection."},
       ]},
     ]},
     {name:"Phase 2 — Vulnerability Scan",tools:[
@@ -839,14 +878,14 @@ const INFO = {
   ftp:{
     en:{
       summary:"File Transfer Protocol — port 21. All traffic is cleartext including passwords. If anonymous login is enabled, files can be accessed without credentials. In CTFs, often a goldmine for credentials, SSH keys, and config files.",
-      lookFor:["Anonymous login (no credentials required)","Config files, credentials, SSH private key (id_rsa), backups","FTP server version (vsftpd/proftpd) → searchsploit","Writable directory → if mapped to webroot, upload webshell"],
-      vulns:["Anonymous login enabled","vsftpd 2.3.4 backdoor (CVE-2011-2523) → spawns shell on port 6200","ProFTPD mod_copy — copy files on the server without auth","Cleartext credentials (sniffable on the network)"],
+      lookFor:["Anonymous login (no credentials required)","id_rsa, id_ecdsa — private SSH keys, try on port 22","*.userlist, users.txt, usernames.txt — credential files","*.passwd, passwords.txt, pass.txt — password files","web.config, .htpasswd, config.php, database.yml — app creds","*.bak, *.old, *.zip, *.tar.gz — backups with sensitive content","FTP server version (vsftpd/proftpd) → searchsploit","Writable directory → if mapped to webroot, upload webshell"],
+      vulns:["Anonymous login enabled","vsftpd 2.3.4 backdoor (CVE-2011-2523) → spawns shell on port 6200","ProFTPD mod_copy — copy files on the server without auth","Cleartext credentials (sniffable on the network)","Write access to webroot → drop PHP/ASPX webshell"],
       creds:["anonymous:anonymous","anonymous:(empty)","ftp:ftp","admin:admin"],
     },
     tr:{
       summary:"File Transfer Protocol — port 21. Dosya transferi için kullanılır. Tüm trafik şifresiz (cleartext) gider — şifreler bile. Anonymous login açıksa kimlik bilgisi olmadan dosyalara erişilebilir. CTF'lerde credential, SSH key, config dosyası bulmak için altın madeni.",
-      lookFor:["Anonymous login (kullanıcı adı/şifre gerekmez)","Config dosyaları, credential, SSH private key (id_rsa), backup","FTP sunucu versiyonu (vsftpd/proftpd) → searchsploit","Yazılabilir dizin → webroot'a map edilmişse webshell upload"],
-      vulns:["Anonymous login açık","vsftpd 2.3.4 backdoor (CVE-2011-2523) → port 6200'de shell açar","ProFTPD mod_copy — dosyaları sunucuda kopyalama yetkisi","Cleartext kimlik bilgileri (ağ dinlenirse yakalanır)"],
+      lookFor:["Anonymous login (kullanıcı adı/şifre gerekmez)","id_rsa, id_ecdsa — SSH private key, port 22'de dene","*.userlist, users.txt — kullanıcı adı listeleri","*.passwd, passwords.txt — şifre dosyaları","web.config, .htpasswd, config.php — uygulama credential'ları","*.bak, *.old, *.zip — hassas içerik barındıran backup'lar","FTP sunucu versiyonu (vsftpd/proftpd) → searchsploit","Yazılabilir dizin → webroot'a map edilmişse webshell upload"],
+      vulns:["Anonymous login açık","vsftpd 2.3.4 backdoor (CVE-2011-2523) → port 6200'de shell açar","ProFTPD mod_copy — dosyaları sunucuda kopyalama yetkisi","Cleartext kimlik bilgileri (ağ dinlenirse yakalanır)","Webroot'a yazma erişimi → PHP/ASPX webshell bırak"],
       creds:["anonymous:anonymous","anonymous:(boş)","ftp:ftp","admin:admin"],
     },
   },
@@ -1363,9 +1402,6 @@ const TOOLS_INFO = {
     platform:'lin',
     en:{summary:"binwalk is a firmware analysis and extraction tool. It scans binary files for embedded file signatures, filesystems, compressed archives, and executable code. In CTF challenges it is used on firmware images, unknown binary blobs, and steganography challenges to extract hidden files. It automatically identifies and extracts embedded content.",lookFor:["Firmware images (.bin, .img, .rom) — extract filesystem for analysis","Embedded filesystems: squashfs, cramfs, jffs2, ext2","Compressed data: gzip, lzma, zip embedded in binary","Bootloader or kernel images — find hardcoded credentials","Steganography challenges — hidden data appended to images or archives","Custom binary format CTF challenges — find embedded flags or data"],vulns:["Squashfs filesystem extraction → find /etc/passwd, credentials, private keys","Bootloader credential extraction → default admin passwords hardcoded","Hidden zip/tar inside image → extract and analyze contents","Kernel image analysis → find hardcoded IPs, credentials, debug strings","LZMA-compressed payload extraction → decompress and analyze binary"],creds:["Basic scan: binwalk firmware.bin","Extract all: binwalk -e firmware.bin (creates _firmware.bin.extracted/)","Recursive extract: binwalk -Me firmware.bin (extracts nested archives)","Force extract: binwalk -e --run-as=root firmware.bin","After extract: find . -name '*.conf' -o -name 'passwd' -o -name '*.key' 2>/dev/null"]},
     tr:{summary:"binwalk, firmware analizi ve çıkarma aracıdır. Binary dosyaları gömülü dosya imzaları, dosya sistemleri, sıkıştırılmış arşivler ve çalıştırılabilir kod için tarar. CTF challenge'larında firmware görüntüleri, bilinmeyen binary blob'lar ve steganografi challenge'larında gizli dosyaları çıkarmak için kullanılır. Gömülü içeriği otomatik olarak tanımlar ve çıkarır.",lookFor:["Firmware görüntüleri (.bin, .img, .rom) — analiz için dosya sistemini çıkar","Gömülü dosya sistemleri: squashfs, cramfs, jffs2, ext2","Binary'ye gömülü sıkıştırılmış veri: gzip, lzma, zip","Bootloader veya kernel görüntüleri — hardcoded credential'ları bul","Steganografi challenge'ları — görüntülere veya arşivlere eklenen gizli veriler","Özel binary format CTF challenge'ları — gömülü flag veya veri bul"],vulns:["Squashfs dosya sistemi çıkarma → /etc/passwd, credential, private key bul","Bootloader credential çıkarma → hardcoded varsayılan admin şifreleri","Görüntü içinde gizli zip/tar → çıkar ve içeriği analiz et","Kernel görüntü analizi → hardcoded IP, credential, debug string bul","LZMA sıkıştırılmış payload çıkarma → sıkıştırmayı aç ve binary analiz et"],creds:["Temel tarama: binwalk firmware.bin","Hepsini çıkar: binwalk -e firmware.bin (_firmware.bin.extracted/ oluşturur)","Özyinelemeli çıkar: binwalk -Me firmware.bin (iç içe arşivleri çıkarır)","Zorla çıkar: binwalk -e --run-as=root firmware.bin","Çıkardıktan sonra: find . -name '*.conf' -o -name 'passwd' -o -name '*.key' 2>/dev/null"]},
-  },
-}; — the definitive tool for enumerating WordPress installations. It identifies themes, plugins, users, and configuration issues, then cross-references findings against the WPVulnDB vulnerability database. A WordPress target without WPScan is an incomplete assessment.",lookFor:["WordPress version — check for known CVEs","Installed plugins and their versions — most WP vulnerabilities are in plugins","Installed themes — some have file inclusion or upload vulnerabilities","Usernames — enumerate for password attacks (xmlrpc, login)","XML-RPC enabled — brute-force bypass, pingback SSRF","Directory listing enabled on uploads folder","Exposed wp-config.php backup files"],vulns:["Outdated plugin with known RCE/LFI/SQLi (check wpscan --api-token)","XML-RPC brute-force: unlimited attempts via multicall","Arbitrary file upload via vulnerable plugin/theme","wp-config.php exposure → DB credentials","User enumeration → password spray on wp-login.php","Unauthenticated REST API → user disclosure (/?wp-json/wp/v2/users)"],creds:["Get free API token from wpscan.com for vulnerability data","Use --enumerate u for users, p for plugins, t for themes, vp for vulnerable plugins","Brute-force with wpscan --passwords rockyou.txt after user enum","Check xmlrpc.php exists: curl -s http://TARGETIP/xmlrpc.php","Always try admin:admin, admin:password on wp-login.php first"]},
-    tr:{summary:"WPScan, WordPress güvenlik tarayıcısıdır — WordPress kurulumlarını tespit etmek için vazgeçilmez araçtır. Tema, eklenti, kullanıcı ve yapılandırma sorunlarını tespit eder, ardından bulguları WPVulnDB zafiyet veritabanıyla karşılaştırır. WPScan olmadan WordPress hedef değerlendirmesi eksik kalır.",lookFor:["WordPress versiyonu — bilinen CVE'leri kontrol et","Yüklü eklentiler ve versiyonları — WP zafiyetlerinin çoğu eklentilerdedir","Yüklü temalar — bazılarında dosya dahil etme veya yükleme zafiyetleri var","Kullanıcı adları — parola saldırıları için tespit et (xmlrpc, login)","XML-RPC etkin — brute-force bypass, pingback SSRF","Uploads klasöründe dizin listeleme etkin","Açık wp-config.php yedek dosyaları"],vulns:["Bilinen RCE/LFI/SQLi'li güncel olmayan eklenti (wpscan --api-token ile kontrol)","XML-RPC brute-force: multicall üzerinden sınırsız deneme","Zafiyet içeren eklenti/tema üzerinden rastgele dosya yükleme","wp-config.php açığa çıkması → DB credential'ları","Kullanıcı tespiti → wp-login.php'de parola spreyi","Kimlik doğrulamasız REST API → kullanıcı ifşası (/?wp-json/wp/v2/users)"],creds:["Zafiyet verileri için wpscan.com'dan ücretsiz API token al","Kullanıcılar için --enumerate u, eklentiler p, temalar t, zafiyet eklentiler vp","Kullanıcı tespitinden sonra wpscan --passwords rockyou.txt ile brute-force","xmlrpc.php varlığını kontrol et: curl -s http://TARGETIP/xmlrpc.php","wp-login.php'de önce admin:admin, admin:password dene"]},
   },
 };
 
@@ -2495,8 +2531,8 @@ let currentSvc = null; // service key or '__session__'
 function loadState() {
   try {
     const s = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    return Object.assign({ip:'',svcStatus:{},checks:{},notes:{},activeTool:{},session:[],collapsed:{},infoOpen:{},lang:'en',sectionOpen:{services:true,tools:true,env:true},toolFavorites:{},customCmds:{}}, s||{});
-  } catch { return {ip:'',svcStatus:{},checks:{},notes:{},activeTool:{},session:[],collapsed:{},infoOpen:{},lang:'en',sectionOpen:{services:true,tools:true,env:true},toolFavorites:{},customCmds:{}}; }
+    return Object.assign({ip:'',svcStatus:{},checks:{},notes:{},activeTool:{},session:[],collapsed:{},infoOpen:{},lang:'en',sectionOpen:{services:true,tools:true,env:true},toolFavorites:{},customCmds:{},cmdLog:[]}, s||{});
+  } catch { return {ip:'',svcStatus:{},checks:{},notes:{},activeTool:{},session:[],collapsed:{},infoOpen:{},lang:'en',sectionOpen:{services:true,tools:true,env:true},toolFavorites:{},customCmds:{},cmdLog:[]}; }
 }
 function saveState() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
 function clearState() {
@@ -2612,6 +2648,15 @@ function renderSidebar() {
       `);
     });
   }
+
+  // CMD LOG
+  const logCount = (state.cmdLog||[]).length;
+  sb.insertAdjacentHTML('beforeend',`<hr class="sb-sep">
+    <button class="tool-nav-btn${currentSvc==='__cmdlog__'?' active':''}" onclick="navigate('__cmdlog__')" style="${currentSvc==='__cmdlog__'?'':'color:var(--green);border-left-color:transparent'}">
+      <span class="svc-label" style="color:var(--green)">◎ CMD LOG</span>
+      <span class="tool-nav-desc">${logCount} entr${logCount===1?'y':'ies'}</span>
+    </button>
+  `);
 }
 
 function togglePin(e, key) {
@@ -2778,6 +2823,7 @@ function renderToolCmdCard(cmd, id, note) {
     <div class="cmd-top">
       <span class="cmd-purpose">${esc(cmd.p)}</span>
       <button class="btn-star${starred?' starred':''}" onclick="toggleFavorite('${id}')" title="Favorite">${starred?'★':'☆'}</button>
+      <button class="btn-log" onclick="logCmd('${id}')" title="Add to CMD Log">+</button>
       <button class="btn-copy" onclick="copyCmd('${id}',this)">${t('copy')}</button>
     </div>
     <div class="cmd-body">
@@ -2824,6 +2870,7 @@ function renderCustomCmds(toolKey) {
       <div class="cmd-top">
         <span class="cmd-purpose">${esc(cmd.p)||'—'}</span>
         <button class="btn-star${starred?' starred':''}" onclick="toggleFavorite('${id}')">${starred?'★':'☆'}</button>
+        <button class="btn-log" onclick="logCmd('${id}')" title="Add to CMD Log">+</button>
         <button class="btn-copy" onclick="copyCmd('${id}',this)">${t('copy')}</button>
         <button class="btn-rmv-sm" onclick="removeCustomCmd('${toolKey}',${ci})" title="Remove">✕</button>
       </div>
@@ -2981,6 +3028,103 @@ function removeCustomCmd(toolKey, idx) {
 }
 
 // ═══════════════════════════════════════════════════
+//  CMD LOG
+// ═══════════════════════════════════════════════════
+function logCmd(id) {
+  const codeEl = document.getElementById('code_'+id);
+  const cardEl = document.getElementById('card_'+id);
+  if (!codeEl) return;
+  const rawCmd = codeEl.innerText;
+  const purpose = cardEl ? (cardEl.querySelector('.cmd-purpose')?.textContent || '') : '';
+  // Extract tool key: id formats _t_KEY_..., _e_KEY_..., _tc_KEY_...
+  const parts = id.split('_').filter(Boolean);
+  const toolKey = parts[1]; // always index 1 after filter
+  const toolLabel = TOOLS_DB[toolKey]?.label || ENUM_DB[toolKey]?.label || toolKey;
+  const platform = TOOLS_INFO[toolKey]?.platform || ENUM_INFO[toolKey]?.platform || 'both';
+  const logId = Date.now()+'_'+Math.random().toString(36).slice(2,7);
+  const entry = {id:logId, cmdId:id, ts:new Date().toISOString(), toolKey, toolLabel, platform, purpose, cmd:rawCmd, output:''};
+  if (!state.cmdLog) state.cmdLog = [];
+  state.cmdLog.push(entry);
+  saveState();
+  // Visual feedback
+  const btn = cardEl?.querySelector('.btn-log');
+  if (btn) {
+    btn.classList.add('logged'); btn.textContent = '✓';
+    setTimeout(() => { btn.textContent='+'; btn.classList.remove('logged'); }, 1500);
+  }
+  // Update sidebar count
+  renderSidebar();
+}
+
+function updateLogOutput(idx, val) {
+  if (!state.cmdLog || !state.cmdLog[idx]) return;
+  state.cmdLog[idx].output = val;
+  saveState();
+}
+
+function deleteLogEntry(idx) {
+  if (!state.cmdLog) return;
+  state.cmdLog.splice(idx, 1);
+  saveState();
+  renderSidebar();
+  renderMain();
+}
+
+function clearCmdLog() {
+  if (!confirm(t('clearConfirm'))) return;
+  state.cmdLog = [];
+  saveState();
+  renderSidebar();
+  renderMain();
+}
+
+function exportCmdLog() {
+  const data = {exported:new Date().toISOString(), target:state.ip||'unknown', entries:state.cmdLog||[]};
+  const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `reconflow-cmdlog-${new Date().toISOString().slice(0,10)}.json`;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(a.href);
+}
+
+function renderCmdLog() {
+  const log = state.cmdLog || [];
+  let html = `<div class="cmdlog-hdr">
+    <span class="svc-title">${t('cmdLog')}</span>
+    <span class="cmdlog-count">${log.length} entr${log.length===1?'y':'ies'}</span>
+  </div>`;
+  if (log.length > 0) {
+    html += `<div class="cmdlog-actions">
+      <button class="btn-export" onclick="exportCmdLog()">${t('cmdLogExport')}</button>
+      <button class="btn-logclr" onclick="clearCmdLog()">${t('cmdLogClear')}</button>
+    </div>`;
+  }
+  if (log.length === 0) {
+    html += `<div style="color:var(--muted);font-size:12px;padding:8px 0">${t('cmdLogEmpty')}</div>`;
+  } else {
+    [...log].reverse().forEach((entry, ri) => {
+      const idx = log.length - 1 - ri;
+      const platCls = entry.platform === 'lin' ? ' lin' : entry.platform === 'both' ? ' both' : '';
+      const ts = new Date(entry.ts).toLocaleString();
+      html += `<div class="cmdlog-entry">
+        <div class="cmdlog-entry-hdr">
+          <span class="cmdlog-ts">${ts}</span>
+          <span class="cmdlog-tool${platCls}">${esc(entry.toolLabel)}</span>
+          <span class="cmdlog-purpose">${esc(entry.purpose)}</span>
+          <button class="cmdlog-del" onclick="deleteLogEntry(${idx})" title="Remove">✕</button>
+        </div>
+        <div class="cmdlog-body">
+          <div class="cmdlog-cmd">${esc(entry.cmd)}</div>
+          <textarea class="cmdlog-output" placeholder="${t('cmdLogOutput')}" onchange="updateLogOutput(${idx},this.value)">${esc(entry.output||'')}</textarea>
+        </div>
+      </div>`;
+    });
+  }
+  return html;
+}
+
+// ═══════════════════════════════════════════════════
 //  RENDER — main dispatcher
 // ═══════════════════════════════════════════════════
 function renderMain() {
@@ -2988,6 +3132,7 @@ function renderMain() {
   const scrollTop = content.scrollTop;
   if (!currentSvc) { content.innerHTML = ''; return; }
   if (currentSvc === '__session__') content.innerHTML = renderSession();
+  else if (currentSvc === '__cmdlog__') content.innerHTML = renderCmdLog();
   else if (TOOLS_DB[currentSvc]) content.innerHTML = renderTool(currentSvc);
   else if (ENUM_DB[currentSvc]) content.innerHTML = renderEnumPage(currentSvc);
   else content.innerHTML = renderSingle(currentSvc);
