@@ -4,8 +4,9 @@
 
 ![HTML](https://img.shields.io/badge/HTML-single%20file-orange?style=flat-square&logo=html5)
 ![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)
-![Tools](https://img.shields.io/badge/tools-28-brightgreen?style=flat-square)
-![CMD Log](https://img.shields.io/badge/CMD_LOG-new-orange?style=flat-square)
+![Tools](https://img.shields.io/badge/tools-30-brightgreen?style=flat-square)
+![CMD Log](https://img.shields.io/badge/CMD_LOG-✓-green?style=flat-square)
+![Search](https://img.shields.io/badge/Ctrl+K-search-blue?style=flat-square)
 ![Language](https://img.shields.io/badge/lang-EN%20%2F%20TR-purple?style=flat-square)
 
 ---
@@ -20,9 +21,10 @@ It keeps your target IP in one place and injects it into every command automatic
 
 ## Features
 
-- **Target IP injection** — type the IP once, it fills into every command
+- **TARGET page** — dedicated page for all injectable variables: IP, PORT, DOMAIN, USERNAME, PASSWORD, HASH, WORDLIST; auto-fills into every command across all pages
+- **Ctrl+K search** — global command search across all 30 tools; type to filter, arrow keys to navigate, Enter to open tool page
 - **One-click copy** — every command copies instantly
-- **CMD LOG** — `+` button on every command logs it to a session activity page; add output/notes per entry, export as JSON
+- **CMD LOG** — `+` button on every command logs it to a session activity page; add output/notes per entry, export as JSON; target vars summary at the top
 - **Favorites** — star any command to pin it at the top of the page
 - **Notes** — collapsible note field on every command card
 - **Custom commands** — add your own commands to any tool page
@@ -35,12 +37,12 @@ It keeps your target IP in one place and injects it into every command automatic
 
 ---
 
-## Tools Covered (28)
+## Tools Covered (30)
 
 ### 🔵 Windows / Active Directory
 | Tool | Description |
 |------|-------------|
-| crackmapexec | SMB/LDAP/WinRM Swiss army knife |
+| nxc | NetExec — SMB/LDAP/WinRM/RDP Swiss army knife (nxc replaces CrackMapExec) |
 | enum4linux | SMB/NetBIOS enumerator |
 | impacket | Windows/AD attack suite |
 | xfreerdp | RDP client |
@@ -63,6 +65,7 @@ It keeps your target IP in one place and injects it into every command automatic
 | msfvenom | Payload generator |
 | chisel / ligolo-ng | Tunneling & pivoting |
 | wpscan | WordPress scanner |
+| OWASP ZAP | Web app security scanner & intercepting proxy |
 
 ### 🟢 Linux
 | Tool | Description |
@@ -96,13 +99,14 @@ Or double-click `recon.html` in your file manager.
 
 ### Workflow
 
-1. Enter target IP in the top bar
+1. Open **TARGET** page (top of sidebar) — enter IP, domain, credentials, wordlist
 2. Click **+** next to discovered services to add them to your session
-3. Select a tool from the sidebar
-4. Click **ℹ INFO** for a summary of what to look for
-5. Run commands — they auto-fill with your target IP
-6. Star important commands, add notes, track your progress
-7. Click **+** on any command card to log it → go to **CMD LOG** to add output/notes and export JSON
+3. Use **Ctrl+K** to search any command across all 30 tools instantly
+4. Select a tool from the sidebar
+5. Click **ℹ INFO** for a summary of what to look for
+6. Run commands — they auto-fill with your target variables
+7. Star important commands, add notes, track your progress
+8. Click **+** on any command card to log it → go to **CMD LOG** to add output/notes and export JSON
 
 ---
 
@@ -112,26 +116,27 @@ Or double-click `recon.html` in your file manager.
 
 ```
 ┌─────────────────┬──────────────────────────────────────────┐
-│  RECON // flow  │  nmap   Network Mapper          ℹ INFO   │
-│  TARGET: [IP]   ├──────────────────────────────────────────┤
-│                 │  ⊞ WIN  🐧 LIN                           │
-│  SERVICES  ▼   │  nmap is the industry-standard scanner... │
-│  □ FTP  21      ├──────────────────────────────────────────┤
-│  □ SSH  22      │  ★ FAVORITES                             │
-│  □ HTTP 80      ├──────────────────────────────────────────┤
-│                 │  HOST DISCOVERY                          │
-│  TOOLS  ▼      │  ┌─────────────────────────────────────┐ │
-│  nmap           │  │ nmap -sn TARGETIP/24  [+][COPY][☆] │ │
-│  gobuster       │  │ Ping sweep — find live hosts        │ │
-│  ffuf           │  └─────────────────────────────────────┘ │
-│  cme            │                                          │
+│  RECON // flow  │  TARGET              variables           │
+│  TARGET: [IP]  ⌕│  ┌─────────────┐  ┌────────────────┐   │
+│  [SESSION 1]    │  │ IP / HOST   │  │ PORT           │   │
+│                 │  │ 10.10.10.X  │  │ 4444           │   │
+│  TARGET    ◀   │  └─────────────┘  └────────────────┘   │
+│  INIT           │  ┌─────────────┐  ┌────────────────┐   │
+│                 │  │ DOMAIN      │  │ USERNAME       │   │
+│  SERVICES  ▼   │  │ corp.local  │  │ administrator  │   │
+│  □ FTP  21      │  └─────────────┘  └────────────────┘   │
+│  □ SSH  22      ├──────────────────────────────────────────┤
+│  □ HTTP 80      │  nmap   Network Mapper          ℹ INFO  │
+│                 ├──────────────────────────────────────────┤
+│  TOOLS  ▼      │  HOST DISCOVERY                          │
+│  nmap           │  ┌─────────────────────────────────────┐ │
+│  gobuster       │  │ nmap -sn TARGETIP/24  [+][COPY][☆] │ │
+│  ffuf           │  │ Ping sweep — find live hosts        │ │
+│  nxc            │  └─────────────────────────────────────┘ │
 │  ...            │                                          │
-│                 │                                          │
+│  zap            │  Ctrl+K → search any command instantly  │
 │  AD / LINUX ▼  │                                          │
-│  Active Dir.    │                                          │
-│  Linux          │                                          │
 │                 │                                          │
-│  ◎ CMD LOG      │                                          │
 └─────────────────┴──────────────────────────────────────────┘
 ```
 

