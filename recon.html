@@ -2646,11 +2646,11 @@ const ENUM_DB = {
 //  STATE
 // ═══════════════════════════════════════════════════
 const STORAGE_KEY = 'reconflow_v3';
+const DEFAULT_STATE = {ip:'',svcStatus:{},checks:{},notes:{},activeTool:{},session:[],collapsed:{},infoOpen:{},lang:'en',sectionOpen:{services:true,tools:true,env:true},toolFavorites:{},customCmds:{},cmdLog:[],sessionName:'SESSION 1',targetVars:{port:'',domain:'',user:'',pass:'',hash:'',wordlist:''}};
+
 let state = loadState();
 let currentSvc = null;
 let CMD_REGISTRY = {}; // id → raw cmd.c template (populated on render, enables cross-page sync)
-
-const DEFAULT_STATE = {ip:'',svcStatus:{},checks:{},notes:{},activeTool:{},session:[],collapsed:{},infoOpen:{},lang:'en',sectionOpen:{services:true,tools:true,env:true},toolFavorites:{},customCmds:{},cmdLog:[],sessionName:'SESSION 1',targetVars:{port:'',domain:'',user:'',pass:'',hash:'',wordlist:''}};
 
 function loadState() {
   try {
