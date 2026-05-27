@@ -152,6 +152,17 @@ body{background:var(--bg);color:var(--text);font-family:var(--mono);height:100vh
 .btn-log{background:none;border:1px solid var(--border);color:var(--muted);padding:2px 7px;font-family:var(--mono);font-size:11px;font-weight:700;cursor:pointer;border-radius:3px;flex-shrink:0;transition:all .15s;}
 .btn-log:hover{border-color:var(--green);color:var(--green);}
 .btn-log.logged{border-color:var(--green);color:var(--green);}
+.btn-edit{background:none;border:none;color:var(--muted);font-size:13px;cursor:pointer;padding:2px 5px;border-radius:3px;flex-shrink:0;opacity:.35;transition:all .15s;line-height:1;}
+.btn-edit:hover{opacity:.9;color:var(--text);}
+.btn-save{background:none;border:1px solid var(--green);color:var(--green);font-size:11px;font-weight:700;font-family:var(--mono);cursor:pointer;padding:2px 8px;border-radius:3px;flex-shrink:0;display:none;transition:all .15s;}
+.btn-save:hover{background:rgba(93,184,122,.1);}
+.cmd-edit-area{display:none;width:100%;box-sizing:border-box;background:var(--bg);border:1px solid var(--cyan);border-radius:3px;padding:6px 10px;font-family:var(--mono);font-size:12px;color:var(--orange);resize:vertical;outline:none;min-height:52px;margin-bottom:5px;line-height:1.5;}
+.cmd-edit-area::placeholder{color:var(--muted);opacity:.3;}
+.cmd-card.cmd-editing{border-color:var(--cyan);}
+.cmd-card.cmd-editing .cmd-code{display:none;}
+.cmd-card.cmd-editing .cmd-edit-area{display:block;}
+.cmd-card.cmd-editing .btn-edit{display:none;}
+.cmd-card.cmd-editing .btn-save{display:inline;}
 
 /* CMD LOG page */
 .cmdlog-hdr{display:flex;align-items:center;gap:10px;margin-bottom:18px;padding-bottom:12px;border-bottom:1px solid var(--border);}
@@ -2809,7 +2820,7 @@ const ENUM_DB = {
 //  STATE
 // ═══════════════════════════════════════════════════
 const STORAGE_KEY = 'reconflow_v3';
-const DEFAULT_STATE = {ip:'',svcStatus:{},checks:{},notes:{},activeTool:{},session:[],collapsed:{},infoOpen:{},lang:'en',sectionOpen:{services:true,tools:true,shells:true,env:true},toolFavorites:{},customCmds:{},cmdLog:[],sessionName:'SESSION 1',targetVars:{port:'',domain:'',wordlist:'',ips:[''],users:[''],passes:[''],hashes:['']}};
+const DEFAULT_STATE = {ip:'',svcStatus:{},checks:{},notes:{},activeTool:{},session:[],collapsed:{},infoOpen:{},lang:'en',sectionOpen:{services:true,tools:true,shells:true,env:true},toolFavorites:{},customCmds:{},cmdLog:[],sessionName:'SESSION 1',targetVars:{port:'',domain:'',wordlist:'',ips:[''],users:[''],passes:[''],hashes:['']},cmdEdits:{}};
 
 let state = loadState();
 let currentSvc = null;
@@ -2834,6 +2845,7 @@ function loadState() {
     if (tv.port     === undefined) tv.port     = '';
     if (tv.domain   === undefined) tv.domain   = '';
     if (tv.wordlist === undefined) tv.wordlist = '';
+    if (!merged.cmdEdits) merged.cmdEdits = {};
     return merged;
   } catch { return Object.assign({}, DEFAULT_STATE); }
 }
@@ -2867,6 +2879,34 @@ function saveTargetVar(key, val) {
   if (!state.targetVars) state.targetVars = {};
   state.targetVars[key] = val;
   saveState();
+}
+
+// ── Inline command editing ────────────────────────────────
+function startEditCmd(id) {
+  const card = document.getElementById('card_' + id);
+  const editEl = document.getElementById('edit_' + id);
+  if (!card || !editEl) return;
+  editEl.value = CMD_REGISTRY[id] || '';
+  card.classList.add('cmd-editing');
+  editEl.focus();
+  editEl.setSelectionRange(0, 0);
+}
+function cancelEditCmd(id) {
+  const card = document.getElementById('card_' + id);
+  if (card) card.classList.remove('cmd-editing');
+}
+function saveEditCmd(id) {
+  const card = document.getElementById('card_' + id);
+  const editEl = document.getElementById('edit_' + id);
+  const codeEl = document.getElementById('code_' + id);
+  if (!card || !editEl) return;
+  const tpl = editEl.value;
+  if (!state.cmdEdits) state.cmdEdits = {};
+  state.cmdEdits[id] = tpl;
+  CMD_REGISTRY[id] = tpl;
+  saveState();
+  if (codeEl) codeEl.textContent = injectVars(tpl);
+  card.classList.remove('cmd-editing');
 }
 
 // ── Multi-value target variable helpers ──────────────────
@@ -3139,17 +3179,22 @@ function navigate(key) {
 //  RENDER — shared primitives
 // ═══════════════════════════════════════════════════
 function renderCmdCard(cmd, id, isDone, note) {
-  CMD_REGISTRY[id] = cmd.c;
-  const logged = !!(state.cmdLog && state.cmdLog.some(e => e.rawTemplate === cmd.c));
+  const tpl = state.cmdEdits?.[id] || cmd.c;
+  CMD_REGISTRY[id] = tpl;
+  const logged = !!(state.cmdLog && state.cmdLog.some(e => e.rawTemplate === tpl));
   return `<div class="cmd-card${isDone?' done':''}" id="card_${id}">
     <div class="cmd-top">
       <input type="checkbox" class="cmd-check" ${isDone?'checked':''} onchange="toggleCheck('${id}',this.checked)">
       <span class="cmd-purpose">${esc(cmd.p)}</span>
-      <button class="btn-log${logged?' logged':''}" onclick="logCmd('${id}')" title="${logged?'Already in session':'Add to session'}">${logged?'✓':'+'}</button>
+      <button class="btn-log${logged?' logged':''}" onclick="logCmd('${id}')" title="${logged?'Already in log':'Add to log'}">${logged?'✓':'+'}</button>
+      <button class="btn-edit" onclick="startEditCmd('${id}')" title="Edit command">⚙</button>
+      <button class="btn-save" onclick="saveEditCmd('${id}')" title="Save edit">✓</button>
       <button class="btn-copy" onclick="copyCmd('${id}',this)">${t('copy')}</button>
     </div>
     <div class="cmd-body">
-      <div class="cmd-code" id="code_${id}">${esc(injectIP(cmd.c))}</div>
+      <div class="cmd-code" id="code_${id}">${esc(injectIP(tpl))}</div>
+      <textarea class="cmd-edit-area" id="edit_${id}" spellcheck="false" autocomplete="off"
+        onkeydown="if(event.key==='Escape'){cancelEditCmd('${id}');}if((event.ctrlKey||event.metaKey)&&event.key==='Enter'){saveEditCmd('${id}');event.preventDefault();}"></textarea>
       <div class="cmd-hint">↳ ${esc(cmd.h)}</div>
       <div class="note-wrap${note?' open':''}" id="nw_${id}">
         <button class="note-toggle" onclick="toggleNote('${id}')">${note?'▼':'▶'} note</button>
@@ -3273,18 +3318,23 @@ function renderSession() {
 //  RENDER — tool view
 // ═══════════════════════════════════════════════════
 function renderToolCmdCard(cmd, id, note) {
-  CMD_REGISTRY[id] = cmd.c;
+  const tpl = state.cmdEdits?.[id] || cmd.c;
+  CMD_REGISTRY[id] = tpl;
   const starred = !!(state.toolFavorites?.[id]);
-  const logged = !!(state.cmdLog && state.cmdLog.some(e => e.rawTemplate === cmd.c));
+  const logged = !!(state.cmdLog && state.cmdLog.some(e => e.rawTemplate === tpl));
   return `<div class="cmd-card" id="card_${id}">
     <div class="cmd-top">
       <span class="cmd-purpose">${esc(cmd.p)}</span>
       <button class="btn-star${starred?' starred':''}" onclick="toggleFavorite('${id}')" title="Favorite">${starred?'★':'☆'}</button>
-      <button class="btn-log${logged?' logged':''}" onclick="logCmd('${id}')" title="${logged?'Already in session':'Add to session'}">${logged?'✓':'+'}</button>
+      <button class="btn-log${logged?' logged':''}" onclick="logCmd('${id}')" title="${logged?'Already in log':'Add to log'}">${logged?'✓':'+'}</button>
+      <button class="btn-edit" onclick="startEditCmd('${id}')" title="Edit command">⚙</button>
+      <button class="btn-save" onclick="saveEditCmd('${id}')" title="Save edit">✓</button>
       <button class="btn-copy" onclick="copyCmd('${id}',this)">${t('copy')}</button>
     </div>
     <div class="cmd-body">
-      <div class="cmd-code" id="code_${id}">${esc(injectIP(cmd.c))}</div>
+      <div class="cmd-code" id="code_${id}">${esc(injectIP(tpl))}</div>
+      <textarea class="cmd-edit-area" id="edit_${id}" spellcheck="false" autocomplete="off"
+        onkeydown="if(event.key==='Escape'){cancelEditCmd('${id}');}if((event.ctrlKey||event.metaKey)&&event.key==='Enter'){saveEditCmd('${id}');event.preventDefault();}"></textarea>
       <div class="cmd-hint">↳ ${esc(cmd.h)}</div>
       <div class="note-wrap${note?' open':''}" id="nw_${id}">
         <button class="note-toggle" onclick="toggleNote('${id}')">${note?'▼':'▶'} note</button>
@@ -3322,19 +3372,24 @@ function renderCustomCmds(toolKey) {
   let html = `<div class="phase"><div class="phase-title">✎ ${t('customTitle')}</div>`;
   cmds.forEach((cmd, ci) => {
     const id = `_tc_${toolKey}_${ci}`;
-    CMD_REGISTRY[id] = cmd.c;
+    const tpl = state.cmdEdits?.[id] || cmd.c;
+    CMD_REGISTRY[id] = tpl;
     const starred = !!(state.toolFavorites?.[id]);
-    const logged = !!(state.cmdLog && state.cmdLog.some(e => e.rawTemplate === cmd.c));
+    const logged = !!(state.cmdLog && state.cmdLog.some(e => e.rawTemplate === tpl));
     html += `<div class="cmd-card" id="card_${id}">
       <div class="cmd-top">
         <span class="cmd-purpose">${esc(cmd.p)||'—'}</span>
         <button class="btn-star${starred?' starred':''}" onclick="toggleFavorite('${id}')">${starred?'★':'☆'}</button>
-        <button class="btn-log${logged?' logged':''}" onclick="logCmd('${id}')" title="${logged?'Already in session':'Add to session'}">${logged?'✓':'+'}</button>
+        <button class="btn-log${logged?' logged':''}" onclick="logCmd('${id}')" title="${logged?'Already in log':'Add to log'}">${logged?'✓':'+'}</button>
+        <button class="btn-edit" onclick="startEditCmd('${id}')" title="Edit command">⚙</button>
+        <button class="btn-save" onclick="saveEditCmd('${id}')" title="Save edit">✓</button>
         <button class="btn-copy" onclick="copyCmd('${id}',this)">${t('copy')}</button>
         <button class="btn-rmv-sm" onclick="removeCustomCmd('${toolKey}',${ci})" title="Remove">✕</button>
       </div>
       <div class="cmd-body">
-        <div class="cmd-code" id="code_${id}">${esc(injectIP(cmd.c))}</div>
+        <div class="cmd-code" id="code_${id}">${esc(injectIP(tpl))}</div>
+        <textarea class="cmd-edit-area" id="edit_${id}" spellcheck="false" autocomplete="off"
+          onkeydown="if(event.key==='Escape'){cancelEditCmd('${id}');}if((event.ctrlKey||event.metaKey)&&event.key==='Enter'){saveEditCmd('${id}');event.preventDefault();}"></textarea>
         ${cmd.h?`<div class="cmd-hint">↳ ${esc(cmd.h)}</div>`:''}
         <div class="note-wrap${state.notes[id]?' open':''}" id="nw_${id}">
           <button class="note-toggle" onclick="toggleNote('${id}')">${state.notes[id]?'▼':'▶'} note</button>
