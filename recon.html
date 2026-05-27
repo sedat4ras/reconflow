@@ -269,6 +269,24 @@ body{background:var(--bg);color:var(--text);font-family:var(--mono);height:100vh
 .target-session-key{color:var(--muted);width:80px;flex-shrink:0;opacity:.7;}
 .target-session-val{color:var(--orange);font-family:var(--mono);}
 .target-session-empty{color:var(--muted);opacity:.3;}
+/* Multi-value (tmv) rows */
+.tmv-list{display:flex;flex-direction:column;gap:3px;margin-top:7px;}
+.tmv-row{display:flex;align-items:center;gap:4px;padding:3px 5px 3px 7px;border-radius:4px;border:1px solid var(--border);background:var(--bg1);transition:border-color .15s,background .15s;}
+.tmv-row.tmv-active{border-color:var(--cyan);background:rgba(110,142,240,.06);}
+.tmv-bullet{font-size:13px;flex-shrink:0;width:14px;text-align:center;line-height:1;transition:color .15s,opacity .15s;}
+.tmv-row.tmv-active .tmv-bullet{color:var(--cyan);cursor:default;}
+.tmv-row:not(.tmv-active) .tmv-bullet{color:var(--muted);opacity:.4;cursor:pointer;}
+.tmv-row:not(.tmv-active) .tmv-bullet:hover{color:var(--green);opacity:1;}
+.tmv-input{flex:1;background:none;border:none;color:var(--orange);font-family:var(--mono);font-size:12px;outline:none;min-width:0;padding:3px 0;}
+.tmv-input::placeholder{color:var(--muted);opacity:.3;}
+.tmv-row.tmv-active .tmv-input{color:var(--orange);}
+.tmv-row:not(.tmv-active) .tmv-input{color:var(--muted);}
+.tmv-btn{background:none;border:none;color:var(--muted);font-size:11px;cursor:pointer;padding:2px 4px;border-radius:3px;flex-shrink:0;line-height:1;transition:all .15s;opacity:.5;}
+.tmv-btn:hover{background:var(--bg3);color:var(--text);opacity:1;}
+.tmv-btn.tmv-del:hover{color:#e06c75;opacity:1;}
+.tmv-add{margin-top:5px;width:100%;background:none;border:1px dashed var(--border);border-radius:4px;color:var(--muted);font-size:10px;font-family:var(--mono);cursor:pointer;padding:3px 0;text-align:center;transition:all .15s;}
+.tmv-add:hover{border-color:var(--cyan);color:var(--cyan);background:rgba(110,142,240,.04);}
+.tmv-hint{font-size:10px;color:var(--muted);margin-bottom:2px;opacity:.38;line-height:1.4;}
 
 /* SEARCH OVERLAY */
 .search-overlay{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:9000;display:none;align-items:flex-start;justify-content:center;padding-top:72px;backdrop-filter:blur(3px);}
@@ -2791,7 +2809,7 @@ const ENUM_DB = {
 //  STATE
 // ═══════════════════════════════════════════════════
 const STORAGE_KEY = 'reconflow_v3';
-const DEFAULT_STATE = {ip:'',svcStatus:{},checks:{},notes:{},activeTool:{},session:[],collapsed:{},infoOpen:{},lang:'en',sectionOpen:{services:true,tools:true,shells:true,env:true},toolFavorites:{},customCmds:{},cmdLog:[],sessionName:'SESSION 1',targetVars:{port:'',domain:'',user:'',pass:'',hash:'',wordlist:''}};
+const DEFAULT_STATE = {ip:'',svcStatus:{},checks:{},notes:{},activeTool:{},session:[],collapsed:{},infoOpen:{},lang:'en',sectionOpen:{services:true,tools:true,shells:true,env:true},toolFavorites:{},customCmds:{},cmdLog:[],sessionName:'SESSION 1',targetVars:{port:'',domain:'',wordlist:'',ips:[''],users:[''],passes:[''],hashes:['']}};
 
 let state = loadState();
 let currentSvc = null;
@@ -2802,7 +2820,20 @@ function loadState() {
   try {
     const s = JSON.parse(localStorage.getItem(STORAGE_KEY));
     const merged = Object.assign({}, DEFAULT_STATE, s||{});
-    if (!merged.targetVars) merged.targetVars = {port:'',domain:'',user:'',pass:'',hash:'',wordlist:''};
+    const tv = merged.targetVars || {};
+    merged.targetVars = tv;
+    // Migrate old single-value fields → arrays
+    if (!Array.isArray(tv.ips))    tv.ips    = (tv.ip   || merged.ip) ? [tv.ip || merged.ip] : [''];
+    if (!Array.isArray(tv.users))  tv.users  = tv.user  ? [tv.user]  : [''];
+    if (!Array.isArray(tv.passes)) tv.passes = tv.pass  ? [tv.pass]  : [''];
+    if (!Array.isArray(tv.hashes)) tv.hashes = tv.hash  ? [tv.hash]  : [''];
+    if (!tv.ips.length)    tv.ips    = [''];
+    if (!tv.users.length)  tv.users  = [''];
+    if (!tv.passes.length) tv.passes = [''];
+    if (!tv.hashes.length) tv.hashes = [''];
+    if (tv.port     === undefined) tv.port     = '';
+    if (tv.domain   === undefined) tv.domain   = '';
+    if (tv.wordlist === undefined) tv.wordlist = '';
     return merged;
   } catch { return Object.assign({}, DEFAULT_STATE); }
 }
@@ -2820,13 +2851,13 @@ function clearState() {
 function getIP() { return document.getElementById('ipInput').value.trim() || 'TARGETIP'; }
 function injectVars(s) {
   const tv = state.targetVars || {};
-  s = s.replace(/TARGETIP/g, document.getElementById('ipInput').value.trim() || 'TARGETIP');
-  s = s.replace(/TARGETPORT/g, tv.port || 'TARGETPORT');
-  s = s.replace(/TARGETDOMAIN/g, tv.domain || 'TARGETDOMAIN');
-  s = s.replace(/TARGETUSER/g, tv.user || 'TARGETUSER');
-  s = s.replace(/TARGETPASS/g, tv.pass || 'TARGETPASS');
-  s = s.replace(/TARGETHASH/g, tv.hash || 'TARGETHASH');
-  s = s.replace(/TARGETWL/g, tv.wordlist || 'TARGETWL');
+  s = s.replace(/TARGETIP/g,     (Array.isArray(tv.ips)    && tv.ips[0])    || document.getElementById('ipInput').value.trim() || 'TARGETIP');
+  s = s.replace(/TARGETPORT/g,   tv.port     || 'TARGETPORT');
+  s = s.replace(/TARGETDOMAIN/g, tv.domain   || 'TARGETDOMAIN');
+  s = s.replace(/TARGETUSER/g,   (Array.isArray(tv.users)  && tv.users[0])  || 'TARGETUSER');
+  s = s.replace(/TARGETPASS/g,   (Array.isArray(tv.passes) && tv.passes[0]) || 'TARGETPASS');
+  s = s.replace(/TARGETHASH/g,   (Array.isArray(tv.hashes) && tv.hashes[0]) || 'TARGETHASH');
+  s = s.replace(/TARGETWL/g,     tv.wordlist || 'TARGETWL');
   return s;
 }
 function injectIP(s) { return injectVars(s); }
@@ -2836,6 +2867,55 @@ function saveTargetVar(key, val) {
   if (!state.targetVars) state.targetVars = {};
   state.targetVars[key] = val;
   saveState();
+}
+
+// ── Multi-value target variable helpers ──────────────────
+function tmvArr(field) {
+  if (!state.targetVars) state.targetVars = {};
+  if (!Array.isArray(state.targetVars[field])) state.targetVars[field] = [''];
+  return state.targetVars[field];
+}
+function tmvSyncHeader() {
+  // Keep header #ipInput in sync with ips[0]
+  const val = (state.targetVars && Array.isArray(state.targetVars.ips) && state.targetVars.ips[0]) || '';
+  state.ip = val;
+  const inp = document.getElementById('ipInput');
+  if (inp && inp !== document.activeElement) inp.value = val;
+}
+function tmvSet(field, idx, val) {
+  // Called oninput — update value without re-rendering (preserves focus)
+  tmvArr(field)[idx] = val;
+  if (field === 'ips' && idx === 0) tmvSyncHeader();
+  saveState();
+}
+function tmvAdd(field) {
+  tmvArr(field).push('');
+  saveState();
+  renderMain();
+}
+function tmvRemove(field, idx) {
+  const arr = tmvArr(field);
+  if (arr.length <= 1) { arr[0] = ''; } else { arr.splice(idx, 1); }
+  if (field === 'ips') tmvSyncHeader();
+  saveState();
+  renderMain();
+}
+function tmvMove(field, idx, dir) {
+  const arr = tmvArr(field);
+  const to = idx + dir;
+  if (to < 0 || to >= arr.length) return;
+  [arr[idx], arr[to]] = [arr[to], arr[idx]];
+  if (field === 'ips') tmvSyncHeader();
+  saveState();
+  renderMain();
+}
+function tmvActivate(field, idx) {
+  if (idx === 0) return;
+  const arr = tmvArr(field);
+  arr.unshift(arr.splice(idx, 1)[0]);
+  if (field === 'ips') tmvSyncHeader();
+  saveState();
+  renderMain();
 }
 
 // ═══════════════════════════════════════════════════
@@ -3508,13 +3588,13 @@ function renderCmdLog() {
   const ipVal = document.getElementById('ipInput').value.trim();
   // Build target vars summary
   const tvRows = [
-    {k:'IP / HOST', v: ipVal},
-    {k:'PORT', v: tv.port},
-    {k:'DOMAIN', v: tv.domain},
-    {k:'USERNAME', v: tv.user},
-    {k:'PASSWORD', v: tv.pass ? '••••••••' : ''},
-    {k:'HASH', v: tv.hash ? tv.hash.slice(0,8)+'...' : ''},
-    {k:'WORDLIST', v: tv.wordlist},
+    {k:'IP / HOST', v: (Array.isArray(tv.ips)    && tv.ips[0])    || ipVal},
+    {k:'PORT',      v: tv.port},
+    {k:'DOMAIN',    v: tv.domain},
+    {k:'USERNAME',  v: Array.isArray(tv.users)  && tv.users[0]},
+    {k:'PASSWORD',  v: Array.isArray(tv.passes) && tv.passes[0] ? '••••••••' : ''},
+    {k:'HASH',      v: Array.isArray(tv.hashes) && tv.hashes[0] ? tv.hashes[0].slice(0,8)+'...' : ''},
+    {k:'WORDLIST',  v: tv.wordlist},
   ].filter(r => r.v);
   const tvHtml = tvRows.length ? `<div class="target-session-preview" style="margin-bottom:14px">
     <div class="target-session-preview-title">TARGET VARS <span style="opacity:.5;font-weight:400">· click to edit</span> <button onclick="navigate('__target__')" style="background:none;border:1px solid var(--border);color:var(--cyan);padding:1px 8px;font-family:var(--mono);font-size:10px;cursor:pointer;border-radius:3px;margin-left:6px;">TARGET PAGE</button></div>
@@ -3562,36 +3642,70 @@ function renderCmdLog() {
 // ═══════════════════════════════════════════════════
 function renderTargetPage() {
   const tv = state.targetVars || {};
-  const ipVal = document.getElementById('ipInput').value.trim();
-  const vars = [
-    {key:'ip',      label:'IP / HOST',    ph:'10.10.10.X',                         inject:'TARGETIP',     hint:'Injected into all commands as TARGETIP', isIP:true},
-    {key:'port',    label:'PORT',          ph:'4444',                                inject:'TARGETPORT',   hint:'Listener port or custom service port'},
-    {key:'domain',  label:'DOMAIN',        ph:'corp.local',                          inject:'TARGETDOMAIN', hint:'Windows domain or DNS domain name'},
-    {key:'user',    label:'USERNAME',      ph:'administrator',                        inject:'TARGETUSER',   hint:'Target username for authenticated commands'},
-    {key:'pass',    label:'PASSWORD',      ph:'Password123!',                         inject:'TARGETPASS',   hint:'Plaintext password for commands'},
-    {key:'hash',    label:'HASH (NTLM)',   ph:'aad3b435b51404ee:NTLMHASH',           inject:'TARGETHASH',   hint:'NT hash for pass-the-hash attacks'},
-    {key:'wordlist',label:'WORDLIST',      ph:'/usr/share/seclists/passwords/rockyou.txt', inject:'TARGETWL', hint:'Wordlist path for brute-force commands'},
-  ];
 
-  const cards = vars.map(v => {
-    const val = v.isIP ? ipVal : (tv[v.key] || '');
-    const inputHandler = v.isIP
-      ? `oninput="document.getElementById('ipInput').value=this.value;state.ip=this.value;saveState()"`
-      : `oninput="saveTargetVar('${v.key}',this.value)"`;
+  // ── Multi-value card (IP, USER, PASS, HASH) ──
+  function multiCard(field, label, inject, ph, hint) {
+    const arr = Array.isArray(tv[field]) ? tv[field] : [''];
+    const rows = arr.map((val, i) => {
+      const active = i === 0;
+      const upBtn   = i > 0             ? `<button class="tmv-btn" onclick="tmvMove('${field}',${i},-1)" title="Move up">↑</button>` : '';
+      const downBtn = i < arr.length-1  ? `<button class="tmv-btn" onclick="tmvMove('${field}',${i},1)"  title="Move down">↓</button>` : '';
+      const delBtn  = `<button class="tmv-btn tmv-del" onclick="tmvRemove('${field}',${i})" title="Remove">✕</button>`;
+      const bullet  = active
+        ? `<span class="tmv-bullet" title="Active — injected into commands">●</span>`
+        : `<span class="tmv-bullet" onclick="tmvActivate('${field}',${i})" title="Load this value (make active)">○</span>`;
+      return `<div class="tmv-row${active?' tmv-active':''}">
+        ${bullet}
+        <input class="tmv-input" type="text" placeholder="${esc(ph)}" value="${esc(val)}" autocomplete="off" spellcheck="false"
+          oninput="tmvSet('${field}',${i},this.value)">
+        ${upBtn}${downBtn}${delBtn}
+      </div>`;
+    }).join('');
     return `<div class="target-var-card">
-      <div class="target-var-name">${v.label} <span class="target-var-ph">→ ${v.inject}</span></div>
-      <input class="target-var-input" type="text" placeholder="${esc(v.ph)}" value="${esc(val)}" ${inputHandler} autocomplete="off" spellcheck="false">
-      <div class="target-var-hint">${v.hint}</div>
+      <div class="target-var-name">${label} <span class="target-var-ph">→ ${inject}</span></div>
+      <div class="tmv-hint">${hint}</div>
+      <div class="tmv-list">${rows}</div>
+      <button class="tmv-add" onclick="tmvAdd('${field}')">+ add value</button>
     </div>`;
-  }).join('');
+  }
 
-  // Build preview of non-empty vars for session summary
-  const filled = vars.filter(v => v.isIP ? ipVal : tv[v.key]);
-  const preview = filled.map(v => {
-    const val = v.isIP ? ipVal : tv[v.key];
-    const display = v.key === 'pass' || v.key === 'hash' ? val.replace(/./g,'•') : val;
-    return `<div class="target-session-row"><span class="target-session-key">${v.label}</span><span class="target-session-val">${esc(display)}</span></div>`;
-  }).join('');
+  // ── Single-value card (PORT, DOMAIN, WORDLIST) ──
+  function singleCard(key, label, inject, ph, hint) {
+    return `<div class="target-var-card">
+      <div class="target-var-name">${label} <span class="target-var-ph">→ ${inject}</span></div>
+      <input class="target-var-input" type="text" placeholder="${esc(ph)}" value="${esc(tv[key]||'')}"
+        oninput="saveTargetVar('${key}',this.value)" autocomplete="off" spellcheck="false">
+      <div class="target-var-hint">${hint}</div>
+    </div>`;
+  }
+
+  const cards = [
+    multiCard ('ips',    'IP / HOST',   'TARGETIP',     '10.10.10.X',                                '● = active · ○ = click to load · ↑↓ reorder'),
+    singleCard('port',   'PORT',        'TARGETPORT',   '4444',                                      'Listener port or custom service port'),
+    singleCard('domain', 'DOMAIN',      'TARGETDOMAIN', 'corp.local',                                'Windows domain or DNS domain name'),
+    multiCard ('users',  'USERNAME',    'TARGETUSER',   'administrator',                              '● = active · stack multiple for spraying'),
+    multiCard ('passes', 'PASSWORD',    'TARGETPASS',   'Password123!',                              '● = active · stack multiple for spraying'),
+    multiCard ('hashes', 'HASH (NTLM)', 'TARGETHASH',   'aad3b435b51404ee:NTLMHASH',                '● = active · stack multiple for PTH attacks'),
+    singleCard('wordlist','WORDLIST',   'TARGETWL',     '/usr/share/seclists/passwords/rockyou.txt', 'Wordlist path for brute-force commands'),
+  ].join('');
+
+  // ── Session summary preview ──
+  const activeIp   = (Array.isArray(tv.ips)    && tv.ips[0])    || state.ip || '';
+  const activeUser = (Array.isArray(tv.users)  && tv.users[0])  || '';
+  const activePass = (Array.isArray(tv.passes) && tv.passes[0]) || '';
+  const activeHash = (Array.isArray(tv.hashes) && tv.hashes[0]) || '';
+  const previewRows = [
+    activeIp   && {k:'IP / HOST', v: activeIp},
+    tv.port    && {k:'PORT',      v: tv.port},
+    tv.domain  && {k:'DOMAIN',   v: tv.domain},
+    activeUser && {k:'USERNAME',  v: activeUser},
+    activePass && {k:'PASSWORD',  v: '••••••••'},
+    activeHash && {k:'HASH',      v: activeHash.slice(0,16)+'…'},
+    tv.wordlist && {k:'WORDLIST', v: tv.wordlist},
+  ].filter(Boolean);
+  const preview = previewRows.map(r =>
+    `<div class="target-session-row"><span class="target-session-key">${r.k}</span><span class="target-session-val">${esc(r.v)}</span></div>`
+  ).join('');
 
   return `
   <div class="target-page-hdr">
@@ -3599,7 +3713,7 @@ function renderTargetPage() {
     <div class="badge">variables</div>
   </div>
   <div class="target-grid">${cards}</div>
-  ${filled.length ? `<div class="target-session-preview">
+  ${preview ? `<div class="target-session-preview">
     <div class="target-session-preview-title">Current session values</div>
     ${preview}
   </div>` : ''}`;
@@ -3805,9 +3919,18 @@ async function copyCmd(id, btn) {
 // ═══════════════════════════════════════════════════
 //  INIT
 // ═══════════════════════════════════════════════════
-document.getElementById('ipInput').value = state.ip || '';
+// Sync header from ips[0] on load
+(function(){
+  const tv0 = state.targetVars || {};
+  document.getElementById('ipInput').value = (Array.isArray(tv0.ips) && tv0.ips[0]) || state.ip || '';
+})();
 document.getElementById('ipInput').addEventListener('input', function(){
-  state.ip = this.value; saveState();
+  const val = this.value;
+  state.ip = val;
+  if (!state.targetVars) state.targetVars = {};
+  if (!Array.isArray(state.targetVars.ips)) state.targetVars.ips = [''];
+  state.targetVars.ips[0] = val;
+  saveState();
   if (currentSvc && currentSvc !== '__target__') renderMain();
 });
 
