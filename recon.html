@@ -54,6 +54,13 @@ body{background:var(--bg);color:var(--text);font-family:var(--mono);height:100vh
 .tool-nav-btn.target-btn.active{border-left-color:var(--yellow);color:var(--yellow);background:rgba(201,151,74,.07);}
 .tool-nav-btn.target-btn:hover{background:var(--bg3);color:var(--yellow);}
 .tool-nav-desc{font-size:10px;opacity:.5;}
+.sb-search-wrap{position:sticky;top:0;z-index:5;background:var(--bg2);padding:5px 8px 6px;border-bottom:1px solid var(--border);}
+.sb-search-inner{position:relative;display:flex;align-items:center;}
+.sb-search-icon{position:absolute;left:7px;color:var(--muted);font-size:13px;pointer-events:none;line-height:1;opacity:.7;}
+.sb-search-input{width:100%;box-sizing:border-box;background:var(--bg1);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:11px;font-family:var(--mono);padding:4px 6px 4px 22px;outline:none;transition:border-color .15s;}
+.sb-search-input::placeholder{color:var(--muted);opacity:.55;}
+.sb-search-input:focus{border-color:var(--accent);}
+.sb-search-input:not(:placeholder-shown){border-color:var(--cyan);}
 
 /* Service row */
 .svc-row{display:flex;align-items:stretch;}
@@ -2789,6 +2796,7 @@ const DEFAULT_STATE = {ip:'',svcStatus:{},checks:{},notes:{},activeTool:{},sessi
 let state = loadState();
 let currentSvc = null;
 let CMD_REGISTRY = {}; // id → raw cmd.c template (populated on render, enables cross-page sync)
+let sbSearchQuery = ''; // sidebar filter query — persists across re-renders
 
 function loadState() {
   try {
@@ -2842,12 +2850,51 @@ function toggleSection(name) {
   renderSidebar();
 }
 
+function filterSidebarItems(q) {
+  sbSearchQuery = q;
+  q = (q||'').toLowerCase().trim();
+  const sb = document.getElementById('sidebar');
+  if (!sb) return;
+  if (!q) {
+    sb.querySelectorAll('.svc-row, .tool-nav-btn:not(.target-btn)').forEach(el => el.style.display = '');
+    sb.querySelectorAll('.sb-section-hdr, .sb-sep').forEach(el => el.style.display = '');
+    return;
+  }
+  // Filter service rows
+  sb.querySelectorAll('.svc-row').forEach(row => {
+    const label = (row.querySelector('.svc-label')?.textContent||'').toLowerCase();
+    const port  = (row.querySelector('.svc-port')?.textContent||'').toLowerCase();
+    row.style.display = (label.includes(q) || port.includes(q)) ? '' : 'none';
+  });
+  // Filter tool/shell/env nav buttons (not TARGET button)
+  sb.querySelectorAll('.tool-nav-btn:not(.target-btn)').forEach(btn => {
+    const label = (btn.querySelector('.svc-label')?.textContent||'').toLowerCase();
+    btn.style.display = label.includes(q) ? '' : 'none';
+  });
+  // Always show section headers & separators when filtering (provides context)
+  sb.querySelectorAll('.sb-section-hdr, .sb-sep').forEach(el => el.style.display = '');
+}
+
 function renderSidebar() {
   const sb = document.getElementById('sidebar');
+  const hadSearchFocus = document.activeElement?.id === 'sbSearchInput';
   sb.innerHTML = '';
   if (!state.sectionOpen) state.sectionOpen = {services:true,tools:true};
   const svOpen = state.sectionOpen.services !== false;
   const tlOpen = state.sectionOpen.tools !== false;
+
+  // Sidebar filter search
+  sb.insertAdjacentHTML('beforeend', `
+    <div class="sb-search-wrap">
+      <div class="sb-search-inner">
+        <span class="sb-search-icon">⌕</span>
+        <input class="sb-search-input" id="sbSearchInput" type="text" placeholder="filter..." autocomplete="off" spellcheck="false"
+          value="${esc(sbSearchQuery)}"
+          oninput="filterSidebarItems(this.value)"
+          onkeydown="if(event.key==='Escape'){this.value='';filterSidebarItems('');this.blur();}">
+      </div>
+    </div>
+  `);
 
   // TARGET button (above INIT)
   sb.insertAdjacentHTML('beforeend', `
@@ -2953,6 +3000,14 @@ function renderSidebar() {
       `);
     });
   }
+
+  // Re-apply sidebar filter if active, restore focus if user was typing
+  if (sbSearchQuery) filterSidebarItems(sbSearchQuery);
+  if (hadSearchFocus) {
+    const inp = document.getElementById('sbSearchInput');
+    if (inp) { inp.focus(); inp.selectionStart = inp.selectionEnd = inp.value.length; }
+  }
+
   renderHeaderSession();
 }
 
