@@ -4,7 +4,7 @@
 
 ![HTML](https://img.shields.io/badge/HTML-single%20file-orange?style=flat-square&logo=html5)
 ![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)
-![Tools](https://img.shields.io/badge/tools-30-brightgreen?style=flat-square)
+![Tools](https://img.shields.io/badge/tools-32-brightgreen?style=flat-square)
 ![CMD Log](https://img.shields.io/badge/CMD_LOG-✓-green?style=flat-square)
 ![Search](https://img.shields.io/badge/Ctrl+K-search-blue?style=flat-square)
 ![Language](https://img.shields.io/badge/lang-EN%20%2F%20TR-purple?style=flat-square)
@@ -37,7 +37,7 @@ It keeps your target IP in one place and injects it into every command automatic
 
 ---
 
-## Tools Covered (30)
+## Tools Covered (32)
 
 ### 🔵 Windows / Active Directory
 | Tool | Description |
@@ -79,6 +79,12 @@ It keeps your target IP in one place and injects it into every command automatic
 | socat | Socket Swiss army knife |
 | strace / ltrace | Syscall tracer |
 | binwalk | Firmware analyzer |
+
+### 🔴 Reverse Shells
+| Tool | Description |
+|------|-------------|
+| revshell-lin | Linux reverse shells — bash, python, nc, socat, php, TTY upgrade guide |
+| revshell-win | Windows reverse shells — PowerShell, MSFvenom, LOLBins, web shells |
 
 ### 📋 Cheat Sheets
 - **Active Directory** — domain enumeration, BloodHound, Kerberoasting, DCSync, ACL abuse

