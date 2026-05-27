@@ -314,7 +314,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--mono);height:100vh
 .search-item:hover,.search-item.focused{background:rgba(110,142,240,.07);}
 .search-item-tool{font-size:10px;font-weight:700;color:var(--cyan);background:#141e38;border:1px solid #1e2d58;padding:2px 7px;border-radius:3px;white-space:nowrap;flex-shrink:0;min-width:58px;text-align:center;}
 .search-item-purpose{font-size:12px;color:var(--text);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.search-item-cmd{font-size:11px;color:var(--orange);font-family:var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:175px;opacity:.6;}
+.search-item-cmd{font-size:11px;color:var(--orange);font-family:var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px;opacity:.6;transition:color .15s,opacity .15s;}
+.search-item-cmd.si-copied{color:var(--green)!important;opacity:1!important;}
+.search-item-nav{background:none;border:1px solid var(--border);color:var(--muted);font-size:11px;padding:2px 7px;border-radius:3px;cursor:pointer;flex-shrink:0;transition:all .15s;line-height:1.4;}
+.search-item-nav:hover{border-color:var(--cyan);color:var(--cyan);background:rgba(110,142,240,.08);}
 .search-empty{padding:26px;text-align:center;color:var(--muted);font-size:12px;line-height:1.65;}
 .search-footer{padding:8px 16px;border-top:1px solid var(--border);font-size:10px;color:var(--muted);opacity:.4;display:flex;gap:16px;}
 .btn-search{background:none;border:1px solid var(--border);color:var(--muted);padding:3px 10px;font-family:var(--mono);font-size:11px;cursor:pointer;border-radius:3px;transition:all .15s;letter-spacing:.3px;}
@@ -360,7 +363,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--mono);height:100vh
     <div class="search-results" id="searchResults">
       <div class="search-empty">Start typing to search across all commands...</div>
     </div>
-    <div class="search-footer"><span>↑↓ navigate</span><span>↵ open tool</span><span>ESC close</span></div>
+    <div class="search-footer"><span>↑↓ navigate</span><span>↵ / click → copy command</span><span>↗ open tool page</span><span>ESC close</span></div>
   </div>
 </div>
 <script>
@@ -3779,13 +3782,14 @@ function renderTargetPage() {
 // ═══════════════════════════════════════════════════
 let searchIndex = null;
 let searchFocusIdx = -1;
+let searchResults = [];
 
 function buildSearchIndex() {
   const items = [];
   Object.entries(TOOLS_DB).forEach(([key, tool]) => {
     (tool.categories||[]).forEach(cat => {
       (cat.cmds||[]).forEach(cmd => {
-        items.push({tool: tool.label, toolKey: key, purpose: cmd.p, cmd: cmd.c.split('\n')[0]});
+        items.push({tool: tool.label, toolKey: key, purpose: cmd.p, cmd: cmd.c.split('\n')[0], cmdFull: cmd.c});
       });
     });
   });
@@ -3794,7 +3798,7 @@ function buildSearchIndex() {
     (svc.phases||[]).forEach(phase => {
       (phase.tools||[]).forEach(ts => {
         (ts.cmds||[]).forEach(cmd => {
-          items.push({tool: svc.label, toolKey: key, purpose: cmd.p, cmd: cmd.c.split('\n')[0]});
+          items.push({tool: svc.label, toolKey: key, purpose: cmd.p, cmd: cmd.c.split('\n')[0], cmdFull: cmd.c});
         });
       });
     });
@@ -3805,7 +3809,7 @@ function buildSearchIndex() {
     (initSvc.phases||[]).forEach(phase => {
       (phase.tools||[]).forEach(ts => {
         (ts.cmds||[]).forEach(cmd => {
-          items.push({tool: 'INIT', toolKey: 'init', purpose: cmd.p, cmd: cmd.c.split('\n')[0]});
+          items.push({tool: 'INIT', toolKey: 'init', purpose: cmd.p, cmd: cmd.c.split('\n')[0], cmdFull: cmd.c});
         });
       });
     });
@@ -3839,28 +3843,46 @@ function closeSearch() {
 function filterSearch(q) {
   q = q.trim().toLowerCase();
   if (!q) {
+    searchResults = [];
     document.getElementById('searchResults').innerHTML = '<div class="search-empty">Start typing to search across all commands...</div>';
     return;
   }
   if (!searchIndex) searchIndex = buildSearchIndex();
-  const results = searchIndex.filter(item =>
+  searchResults = searchIndex.filter(item =>
     item.purpose.toLowerCase().includes(q) ||
     item.cmd.toLowerCase().includes(q) ||
     item.tool.toLowerCase().includes(q)
-  ).slice(0, 18);
+  ).slice(0, 20);
   const el = document.getElementById('searchResults');
-  if (!results.length) {
+  if (!searchResults.length) {
     el.innerHTML = `<div class="search-empty">No results for "<b style="color:var(--text)">${esc(q)}</b>"</div>`;
     return;
   }
-  el.innerHTML = results.map((r,i) =>
-    `<div class="search-item" data-key="${esc(r.toolKey)}" onclick="searchNavigate('${esc(r.toolKey)}')" onmouseover="searchFocusIdx=${i};updateSearchFocus()">
+  el.innerHTML = searchResults.map((r, i) =>
+    `<div class="search-item" data-idx="${i}" onclick="searchCopy(this)" onmouseover="searchFocusIdx=${i};updateSearchFocus()">
       <span class="search-item-tool">${esc(r.tool)}</span>
       <span class="search-item-purpose">${esc(r.purpose)}</span>
       <span class="search-item-cmd">${esc(r.cmd)}</span>
+      <button class="search-item-nav" onclick="event.stopPropagation();searchNavigate('${esc(r.toolKey)}')" title="Open tool page">↗</button>
     </div>`
   ).join('');
   searchFocusIdx = -1;
+}
+
+async function searchCopy(el) {
+  const idx = parseInt(el.dataset.idx);
+  if (isNaN(idx) || !searchResults[idx]) return;
+  const injected = injectVars(searchResults[idx].cmdFull);
+  try { await navigator.clipboard.writeText(injected); }
+  catch { const ta = Object.assign(document.createElement('textarea'),{value:injected});
+    document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); }
+  const cmdEl = el.querySelector('.search-item-cmd');
+  if (cmdEl && !cmdEl.classList.contains('si-copied')) {
+    const orig = cmdEl.textContent;
+    cmdEl.classList.add('si-copied');
+    cmdEl.textContent = '✓ COPIED';
+    setTimeout(() => { cmdEl.classList.remove('si-copied'); cmdEl.textContent = orig; }, 1300);
+  }
 }
 
 function searchNavigate(toolKey) {
@@ -3881,7 +3903,7 @@ function searchKeydown(e) {
     updateSearchFocus();
   } else if (e.key === 'Enter') {
     if (searchFocusIdx >= 0 && items[searchFocusIdx]) {
-      items[searchFocusIdx].click();
+      searchCopy(items[searchFocusIdx]);
     }
   }
 }
