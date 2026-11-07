@@ -66,6 +66,8 @@ It keeps your target IP in one place and injects it into every command automatic
 | chisel / ligolo-ng | Tunneling & pivoting |
 | wpscan | WordPress scanner |
 | OWASP ZAP | Web app security scanner & intercepting proxy |
+| curl | HTTP Swiss Army Knife |
+| nessus | Vulnerability scanner |
 
 ### 🟢 Linux
 | Tool | Description |
@@ -79,6 +81,7 @@ It keeps your target IP in one place and injects it into every command automatic
 | socat | Socket Swiss army knife |
 | strace / ltrace | Syscall tracer |
 | binwalk | Firmware analyzer |
+| psql | PostgreSQL client & exploitation |
 
 ### 🔴 Reverse Shells
 | Tool | Description |
