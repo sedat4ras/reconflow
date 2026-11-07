@@ -22,7 +22,7 @@ It keeps your target IP in one place and injects it into every command automatic
 ## Features
 
 - **TARGET page**: a dedicated page for all injectable variables (IP, PORT, DOMAIN, USERNAME, PASSWORD, HASH, WORDLIST), which auto-fill into every command across all pages
-- **Ctrl+K search**: global command search across all 30 tools. Type to filter, use the arrow keys to navigate, and press Enter to open the tool page
+- **Ctrl+K search**: global command search across all 32 tools. Type to filter, use the arrow keys to navigate, and press Enter to open the tool page
 - **One-click copy**: every command copies instantly
 - **CMD LOG**: the `+` button on every command logs it to a session activity page, where you can add output/notes per entry and export as JSON. A target vars summary sits at the top
 - **Favorites**: star any command to pin it at the top of the page
@@ -107,7 +107,7 @@ Or double-click `recon.html` in your file manager.
 
 1. Open the **TARGET** page (top of sidebar) and enter the IP, domain, credentials, and wordlist
 2. Click **+** next to discovered services to add them to your session
-3. Use **Ctrl+K** to search any command across all 30 tools instantly
+3. Use **Ctrl+K** to search any command across all 32 tools instantly
 4. Select a tool from the sidebar
 5. Click **ℹ INFO** for a summary of what to look for
 6. Run commands, which auto-fill with your target variables
