@@ -1,6 +1,6 @@
 # 🔍 ReconFlow
 
-> A single-file pentest & CTF reconnaissance cheat sheet — offline, no dependencies, no install.
+> A single-file pentest & CTF reconnaissance cheat sheet that runs offline, with no dependencies and no install.
 
 ![HTML](https://img.shields.io/badge/HTML-single%20file-orange?style=flat-square&logo=html5)
 ![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)
@@ -13,7 +13,7 @@
 
 ## What is this?
 
-ReconFlow is a **single HTML file** that acts as an interactive command reference during penetration tests and CTF competitions. Open it in any browser — no server, no install, no internet required.
+ReconFlow is a **single HTML file** you use as an interactive command reference during penetration tests and CTF competitions. It opens in any browser and needs no server, install, or internet connection.
 
 It keeps your target IP in one place and injects it into every command automatically. Every command card has one-click copy, star favorites, and collapsible notes.
 
@@ -21,19 +21,19 @@ It keeps your target IP in one place and injects it into every command automatic
 
 ## Features
 
-- **TARGET page** — dedicated page for all injectable variables: IP, PORT, DOMAIN, USERNAME, PASSWORD, HASH, WORDLIST; auto-fills into every command across all pages
-- **Ctrl+K search** — global command search across all 30 tools; type to filter, arrow keys to navigate, Enter to open tool page
-- **One-click copy** — every command copies instantly
-- **CMD LOG** — `+` button on every command logs it to a session activity page; add output/notes per entry, export as JSON; target vars summary at the top
-- **Favorites** — star any command to pin it at the top of the page
-- **Notes** — collapsible note field on every command card
-- **Custom commands** — add your own commands to any tool page
-- **Session tracking** — check off services as you enumerate them
-- **Info panels** — bilingual (EN/TR) summary, what to look for, common vulns, tips
-- **Platform badges** — WIN / LIN labels on every tool info panel (indicates target platform)
-- **Related tool badges** — AD and Linux pages show clickable tool shortcuts
-- **Fully offline** — zero dependencies, works without internet
-- **Persistent state** — everything saves to localStorage automatically
+- **TARGET page**: a dedicated page for all injectable variables (IP, PORT, DOMAIN, USERNAME, PASSWORD, HASH, WORDLIST), which auto-fill into every command across all pages
+- **Ctrl+K search**: global command search across all 30 tools. Type to filter, use the arrow keys to navigate, and press Enter to open the tool page
+- **One-click copy**: every command copies instantly
+- **CMD LOG**: the `+` button on every command logs it to a session activity page, where you can add output/notes per entry and export as JSON. A target vars summary sits at the top
+- **Favorites**: star any command to pin it at the top of the page
+- **Notes**: collapsible note field on every command card
+- **Custom commands**: add your own commands to any tool page
+- **Session tracking**: check off services as you enumerate them
+- **Info panels**: bilingual (EN/TR) summary, what to look for, common vulns, tips
+- **Platform badges**: WIN / LIN labels on every tool info panel show the target platform
+- **Related tool badges**: AD and Linux pages show clickable tool shortcuts
+- **Fully offline**: has zero dependencies and works without internet
+- **Persistent state**: everything saves to localStorage automatically
 
 ---
 
@@ -87,8 +87,8 @@ It keeps your target IP in one place and injects it into every command automatic
 | revshell-win | Windows reverse shells — PowerShell, MSFvenom, LOLBins, web shells |
 
 ### 📋 Cheat Sheets
-- **Active Directory** — domain enumeration, BloodHound, Kerberoasting, DCSync, ACL abuse
-- **Linux Post-Exploitation** — privesc paths, SUID, cron, capabilities, kernel exploits
+- **Active Directory**: domain enumeration, BloodHound, Kerberoasting, DCSync, ACL abuse
+- **Linux Post-Exploitation**: privesc paths, SUID, cron, capabilities, kernel exploits
 
 ---
 
@@ -105,14 +105,14 @@ Or double-click `recon.html` in your file manager.
 
 ### Workflow
 
-1. Open **TARGET** page (top of sidebar) — enter IP, domain, credentials, wordlist
+1. Open the **TARGET** page (top of sidebar) and enter the IP, domain, credentials, and wordlist
 2. Click **+** next to discovered services to add them to your session
 3. Use **Ctrl+K** to search any command across all 30 tools instantly
 4. Select a tool from the sidebar
 5. Click **ℹ INFO** for a summary of what to look for
-6. Run commands — they auto-fill with your target variables
+6. Run commands, which auto-fill with your target variables
 7. Star important commands, add notes, track your progress
-8. Click **+** on any command card to log it → go to **CMD LOG** to add output/notes and export JSON
+8. Click **+** on any command card to log it, then go to **CMD LOG** to add output/notes and export JSON
 
 ---
 
@@ -150,10 +150,10 @@ Or double-click `recon.html` in your file manager.
 
 ## State & Privacy
 
-All data (IP, notes, favorites, session progress) is stored in **browser localStorage** only — nothing is sent anywhere. Clear with the `SIFIRLA / CLEAR STATE` button.
+All data (IP, notes, favorites, session progress) is stored in **browser localStorage** only, and nothing is sent anywhere. Clear with the `SIFIRLA / CLEAR STATE` button.
 
 ---
 
 ## License
 
-MIT — use freely, modify freely.
+MIT. Use and modify freely.
